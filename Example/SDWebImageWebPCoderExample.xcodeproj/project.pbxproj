@@ -14,12 +14,14 @@
 		803D79DB213597CC00C815FC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 803D79DA213597CC00C815FC /* Assets.xcassets */; };
 		803D79DE213597CC00C815FC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 803D79DC213597CC00C815FC /* LaunchScreen.storyboard */; };
 		803D79E1213597CC00C815FC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 803D79E0213597CC00C815FC /* main.m */; };
+		C04477BE8FEEDC78E0968915 /* Pods_SDWebImageWebPCoderExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C77BDBD4B5163F7D451BCFC8 /* Pods_SDWebImageWebPCoderExample.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		08D062B84105453A729B2E18 /* Pods_SDImageWebPCoderExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SDImageWebPCoderExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		5204DF62292B642922AD88A7 /* Pods-SDWebImageWebPCoderExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageWebPCoderExample.release.xcconfig"; path = "Pods/Target Support Files/Pods-SDWebImageWebPCoderExample/Pods-SDWebImageWebPCoderExample.release.xcconfig"; sourceTree = "<group>"; };
 		6B2A8799CA055DEFD6287E90 /* Pods-SDImageWebPCoderExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDImageWebPCoderExample.release.xcconfig"; path = "Pods/Target Support Files/Pods-SDImageWebPCoderExample/Pods-SDImageWebPCoderExample.release.xcconfig"; sourceTree = "<group>"; };
-		803D79CE213597CB00C815FC /* SDImageWebPCoderExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SDImageWebPCoderExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		803D79CE213597CB00C815FC /* SDWebImageWebPCoderExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SDWebImageWebPCoderExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		803D79D1213597CB00C815FC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		803D79D2213597CB00C815FC /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		803D79D4213597CB00C815FC /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
@@ -30,6 +32,8 @@
 		803D79DF213597CC00C815FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		803D79E0213597CC00C815FC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		9C8C6854F3571B183FE25D4E /* Pods-SDImageWebPCoderExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDImageWebPCoderExample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SDImageWebPCoderExample/Pods-SDImageWebPCoderExample.debug.xcconfig"; sourceTree = "<group>"; };
+		C77BDBD4B5163F7D451BCFC8 /* Pods_SDWebImageWebPCoderExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SDWebImageWebPCoderExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		ECCF49FEACC8A1934D82D563 /* Pods-SDWebImageWebPCoderExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageWebPCoderExample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SDWebImageWebPCoderExample/Pods-SDWebImageWebPCoderExample.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,6 +42,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0358F0904AE0B377A509E317 /* Pods_SDImageWebPCoderExample.framework in Frameworks */,
+				C04477BE8FEEDC78E0968915 /* Pods_SDWebImageWebPCoderExample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -49,6 +54,8 @@
 			children = (
 				9C8C6854F3571B183FE25D4E /* Pods-SDImageWebPCoderExample.debug.xcconfig */,
 				6B2A8799CA055DEFD6287E90 /* Pods-SDImageWebPCoderExample.release.xcconfig */,
+				ECCF49FEACC8A1934D82D563 /* Pods-SDWebImageWebPCoderExample.debug.xcconfig */,
+				5204DF62292B642922AD88A7 /* Pods-SDWebImageWebPCoderExample.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -57,6 +64,7 @@
 			isa = PBXGroup;
 			children = (
 				08D062B84105453A729B2E18 /* Pods_SDImageWebPCoderExample.framework */,
+				C77BDBD4B5163F7D451BCFC8 /* Pods_SDWebImageWebPCoderExample.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -74,7 +82,7 @@
 		803D79CF213597CB00C815FC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				803D79CE213597CB00C815FC /* SDImageWebPCoderExample.app */,
+				803D79CE213597CB00C815FC /* SDWebImageWebPCoderExample.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -92,15 +100,16 @@
 				803D79DF213597CC00C815FC /* Info.plist */,
 				803D79E0213597CC00C815FC /* main.m */,
 			);
-			path = SDImageWebPCoderExample;
+			name = SDImageWebPCoderExample;
+			path = SDWebImageWebPCoderExample;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		803D79CD213597CB00C815FC /* SDImageWebPCoderExample */ = {
+		803D79CD213597CB00C815FC /* SDWebImageWebPCoderExample */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 803D79E4213597CC00C815FC /* Build configuration list for PBXNativeTarget "SDImageWebPCoderExample" */;
+			buildConfigurationList = 803D79E4213597CC00C815FC /* Build configuration list for PBXNativeTarget "SDWebImageWebPCoderExample" */;
 			buildPhases = (
 				47B6AB88C962A96D10FA0EF4 /* [CP] Check Pods Manifest.lock */,
 				803D79CA213597CB00C815FC /* Sources */,
@@ -112,9 +121,9 @@
 			);
 			dependencies = (
 			);
-			name = SDImageWebPCoderExample;
+			name = SDWebImageWebPCoderExample;
 			productName = SDImageWebPCoderExample;
-			productReference = 803D79CE213597CB00C815FC /* SDImageWebPCoderExample.app */;
+			productReference = 803D79CE213597CB00C815FC /* SDWebImageWebPCoderExample.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -131,7 +140,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 803D79C9213597CB00C815FC /* Build configuration list for PBXProject "SDImageWebPCoderExample" */;
+			buildConfigurationList = 803D79C9213597CB00C815FC /* Build configuration list for PBXProject "SDWebImageWebPCoderExample" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -144,7 +153,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				803D79CD213597CB00C815FC /* SDImageWebPCoderExample */,
+				803D79CD213597CB00C815FC /* SDWebImageWebPCoderExample */,
 			);
 		};
 /* End PBXProject section */
@@ -169,20 +178,20 @@
 			files = (
 			);
 			inputPaths = (
-				"${SRCROOT}/Pods/Target Support Files/Pods-SDImageWebPCoderExample/Pods-SDImageWebPCoderExample-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/SDImageWebPCoder/SDImageWebPCoder.framework",
+				"${SRCROOT}/Pods/Target Support Files/Pods-SDWebImageWebPCoderExample/Pods-SDWebImageWebPCoderExample-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
+				"${BUILT_PRODUCTS_DIR}/SDWebImageWebPCoder/SDWebImageWebPCoder.framework",
 				"${BUILT_PRODUCTS_DIR}/libwebp/libwebp.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDImageWebPCoder.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImageWebPCoder.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libwebp.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SDImageWebPCoderExample/Pods-SDImageWebPCoderExample-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-SDWebImageWebPCoderExample/Pods-SDWebImageWebPCoderExample-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		47B6AB88C962A96D10FA0EF4 /* [CP] Check Pods Manifest.lock */ = {
@@ -196,7 +205,7 @@
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SDImageWebPCoderExample-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-SDWebImageWebPCoderExample-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -350,13 +359,16 @@
 		};
 		803D79E5213597CC00C815FC /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9C8C6854F3571B183FE25D4E /* Pods-SDImageWebPCoderExample.debug.xcconfig */;
+			baseConfigurationReference = ECCF49FEACC8A1934D82D563 /* Pods-SDWebImageWebPCoderExample.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = SDImageWebPCoderExample/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = org.SDWebImage.SDImageWebPCoderExample;
+				INFOPLIST_FILE = SDWebImageWebPCoderExample/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.SDWebImage.SDWebImageWebPCoderExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -364,13 +376,16 @@
 		};
 		803D79E6213597CC00C815FC /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6B2A8799CA055DEFD6287E90 /* Pods-SDImageWebPCoderExample.release.xcconfig */;
+			baseConfigurationReference = 5204DF62292B642922AD88A7 /* Pods-SDWebImageWebPCoderExample.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = SDImageWebPCoderExample/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = org.SDWebImage.SDImageWebPCoderExample;
+				INFOPLIST_FILE = SDWebImageWebPCoderExample/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.SDWebImage.SDWebImageWebPCoderExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -379,7 +394,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		803D79C9213597CB00C815FC /* Build configuration list for PBXProject "SDImageWebPCoderExample" */ = {
+		803D79C9213597CB00C815FC /* Build configuration list for PBXProject "SDWebImageWebPCoderExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				803D79E2213597CC00C815FC /* Debug */,
@@ -388,7 +403,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		803D79E4213597CC00C815FC /* Build configuration list for PBXNativeTarget "SDImageWebPCoderExample" */ = {
+		803D79E4213597CC00C815FC /* Build configuration list for PBXNativeTarget "SDWebImageWebPCoderExample" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				803D79E5213597CC00C815FC /* Debug */,

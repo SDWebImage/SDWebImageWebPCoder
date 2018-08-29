@@ -1,6 +1,6 @@
 //
 //  AppDelegate.m
-//  SDImageWebPCoderExample
+//  SDWebImageWebPCoderExample
 //
 //  Created by Bogdan Poplauschi on 28/08/2018.
 //  Copyright © 2018 SDWebImage. All rights reserved.

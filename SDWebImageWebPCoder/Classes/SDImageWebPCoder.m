@@ -9,21 +9,25 @@
 #ifdef SD_WEBP
 
 #import "SDImageWebPCoder.h"
-#import "SDImageCoderHelper.h"
-#import "NSImage+Compatibility.h"
-#import "UIImage+Metadata.h"
-#import "UIImage+ForceDecode.h"
-#if __has_include(<webp/decode.h>) && __has_include(<webp/encode.h>) && __has_include(<webp/demux.h>) && __has_include(<webp/mux.h>)
-#import <webp/decode.h>
-#import <webp/encode.h>
-#import <webp/demux.h>
-#import <webp/mux.h>
+#import <SDWebImage/SDImageCoderHelper.h>
+#if __has_include(<SDWebImage/NSImage+Compatibility.h>)
+#import <SDWebImage/NSImage+Compatibility.h>
+#endif
+#import <SDWebImage/UIImage+Metadata.h>
+#import <SDWebImage/UIImage+ForceDecode.h>
+
+#if __has_include(<libwebp/decode.h>) && __has_include(<libwebp/encode.h>) && __has_include(<libwebp/demux.h>) && __has_include(<libwebp/mux.h>)
+#import <libwebp/decode.h>
+#import <libwebp/encode.h>
+#import <libwebp/demux.h>
+#import <libwebp/mux.h>
 #else
 #import "webp/decode.h"
 #import "webp/encode.h"
 #import "webp/demux.h"
 #import "webp/mux.h"
 #endif
+
 #import <Accelerate/Accelerate.h>
 
 @interface SDWebPCoderFrame : NSObject

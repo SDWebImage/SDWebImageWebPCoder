@@ -1,10 +1,10 @@
-# SDImageWebPCoder
+# SDWebImageWebPCoder
 
-[![CI Status](http://img.shields.io/travis/SDWebImage/SDImageWebPCoder.svg?style=flat)](https://travis-ci.org/SDWebImage/SDImageWebPCoder)
-[![Version](https://img.shields.io/cocoapods/v/SDImageWebPCoder.svg?style=flat)](http://cocoapods.org/pods/SDImageWebPCoder)
-[![License](https://img.shields.io/cocoapods/l/SDImageWebPCoder.svg?style=flat)](http://cocoapods.org/pods/SDImageWebPCoder)
-[![Platform](https://img.shields.io/cocoapods/p/SDImageWebPCoder.svg?style=flat)](http://cocoapods.org/pods/SDImageWebPCoder)
-[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/SDWebImage/SDImageWebPCoder)
+[![CI Status](http://img.shields.io/travis/SDWebImage/SDWebImageWebPCoder.svg?style=flat)](https://travis-ci.org/SDWebImage/SDWebImageWebPCoder)
+[![Version](https://img.shields.io/cocoapods/v/SDWebImageWebPCoder.svg?style=flat)](http://cocoapods.org/pods/SDWebImageWebPCoder)
+[![License](https://img.shields.io/cocoapods/l/SDWebImageWebPCoder.svg?style=flat)](http://cocoapods.org/pods/SDWebImageWebPCoder)
+[![Platform](https://img.shields.io/cocoapods/p/SDWebImageWebPCoder.svg?style=flat)](http://cocoapods.org/pods/SDWebImageWebPCoder)
+[![Carthage compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/SDWebImage/SDWebImageWebPCoder)
 
 Starting with the SDWebImage 5.0 version, we moved the [libwebp](https://github.com/webmproject/libwebp) support code from the Core Repo to this stand-alone repo.
 
@@ -19,18 +19,18 @@ Starting with the SDWebImage 5.0 version, we moved the [libwebp](https://github.
 
 #### CocoaPods
 
-SDImageWebPCoder is available through [CocoaPods](http://cocoapods.org). To install it, simply add the following line to your Podfile:
+SDWebImageWebPCoder is available through [CocoaPods](http://cocoapods.org). To install it, simply add the following line to your Podfile:
 
 ```ruby
-pod 'SDImageWebPCoder'
+pod 'SDWebImageWebPCoder'
 ```
 
 #### Carthage
 
-SDImageWebPCoder is available through [Carthage](https://github.com/Carthage/Carthage).
+SDWebImageWebPCoder is available through [Carthage](https://github.com/Carthage/Carthage).
 
 ```
-github "SDWebImage/SDImageWebPCoder"
+github "SDWebImage/SDWebImageWebPCoder"
 ```
 
 ## Usage
@@ -56,4 +56,4 @@ This is a demo to show how to use `WebP` and animated `WebP` images via `SDWebIm
 
 ## License
 
-SDImageWebPCoder is available under the MIT license. See [the LICENSE file](https://github.com/SDWebImage/SDImageWebPCoder/blob/master/LICENSE) for more info.
+SDWebImageWebPCoder is available under the MIT license. See [the LICENSE file](https://github.com/SDWebImage/SDWebImageWebPCoder/blob/master/LICENSE) for more info.
