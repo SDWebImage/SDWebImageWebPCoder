@@ -32,7 +32,7 @@ script:
 
   - echo Build example
   - pod install --project-directory=Example
-  - xcodebuild build -workspace Example/SDImageWebPCoderExample.xcworkspace -scheme SDImageWebPCoderExample -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 8' -configuration Debug | xcpretty -c
+  - xcodebuild build -workspace SDWebImageWebPCoder.xcworkspace -scheme SDWebImageWebPCoderExample -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 8' -configuration Debug | xcpretty -c
 
 #  - echo Run the tests
 #  - xcodebuild test -workspace Example/SDImageWebPCoderExample.xcworkspace -scheme 'SDImageWebPCoderTests' -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 8' -configuration Debug | xcpretty -c
