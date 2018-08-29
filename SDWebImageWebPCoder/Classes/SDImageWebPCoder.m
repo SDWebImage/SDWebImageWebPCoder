@@ -16,16 +16,16 @@
 #import <SDWebImage/UIImage+Metadata.h>
 #import <SDWebImage/UIImage+ForceDecode.h>
 
-#if __has_include(<libwebp/decode.h>) && __has_include(<libwebp/encode.h>) && __has_include(<libwebp/demux.h>) && __has_include(<libwebp/mux.h>)
-#import <libwebp/decode.h>
-#import <libwebp/encode.h>
-#import <libwebp/demux.h>
-#import <libwebp/mux.h>
-#else
+#if __has_include("webp/decode.h") && __has_include("webp/encode.h") && __has_include("webp/demux.h") && __has_include("webp/mux.h")
 #import "webp/decode.h"
 #import "webp/encode.h"
 #import "webp/demux.h"
 #import "webp/mux.h"
+#elif __has_include(<libwebp/decode.h>) && __has_include(<libwebp/encode.h>) && __has_include(<libwebp/demux.h>) && __has_include(<libwebp/mux.h>)
+#import <libwebp/decode.h>
+#import <libwebp/encode.h>
+#import <libwebp/demux.h>
+#import <libwebp/mux.h>
 #endif
 
 #import <Accelerate/Accelerate.h>

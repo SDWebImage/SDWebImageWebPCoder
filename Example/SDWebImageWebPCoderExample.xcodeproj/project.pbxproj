@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0358F0904AE0B377A509E317 /* Pods_SDImageWebPCoderExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08D062B84105453A729B2E18 /* Pods_SDImageWebPCoderExample.framework */; };
 		803D79D3213597CB00C815FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 803D79D2213597CB00C815FC /* AppDelegate.m */; };
 		803D79D6213597CB00C815FC /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 803D79D5213597CB00C815FC /* ViewController.m */; };
 		803D79D9213597CB00C815FC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 803D79D7213597CB00C815FC /* Main.storyboard */; };
@@ -41,7 +40,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0358F0904AE0B377A509E317 /* Pods_SDImageWebPCoderExample.framework in Frameworks */,
 				C04477BE8FEEDC78E0968915 /* Pods_SDWebImageWebPCoderExample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
