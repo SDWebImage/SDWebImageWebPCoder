@@ -1,5 +1,5 @@
 language: objective-c
-osx_image: xcode9
+osx_image: xcode9.4
 
 env:
   global:
@@ -8,10 +8,10 @@ env:
 
 addons:
   ssh_known_hosts: github.com
-    
+
 notifications:
   email: false
-  
+
 before_install:
   - env
   - locale
@@ -32,7 +32,7 @@ script:
 
   - echo Build example
   - pod install --project-directory=Example
-  - xcodebuild build -workspace SDWebImageWebPCoder.xcworkspace -scheme SDWebImageWebPCoderExample -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 8' -configuration Debug | xcpretty -c
+  - xcodebuild build -workspace SDWebImageWebPCoder.xcworkspace -scheme SDWebImageWebPCoderExample -sdk iphonesimulator -destination 'name=iPhone 6s' -configuration Debug | xcpretty -c
 
 #  - echo Run the tests
 #  - xcodebuild test -workspace Example/SDImageWebPCoderExample.xcworkspace -scheme 'SDImageWebPCoderTests' -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 8' -configuration Debug | xcpretty -c
