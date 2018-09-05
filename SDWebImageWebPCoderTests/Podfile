@@ -1,0 +1,9 @@
+platform :ios, '8.0'
+use_frameworks!
+
+project '../SDWebImageWebPCoder'
+workspace '../SDWebImageWebPCoder'
+
+target 'SDWebImageWebPCoderTests' do
+  pod 'SDWebImageWebPCoder', :path => '../'
+end

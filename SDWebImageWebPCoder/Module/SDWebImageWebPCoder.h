@@ -6,6 +6,8 @@
  * file that was distributed with this source code.
  */
 
+#import <Foundation/Foundation.h>
+
 FOUNDATION_EXPORT double SDWebImageWebPCoderVersionNumber;
 FOUNDATION_EXPORT const unsigned char SDWebImageWebPCoderVersionString[];
 
