@@ -33,6 +33,14 @@ script:
   - echo Build example
   - pod install --project-directory=Example
   - xcodebuild build -workspace SDWebImageWebPCoder.xcworkspace -scheme SDWebImageWebPCoderExample -sdk iphonesimulator -destination 'name=iPhone 6s' -configuration Debug | xcpretty -c
+  
+  - echo Clean DerivedData
+  - mkdir DerivedData
+  - rm -rf ~/Library/Developer/Xcode/DerivedData
 
   - echo Run the tests
   - xcodebuild test -workspace SDWebImageWebPCoder.xcworkspace -scheme 'SDWebImageWebPCoderTests' -sdk iphonesimulator -destination 'name=iPhone 6s' -configuration Debug | xcpretty -c
+  - mv ~/Library/Developer/Xcode/DerivedData/ ./DerivedData/iOS
+
+after_success:
+    - bash <(curl -s https://codecov.io/bash) -D './DerivedData/iOS' -J '^SDWebImageWebPCoder$' -F 'iOS'
