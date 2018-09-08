@@ -1,6 +1,8 @@
 platform :ios, '8.0'
 use_frameworks!
 
+workspace '../SDWebImageWebPCoder'
+
 target 'SDWebImageWebPCoderExample' do
   pod 'SDWebImageWebPCoder', :path => '../'
 end

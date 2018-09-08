@@ -6,5 +6,4 @@ workspace '../SDWebImageWebPCoder'
 
 target 'SDWebImageWebPCoderTests' do
   pod 'SDWebImageWebPCoder', :path => '../'
-  pod 'SDWebImage'
 end
