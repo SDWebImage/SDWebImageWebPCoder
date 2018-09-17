@@ -6,8 +6,6 @@
  * file that was distributed with this source code.
  */
 
-#ifdef SD_WEBP
-
 #import "SDImageWebPCoder.h"
 #import <SDWebImage/SDImageCoderHelper.h>
 #if __has_include(<SDWebImage/NSImage+Compatibility.h>)
@@ -29,6 +27,14 @@
 #endif
 
 #import <Accelerate/Accelerate.h>
+
+#ifndef SD_LOCK
+#define SD_LOCK(lock) dispatch_semaphore_wait(lock, DISPATCH_TIME_FOREVER);
+#endif
+
+#ifndef SD_UNLOCK
+#define SD_UNLOCK(lock) dispatch_semaphore_signal(lock);
+#endif
 
 @interface SDWebPCoderFrame : NSObject
 
@@ -748,9 +754,9 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     if (index >= _frameCount) {
         return nil;
     }
-    LOCKBLOCK({
-        image = [self safeAnimatedImageFrameAtIndex:index];
-    });
+    SD_LOCK(_lock);
+    image = [self safeAnimatedImageFrameAtIndex:index];
+    SD_UNLOCK(_lock);
     return image;
 }
 
@@ -826,6 +832,3 @@ static void FreeImageData(void *info, const void *data, size_t size) {
 }
 
 @end
-
-#endif
-

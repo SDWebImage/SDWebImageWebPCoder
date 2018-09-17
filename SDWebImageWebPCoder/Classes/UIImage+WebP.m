@@ -6,8 +6,6 @@
  * file that was distributed with this source code.
  */
 
-#ifdef SD_WEBP
-
 #import "UIImage+WebP.h"
 #import "SDImageWebPCoder.h"
 
@@ -21,5 +19,3 @@
 }
 
 @end
-
-#endif
