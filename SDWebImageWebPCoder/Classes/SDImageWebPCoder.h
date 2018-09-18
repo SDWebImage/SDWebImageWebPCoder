@@ -6,8 +6,6 @@
  * file that was distributed with this source code.
  */
 
-#ifdef SD_WEBP
-
 #import <Foundation/Foundation.h>
 #import <SDWebImage/SDImageCoder.h>
 
@@ -19,5 +17,3 @@
 @property (nonatomic, class, readonly, nonnull) SDImageWebPCoder *sharedCoder;
 
 @end
-
-#endif
