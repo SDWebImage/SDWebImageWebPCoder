@@ -1,32 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Workspace
    version = "1.0">
-   <Group
-      location = "container:"
-      name = "Meta">
-      <FileRef
-         location = "group:Cartfile">
-      </FileRef>
-      <FileRef
-         location = "group:LICENSE">
-      </FileRef>
-      <FileRef
-         location = "group:README.md">
-      </FileRef>
-      <FileRef
-         location = "group:SDWebImageWebPCoder.podspec">
-      </FileRef>
-   </Group>
-   <FileRef
-      location = "group:SDWebImageWebPCoder.xcodeproj">
-   </FileRef>
    <FileRef
       location = "group:Example/SDWebImageWebPCoderExample.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Example/Pods/Pods.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:SDWebImageWebPCoderTests/Pods/Pods.xcodeproj">
    </FileRef>
 </Workspace>
