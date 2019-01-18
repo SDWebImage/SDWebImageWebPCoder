@@ -64,6 +64,7 @@
     NSUInteger _frameCount;
     NSArray<SDWebPCoderFrame *> *_frames;
     CGContextRef _canvas;
+    CGColorSpaceRef _colorSpace;
     BOOL _hasAnimation;
     BOOL _hasAlpha;
     BOOL _finished;
@@ -85,6 +86,10 @@
     if (_canvas) {
         CGContextRelease(_canvas);
         _canvas = NULL;
+    }
+    if (_colorSpace) {
+        CGColorSpaceRelease(_colorSpace);
+        _colorSpace = NULL;
     }
 }
 
@@ -131,21 +136,6 @@
             scale = 1;
         }
     }
-    if (!hasAnimation) {
-        // for static single webp image
-        CGImageRef imageRef = [self sd_createWebpImageWithData:webpData];
-        if (!imageRef) {
-            return nil;
-        }
-#if SD_UIKIT || SD_WATCH
-        UIImage *staticImage = [[UIImage alloc] initWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
-#else
-        UIImage *staticImage = [[UIImage alloc] initWithCGImage:imageRef scale:scale orientation:kCGImagePropertyOrientationUp];
-#endif
-        CGImageRelease(imageRef);
-        WebPDemuxDelete(demuxer);
-        return staticImage;
-    }
     
     // for animated webp image
     WebPIterator iter;
@@ -155,10 +145,12 @@
         WebPDemuxDelete(demuxer);
         return nil;
     }
+    CGColorSpaceRef colorSpace = [self sd_colorSpaceWithDemuxer:demuxer];
     
-    if (decodeFirstFrame) {
+    if (!hasAnimation || decodeFirstFrame) {
         // first frame for animated webp image
-        CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment];
+        CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:colorSpace];
+        CGColorSpaceRelease(colorSpace);
 #if SD_UIKIT || SD_WATCH
         UIImage *firstFrameImage = [[UIImage alloc] initWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
 #else
@@ -180,6 +172,7 @@
     CGContextRef canvas = CGBitmapContextCreate(NULL, canvasWidth, canvasHeight, 8, 0, [SDImageCoderHelper colorSpaceGetDeviceRGB], bitmapInfo);
     if (!canvas) {
         WebPDemuxDelete(demuxer);
+        CGColorSpaceRelease(colorSpace);
         return nil;
     }
     
@@ -187,7 +180,7 @@
     
     do {
         @autoreleasepool {
-            CGImageRef imageRef = [self sd_drawnWebpImageWithCanvas:canvas iterator:iter];
+            CGImageRef imageRef = [self sd_drawnWebpImageWithCanvas:canvas iterator:iter colorSpace:colorSpace];
             if (!imageRef) {
                 continue;
             }
@@ -208,6 +201,7 @@
     WebPDemuxReleaseIterator(&iter);
     WebPDemuxDelete(demuxer);
     CGContextRelease(canvas);
+    CGColorSpaceRelease(colorSpace);
     
     UIImage *animatedImage = [SDImageCoderHelper animatedImageWithFrames:frames];
     animatedImage.sd_imageLoopCount = loopCount;
@@ -318,7 +312,7 @@
     return image;
 }
 
-- (void)sd_blendWebpImageWithCanvas:(CGContextRef)canvas iterator:(WebPIterator)iter {
+- (void)sd_blendWebpImageWithCanvas:(CGContextRef)canvas iterator:(WebPIterator)iter colorSpace:(nonnull CGColorSpaceRef)colorSpaceRef {
     size_t canvasHeight = CGBitmapContextGetHeight(canvas);
     CGFloat tmpX = iter.x_offset;
     CGFloat tmpY = canvasHeight - iter.height - iter.y_offset;
@@ -327,7 +321,7 @@
     if (iter.dispose_method == WEBP_MUX_DISPOSE_BACKGROUND) {
         CGContextClearRect(canvas, imageRect);
     } else {
-        CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment];
+        CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:colorSpaceRef];
         if (!imageRef) {
             return;
         }
@@ -341,8 +335,8 @@
     }
 }
 
-- (nullable CGImageRef)sd_drawnWebpImageWithCanvas:(CGContextRef)canvas iterator:(WebPIterator)iter CF_RETURNS_RETAINED {
-    CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment];
+- (nullable CGImageRef)sd_drawnWebpImageWithCanvas:(CGContextRef)canvas iterator:(WebPIterator)iter colorSpace:(nonnull CGColorSpaceRef)colorSpaceRef CF_RETURNS_RETAINED {
+    CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:colorSpaceRef];
     if (!imageRef) {
         return nil;
     }
@@ -369,7 +363,7 @@
     return newImageRef;
 }
 
-- (nullable CGImageRef)sd_createWebpImageWithData:(WebPData)webpData CF_RETURNS_RETAINED {
+- (nullable CGImageRef)sd_createWebpImageWithData:(WebPData)webpData colorSpace:(nonnull CGColorSpaceRef)colorSpaceRef CF_RETURNS_RETAINED {
     WebPDecoderConfig config;
     if (!WebPInitDecoderConfig(&config)) {
         return nil;
@@ -382,11 +376,10 @@
     BOOL hasAlpha = config.input.has_alpha;
     // iOS prefer BGRA8888 (premultiplied) or BGRX8888 bitmapInfo for screen rendering, which is same as `UIGraphicsBeginImageContext()` or `- [CALayer drawInContext:]`
     // use this bitmapInfo, combined with right colorspace, even without decode, can still avoid extra CA::Render::copy_image(which marked `Color Copied Images` from Instruments)
-    WEBP_CSP_MODE colorspace = MODE_bgrA;
     CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host;
     bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
     config.options.use_threads = 1;
-    config.output.colorspace = colorspace;
+    config.output.colorspace = MODE_bgrA;
     
     // Decode the WebP image data into a RGBA value array
     if (WebPDecode(webpData.bytes, webpData.size, &config) != VP8_STATUS_OK) {
@@ -406,7 +399,6 @@
     size_t bitsPerComponent = 8;
     size_t bitsPerPixel = 32;
     size_t bytesPerRow = config.output.u.RGBA.stride;
-    CGColorSpaceRef colorSpaceRef = [SDImageCoderHelper colorSpaceGetDeviceRGB];
     CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
     CGImageRef imageRef = CGImageCreate(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpaceRef, bitmapInfo, provider, NULL, NO, renderingIntent);
     
@@ -423,6 +415,28 @@
         duration = 100;
     }
     return duration / 1000.0;
+}
+
+// Create and return the correct colorspace by checking the ICC Profile
+- (nonnull CGColorSpaceRef)sd_colorSpaceWithDemuxer:(nonnull WebPDemuxer *)demuxer CF_RETURNS_RETAINED {
+    // WebP contains ICC Profile should use the desired colorspace, instead of default device colorspace
+    // See: https://developers.google.com/speed/webp/docs/riff_container#color_profile
+    
+    WebPChunkIterator chunk_iter;
+    CGColorSpaceRef colorSpaceRef = NULL;
+    
+    int result = WebPDemuxGetChunk(demuxer, "ICCP", 1, &chunk_iter);
+    if (result) {
+        NSData *profileData = [NSData dataWithBytes:chunk_iter.chunk.bytes length:chunk_iter.chunk.size];
+        colorSpaceRef = CGColorSpaceCreateWithICCProfile((__bridge CFDataRef)profileData);
+    }
+    
+    if (!colorSpaceRef) {
+        colorSpaceRef = [SDImageCoderHelper colorSpaceGetDeviceRGB];
+        CGColorSpaceRetain(colorSpaceRef);
+    }
+    
+    return colorSpaceRef;
 }
 
 #pragma mark - Encode
@@ -770,6 +784,9 @@ static void FreeImageData(void *info, const void *data, size_t size) {
         }
         _canvas = canvas;
     }
+    if (!_colorSpace) {
+        _colorSpace = [self sd_colorSpaceWithDemuxer:_demux];
+    }
     
     SDWebPCoderFrame *frame = _frames[index];
     UIImage *image;
@@ -782,7 +799,7 @@ static void FreeImageData(void *info, const void *data, size_t size) {
             WebPDemuxReleaseIterator(&iter);
             return nil;
         }
-        CGImageRef imageRef = [self sd_drawnWebpImageWithCanvas:_canvas iterator:iter];
+        CGImageRef imageRef = [self sd_drawnWebpImageWithCanvas:_canvas iterator:iter colorSpace:_colorSpace];
         if (!imageRef) {
             return nil;
         }
@@ -810,9 +827,9 @@ static void FreeImageData(void *info, const void *data, size_t size) {
         do {
             @autoreleasepool {
                 if ((size_t)iter.frame_num == endIndex) {
-                    [self sd_blendWebpImageWithCanvas:_canvas iterator:iter];
+                    [self sd_blendWebpImageWithCanvas:_canvas iterator:iter colorSpace:_colorSpace];
                 } else {
-                    CGImageRef imageRef = [self sd_drawnWebpImageWithCanvas:_canvas iterator:iter];
+                    CGImageRef imageRef = [self sd_drawnWebpImageWithCanvas:_canvas iterator:iter colorSpace:_colorSpace];
                     if (!imageRef) {
                         return nil;
                     }
