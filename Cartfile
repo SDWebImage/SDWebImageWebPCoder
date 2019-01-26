@@ -1,2 +1,2 @@
-github "rs/SDWebImage" "remove_webp"
+github "SDWebImage/SDWebImage" >= 5.0.0-beta4
 github "SDWebImage/libwebp-Xcode" >= 1.0.0
