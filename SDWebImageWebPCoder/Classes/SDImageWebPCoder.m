@@ -795,58 +795,57 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     SDWebPCoderFrame *frame = _frames[index];
     UIImage *image;
     WebPIterator iter;
+    
+    // Because Animated WebP supports dispose method, which means frames can based on previous canvas context. However, if we clear canvas and loop from the 0 index until the request index, it's harm for performance.
+    // But when one frame's dispose method is `WEBP_MUX_DISPOSE_BACKGROUND`, the canvas is cleared after the frame decoded. And subsequent frames are not effected by that frame.
+    // So, we calculate each frame's `blendFromIndex`. Then directly draw canvas from that index, instead of always from 0 index.
+    
     if (_currentBlendIndex + 1 == index) {
-        // If current blend index is equal to request index, normal serial process
+        // If the request index is subsequence of current blend index, it does not matter what dispose method is. The canvas is always ready.
         _currentBlendIndex = index;
+        NSUInteger startIndex = index;
         // libwebp's index start with 1
-        if (!WebPDemuxGetFrame(_demux, (int)(index + 1), &iter)) {
+        if (!WebPDemuxGetFrame(_demux, (int)(startIndex + 1), &iter)) {
             WebPDemuxReleaseIterator(&iter);
             return nil;
         }
-        CGImageRef imageRef = [self sd_drawnWebpImageWithCanvas:_canvas iterator:iter colorSpace:_colorSpace];
-        if (!imageRef) {
-            return nil;
-        }
-#if SD_UIKIT || SD_WATCH
-        image = [[UIImage alloc] initWithCGImage:imageRef scale:_scale orientation:UIImageOrientationUp];
-#else
-        image = [[UIImage alloc] initWithCGImage:imageRef scale:_scale orientation:kCGImagePropertyOrientationUp];
-#endif
-        CGImageRelease(imageRef);
     } else {
-        // Else, this can happen when one image set to different imageViews or one loop end. So we should clear the shared cavans.
+        // Else, this can happen when one image set to different imageViews or one loop end. So we should clear the canvas. Then draw until the canvas is ready.
         if (_currentBlendIndex != NSNotFound) {
             CGContextClearRect(_canvas, CGRectMake(0, 0, _canvasWidth, _canvasHeight));
         }
         _currentBlendIndex = index;
         
         // Then, loop from the blend from index, draw each of previous frames on the canvas.
-        // We use do while loop to call `WebPDemuxNextFrame`(fast), only (startIndex == endIndex) need to create image instance
+        // We use do while loop to call `WebPDemuxNextFrame`(fast), until the endIndex meet.
         size_t startIndex = frame.blendFromIndex;
         size_t endIndex = frame.index;
+        // libwebp's index start with 1
         if (!WebPDemuxGetFrame(_demux, (int)(startIndex + 1), &iter)) {
             WebPDemuxReleaseIterator(&iter);
             return nil;
         }
-        do {
-            @autoreleasepool {
-                if ((size_t)iter.frame_num == endIndex) {
+        // Draw from range: [startIndex, endIndex)
+        if (endIndex > startIndex) {
+            do {
+                @autoreleasepool {
                     [self sd_blendWebpImageWithCanvas:_canvas iterator:iter colorSpace:_colorSpace];
-                } else {
-                    CGImageRef imageRef = [self sd_drawnWebpImageWithCanvas:_canvas iterator:iter colorSpace:_colorSpace];
-                    if (!imageRef) {
-                        return nil;
-                    }
-#if SD_UIKIT || SD_WATCH
-                    image = [[UIImage alloc] initWithCGImage:imageRef scale:_scale orientation:UIImageOrientationUp];
-#else
-                    image = [[UIImage alloc] initWithCGImage:imageRef scale:_scale orientation:kCGImagePropertyOrientationUp];
-#endif
-                    CGImageRelease(imageRef);
                 }
-            }
-        } while ((size_t)iter.frame_num < (endIndex + 1) && WebPDemuxNextFrame(&iter));
+            } while ((size_t)iter.frame_num < (endIndex + 1) && WebPDemuxNextFrame(&iter));
+        }
     }
+    
+    // Now the canvas is ready, which respects of dispose method behavior. Just do normal decoding and produce image.
+    CGImageRef imageRef = [self sd_drawnWebpImageWithCanvas:_canvas iterator:iter colorSpace:_colorSpace];
+    if (!imageRef) {
+        return nil;
+    }
+#if SD_UIKIT || SD_WATCH
+    image = [[UIImage alloc] initWithCGImage:imageRef scale:_scale orientation:UIImageOrientationUp];
+#else
+    image = [[UIImage alloc] initWithCGImage:imageRef scale:_scale orientation:kCGImagePropertyOrientationUp];
+#endif
+    CGImageRelease(imageRef);
     
     WebPDemuxReleaseIterator(&iter);
     return image;
