@@ -595,12 +595,14 @@
         
         error = vImageBuffer_Init(&dest, height, width, destFormat.bitsPerPixel, kvImageNoFlags);
         if (error != kvImageNoError) {
+            vImageConverter_Release(convertor);
             CFRelease(dataRef);
             return nil;
         }
         
         // Convert input color mode to RGB888/RGBA8888
         error = vImageConvert_AnyToAny(convertor, &src, &dest, NULL, kvImageNoFlags);
+        vImageConverter_Release(convertor);
         if (error != kvImageNoError) {
             CFRelease(dataRef);
             return nil;
