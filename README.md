@@ -51,7 +51,7 @@ NSURL *webpURL;
 
 // WebP image encoding
 UIImage *image;
-NSData *webpData = [UIImage sd_imageDataAsFormat:SDImageFormatWebP];
+NSData *webpData = [[SDImageWebPCoder sharedCoder] encodedDataWithImage:image format:SDImageFormatWebP options:nil];
 ```
 
 + Swift
@@ -68,7 +68,7 @@ imageView.sd_setImage(with: webpURL)
 
 // WebP image encoding
 let image: UIImage
-let webpData = image.sd_imageData(asFormat: .WebP)
+let webpData = SDImageWebPCoder.shared.encodedData(with: image, format: .webP, options: nil)
 ```
 
 ## Example
