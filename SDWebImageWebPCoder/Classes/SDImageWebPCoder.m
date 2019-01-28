@@ -464,7 +464,13 @@
     BOOL encodeFirstFrame = [options[SDImageCoderEncodeFirstFrameOnly] boolValue];
     if (encodeFirstFrame || frames.count == 0) {
         // for static single webp image
-        data = [self sd_encodedWebpDataWithImage:image quality:compressionQuality];
+        CGImageRef imageRef = image.CGImage;
+#if SD_UIKIT || SD_WATCH
+        if (!imageRef) {
+            imageRef = image.images.firstObject.CGImage;
+        }
+#endif
+        data = [self sd_encodedWebpDataWithImage:imageRef quality:compressionQuality];
     } else {
         // for animated webp image
         WebPMux *mux = WebPMuxNew();
@@ -473,7 +479,7 @@
         }
         for (size_t i = 0; i < frames.count; i++) {
             SDImageFrame *currentFrame = frames[i];
-            NSData *webpData = [self sd_encodedWebpDataWithImage:currentFrame.image quality:compressionQuality];
+            NSData *webpData = [self sd_encodedWebpDataWithImage:currentFrame.image.CGImage quality:compressionQuality];
             int duration = currentFrame.duration * 1000;
             WebPMuxFrameInfo frame = { .bitstream.bytes = webpData.bytes,
                 .bitstream.size = webpData.length,
@@ -510,13 +516,11 @@
     return data;
 }
 
-- (nullable NSData *)sd_encodedWebpDataWithImage:(nullable UIImage *)image quality:(double)quality {
-    if (!image) {
+- (nullable NSData *)sd_encodedWebpDataWithImage:(nullable CGImageRef)imageRef quality:(double)quality {
+    NSData *webpData;
+    if (!imageRef) {
         return nil;
     }
-    
-    NSData *webpData;
-    CGImageRef imageRef = image.CGImage;
     
     size_t width = CGImageGetWidth(imageRef);
     size_t height = CGImageGetHeight(imageRef);
