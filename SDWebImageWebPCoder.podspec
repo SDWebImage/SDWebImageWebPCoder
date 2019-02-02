@@ -1,10 +1,10 @@
 Pod::Spec.new do |s|
   s.name             = 'SDWebImageWebPCoder'
-  s.version          = '0.1.2'
+  s.version          = '0.1.3'
   s.summary          = 'WebP decoder/encoder for SDWebImage coder plugin.'
 
   s.description      = <<-DESC
-This is a simple SDWebImage coder plugin to support WebP image.
+This is a SDWebImage coder plugin to support WebP image.
                        DESC
 
   s.homepage         = 'https://github.com/SDWebImage/SDWebImageWebPCoder'
