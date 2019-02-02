@@ -464,13 +464,7 @@
     BOOL encodeFirstFrame = [options[SDImageCoderEncodeFirstFrameOnly] boolValue];
     if (encodeFirstFrame || frames.count == 0) {
         // for static single webp image
-        CGImageRef imageRef = image.CGImage;
-#if SD_UIKIT || SD_WATCH
-        if (!imageRef) {
-            imageRef = image.images.firstObject.CGImage;
-        }
-#endif
-        data = [self sd_encodedWebpDataWithImage:imageRef quality:compressionQuality];
+        data = [self sd_encodedWebpDataWithImage:image.CGImage quality:compressionQuality];
     } else {
         // for animated webp image
         WebPMux *mux = WebPMuxNew();
