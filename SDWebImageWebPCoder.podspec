@@ -16,8 +16,9 @@ This is a simple SDWebImage coder plugin to support WebP image.
   s.osx.deployment_target = '10.10'
   s.tvos.deployment_target = '9.0'
   s.watchos.deployment_target = '2.0'
+  s.module_map = 'SDWebImageWebPCoder/Module/SDWebImageWebPCoder.modulemap'
   
-  s.source_files = 'SDWebImageWebPCoder/Classes/**/*'
+  s.source_files = 'SDWebImageWebPCoder/Classes/**/*', 'SDWebImageWebPCoder/Module/SDWebImageWebPCoder.h'
   s.xcconfig = {
     'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) SD_WEBP=1',
     'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/libwebp/src'
