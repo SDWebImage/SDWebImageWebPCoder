@@ -7,4 +7,10 @@
    <FileRef
       location = "group:Example/Pods/Pods.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:SDWebImageWebPCoder.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:SDWebImageWebPCoderTests/Pods/Pods.xcodeproj">
+   </FileRef>
 </Workspace>
