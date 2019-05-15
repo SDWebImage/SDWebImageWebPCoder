@@ -28,6 +28,11 @@ const int64_t kAsyncTestTimeout = 5;
 @property (nonatomic, assign) BOOL isProgressive;
 @end
 
+@interface SDWebPCoderFrame : NSObject
+@property (nonatomic, assign) NSUInteger index; // Frame index (zero based)
+@property (nonatomic, assign) NSUInteger blendFromIndex; // The nearest previous frame index which blend mode is WEBP_MUX_BLEND
+@end
+
 @implementation SDWebImageWebPCoderTests
 
 + (void)setUp {
@@ -126,6 +131,47 @@ const int64_t kAsyncTestTimeout = 5;
     [self waitForExpectationsWithTimeout:kAsyncTestTimeout handler:nil];
 }
 
+- (void)test33AnimatedImageBlendMethod {
+    // Test the optimization for blend and disposal method works without problem
+    NSURL *animatedWebPURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImageBlendAnimated" withExtension:@"webp"];
+    NSData *data = [NSData dataWithContentsOfURL:animatedWebPURL];
+    SDImageWebPCoder *coder = [[SDImageWebPCoder alloc] initWithAnimatedImageData:data options:nil];
+    XCTAssertNotNil(coder);
+    /**
+     This WebP image frames info is below:
+     Canvas size: 400 x 400
+     Features present: animation transparency
+     Background color : 0xFF000000  Loop Count : 0
+     Number of frames: 12
+     No.: width height alpha x_offset y_offset duration   dispose blend image_size  compression
+     1:   400   400    no        0        0       70       none    no       5178    lossless
+     2:   400   400   yes        0        0       70       none   yes       1386    lossless
+     3:   400   400   yes        0        0       70       none   yes       1472    lossless
+     4:   400   394   yes        0        6       70       none   yes       3212    lossless
+     5:   371   394   yes        0        6       70       none   yes       1888    lossless
+     6:   394   382   yes        6        6       70       none   yes       3346    lossless
+     7:   400   388   yes        0        0       70       none   yes       3786    lossless
+     8:   394   383   yes        0        0       70       none   yes       1858    lossless
+     9:   394   394   yes        0        6       70       none   yes       3794    lossless
+     10:   372   394   yes       22        6       70       none   yes       3458    lossless
+     11:   400   400    no        0        0       70       none    no       5270    lossless
+     12:   320   382   yes        0        6       70       none   yes       2506    lossless
+    */
+    NSArray<SDWebPCoderFrame *> *frames = [coder valueForKey:@"_frames"];
+    XCTAssertEqual(frames.count, 12);
+    for (SDWebPCoderFrame *frame in frames) {
+        switch (frame.index) {
+            // frame: 11 blend == no, means clear the canvas
+            case 10:
+            case 11:
+                XCTAssertEqual(frame.blendFromIndex, 10);
+                break;
+            default:
+                XCTAssertEqual(frame.blendFromIndex, 0);
+                break;
+        }
+    }
+}
 
 @end
 

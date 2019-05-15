@@ -46,8 +46,8 @@
 @property (nonatomic, assign) NSUInteger offsetY; // Frame origin.y in canvas (left-bottom based)
 @property (nonatomic, assign) BOOL hasAlpha; // Whether frame contains alpha
 @property (nonatomic, assign) BOOL isFullSize; // Whether frame size is equal to canvas size
-@property (nonatomic, assign) WebPMuxAnimBlend blend; // Frame dispose method
-@property (nonatomic, assign) WebPMuxAnimDispose dispose; // Frame blend operation
+@property (nonatomic, assign) BOOL shouldBlend; // Frame dispose method
+@property (nonatomic, assign) BOOL shouldDispose; // Frame blend operation
 @property (nonatomic, assign) NSUInteger blendFromIndex; // The nearest previous frame index which blend mode is WEBP_MUX_BLEND
 
 @end
@@ -719,8 +719,8 @@ static void FreeImageData(void *info, const void *data, size_t size) {
         frame.width = iter.width;
         frame.height = iter.height;
         frame.hasAlpha = iter.has_alpha;
-        frame.dispose = iter.dispose_method;
-        frame.blend = iter.blend_method;
+        frame.shouldDispose = iter.dispose_method == WEBP_MUX_DISPOSE_BACKGROUND;
+        frame.shouldBlend = iter.blend_method == WEBP_MUX_BLEND;
         frame.offsetX = iter.x_offset;
         frame.offsetY = canvasHeight - iter.y_offset - iter.height;
 
@@ -728,11 +728,11 @@ static void FreeImageData(void *info, const void *data, size_t size) {
         BOOL offsetIsZero = (iter.x_offset == 0 && iter.y_offset == 0);
         frame.isFullSize = (sizeEqualsToCanvas && offsetIsZero);
         
-        if ((!frame.blend || !frame.hasAlpha) && frame.isFullSize) {
+        if ((!frame.shouldBlend || !frame.hasAlpha) && frame.isFullSize) {
             lastBlendIndex = iterIndex;
             frame.blendFromIndex = iterIndex;
         } else {
-            if (frame.dispose && frame.isFullSize) {
+            if (frame.shouldDispose && frame.isFullSize) {
                 frame.blendFromIndex = lastBlendIndex;
                 lastBlendIndex = iterIndex + 1;
             } else {

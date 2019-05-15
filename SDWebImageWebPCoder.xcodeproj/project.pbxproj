@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0EF5B6264833B7BC20894578 /* Pods_SDWebImageWebPCoderTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 46F21AD7D1692EBAC4D0FF33 /* Pods_SDWebImageWebPCoderTests.framework */; };
+		3219F3B2228B0453003822A6 /* TestImageBlendAnimated.webp in Resources */ = {isa = PBXBuildFile; fileRef = 3219F3B1228B0453003822A6 /* TestImageBlendAnimated.webp */; };
 		806E77B32136A2E900A316D2 /* UIImage+WebP.m in Sources */ = {isa = PBXBuildFile; fileRef = 806E77AA2136A2E900A316D2 /* UIImage+WebP.m */; };
 		806E77B42136A2E900A316D2 /* SDImageWebPCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 806E77AB2136A2E900A316D2 /* SDImageWebPCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		806E77B62136A2E900A316D2 /* UIImage+WebP.h in Headers */ = {isa = PBXBuildFile; fileRef = 806E77AD2136A2E900A316D2 /* UIImage+WebP.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -44,6 +45,7 @@
 /* Begin PBXFileReference section */
 		28D8AA3D3015E075692FD3E3 /* Pods-SDWebImageWebPCoderTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageWebPCoderTests.debug.xcconfig"; path = "SDWebImageWebPCoderTests/Pods/Target Support Files/Pods-SDWebImageWebPCoderTests/Pods-SDWebImageWebPCoderTests.debug.xcconfig"; sourceTree = "<group>"; };
 		3217BE7B220547EB003D0310 /* SDWebImageWebPCoder.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = SDWebImageWebPCoder.modulemap; sourceTree = "<group>"; };
+		3219F3B1228B0453003822A6 /* TestImageBlendAnimated.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = TestImageBlendAnimated.webp; sourceTree = "<group>"; };
 		46F21AD7D1692EBAC4D0FF33 /* Pods_SDWebImageWebPCoderTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SDWebImageWebPCoderTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		806E779D2136A1C000A316D2 /* SDWebImageWebPCoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDWebImageWebPCoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		806E77AA2136A2E900A316D2 /* UIImage+WebP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+WebP.m"; sourceTree = "<group>"; };
@@ -205,6 +207,7 @@
 			children = (
 				808C919A213FD2B2004B0F7C /* TestImageStatic.webp */,
 				808C919B213FD2B2004B0F7C /* TestImageAnimated.webp */,
+				3219F3B1228B0453003822A6 /* TestImageBlendAnimated.webp */,
 			);
 			path = Images;
 			sourceTree = "<group>";
@@ -453,6 +456,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3219F3B2228B0453003822A6 /* TestImageBlendAnimated.webp in Resources */,
 				808C919D213FD2B2004B0F7C /* TestImageAnimated.webp in Resources */,
 				808C919C213FD2B2004B0F7C /* TestImageStatic.webp in Resources */,
 			);
@@ -620,8 +624,14 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchos*]" = "WEBP_USE_INTRINSICS=1 $(inherited)";
-				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchsimulator*]" = "WEBP_USE_INTRINSICS=1 $(inherited)";
+				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchos*]" = (
+					"WEBP_USE_INTRINSICS=1",
+					"$(inherited)",
+				);
+				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchsimulator*]" = (
+					"WEBP_USE_INTRINSICS=1",
+					"$(inherited)",
+				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -689,8 +699,14 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchos*]" = "WEBP_USE_INTRINSICS=1 $(inherited)";
-				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchsimulator*]" = "WEBP_USE_INTRINSICS=1 $(inherited)";
+				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchos*]" = (
+					"WEBP_USE_INTRINSICS=1",
+					"$(inherited)",
+				);
+				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchsimulator*]" = (
+					"WEBP_USE_INTRINSICS=1",
+					"$(inherited)",
+				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
