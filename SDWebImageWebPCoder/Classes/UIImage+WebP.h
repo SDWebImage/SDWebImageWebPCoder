@@ -6,6 +6,7 @@
  * file that was distributed with this source code.
  */
 
+@import UIKit;
 #import <SDWebImage/SDWebImageCompat.h>
 
 // This category is just use as a convenience method. For more detail control, use methods in `UIImage+MultiFormat.h` or directlly use `SDImageCoder`
