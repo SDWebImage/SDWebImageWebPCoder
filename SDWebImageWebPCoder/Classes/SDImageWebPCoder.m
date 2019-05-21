@@ -419,10 +419,16 @@
 
 // Create and return the correct colorspace by checking the ICC Profile
 - (nonnull CGColorSpaceRef)sd_colorSpaceWithDemuxer:(nonnull WebPDemuxer *)demuxer CF_RETURNS_RETAINED {
+    CGColorSpaceRef colorSpaceRef = NULL;
+    #if SD_UIKIT || SD_WATCH
+        colorSpaceRef = [SDImageCoderHelper colorSpaceGetDeviceRGB];
+        CGColorSpaceRetain(colorSpaceRef);
+    return colorSpaceRef;
+    #else
     // WebP contains ICC Profile should use the desired colorspace, instead of default device colorspace
     // See: https://developers.google.com/speed/webp/docs/riff_container#color_profile
     
-    CGColorSpaceRef colorSpaceRef = NULL;
+    
     uint32_t flags = WebPDemuxGetI(demuxer, WEBP_FF_FORMAT_FLAGS);
     
     if (flags & ICCP_FLAG) {
@@ -451,6 +457,7 @@
     }
     
     return colorSpaceRef;
+    #endif
 }
 
 #pragma mark - Encode
