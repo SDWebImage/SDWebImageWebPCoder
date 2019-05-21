@@ -423,7 +423,7 @@
     #if SD_UIKIT || SD_WATCH
         colorSpaceRef = [SDImageCoderHelper colorSpaceGetDeviceRGB];
         CGColorSpaceRetain(colorSpaceRef);
-    return colorSpaceRef;
+        return colorSpaceRef;
     #else
     // WebP contains ICC Profile should use the desired colorspace, instead of default device colorspace
     // See: https://developers.google.com/speed/webp/docs/riff_container#color_profile
