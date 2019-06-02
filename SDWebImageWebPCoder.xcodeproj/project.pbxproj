@@ -61,7 +61,7 @@
 		808C919B213FD2B2004B0F7C /* TestImageAnimated.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = TestImageAnimated.webp; sourceTree = "<group>"; };
 		80BFF2332136AA9100B95470 /* libwebp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libwebp.framework; path = Carthage/Build/iOS/libwebp.framework; sourceTree = "<group>"; };
 		80BFF2342136AA9100B95470 /* SDWebImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDWebImage.framework; path = Carthage/Build/iOS/SDWebImage.framework; sourceTree = "<group>"; };
-		80BFF2402136BA4900B95470 /* SDWebImageWebPCoder_macos.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SDWebImageWebPCoder_macos.framework; path = SDWebImageWebPCoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		80BFF2402136BA4900B95470 /* SDWebImageWebPCoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDWebImageWebPCoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		80BFF2492136BB0D00B95470 /* libwebp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libwebp.framework; path = Carthage/Build/Mac/libwebp.framework; sourceTree = "<group>"; };
 		80BFF24A2136BB0D00B95470 /* SDWebImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDWebImage.framework; path = Carthage/Build/Mac/SDWebImage.framework; sourceTree = "<group>"; };
 		80BFF2572136BDBE00B95470 /* SDWebImageWebPCoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDWebImageWebPCoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -145,7 +145,7 @@
 			isa = PBXGroup;
 			children = (
 				806E779D2136A1C000A316D2 /* SDWebImageWebPCoder.framework */,
-				80BFF2402136BA4900B95470 /* SDWebImageWebPCoder_macos.framework */,
+				80BFF2402136BA4900B95470 /* SDWebImageWebPCoder.framework */,
 				80BFF2572136BDBE00B95470 /* SDWebImageWebPCoder.framework */,
 				80BFF26E2136BE7900B95470 /* SDWebImageWebPCoder.framework */,
 				808C918B213FD130004B0F7C /* SDWebImageWebPCoderTests.xctest */,
@@ -358,7 +358,7 @@
 			);
 			name = "SDWebImageWebPCoder-macos";
 			productName = "SDWebImageWebPCoder-macos";
-			productReference = 80BFF2402136BA4900B95470 /* SDWebImageWebPCoder_macos.framework */;
+			productReference = 80BFF2402136BA4900B95470 /* SDWebImageWebPCoder.framework */;
 			productType = "com.apple.product-type.framework";
 		};
 		80BFF2562136BDBE00B95470 /* SDWebImageWebPCoder-tvos */ = {
