@@ -7,7 +7,7 @@
  */
 
 #import <Foundation/Foundation.h>
-#import <SDWebImage/SDImageCoder.h>
+@import SDWebImage;
 
 /**
  Built in coder that supports WebP and animated WebP
