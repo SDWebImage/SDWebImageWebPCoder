@@ -841,7 +841,7 @@ static void FreeImageData(void *info, const void *data, size_t size) {
                 @autoreleasepool {
                     [self sd_blendWebpImageWithCanvas:_canvas iterator:iter colorSpace:_colorSpace];
                 }
-            } while ((size_t)iter.frame_num < (endIndex + 1) && WebPDemuxNextFrame(&iter));
+            } while ((size_t)iter.frame_num < endIndex && WebPDemuxNextFrame(&iter));
         }
     }
     
