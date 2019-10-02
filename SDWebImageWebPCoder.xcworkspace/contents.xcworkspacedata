@@ -5,10 +5,10 @@
       location = "group:Example/SDWebImageWebPCoderExample.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:Example/Pods/Pods.xcodeproj">
+      location = "group:SDWebImageWebPCoder.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:SDWebImageWebPCoder.xcodeproj">
+      location = "group:Example/Pods/Pods.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:SDWebImageWebPCoderTests/Pods/Pods.xcodeproj">

@@ -491,17 +491,12 @@
 			buildActionMask = 2147483647;
 			files = (
 			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SDWebImageWebPCoderTests/Pods-SDWebImageWebPCoderTests-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
-				"${BUILT_PRODUCTS_DIR}/SDWebImageWebPCoder/SDWebImageWebPCoder.framework",
-				"${BUILT_PRODUCTS_DIR}/libwebp/libwebp.framework",
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SDWebImageWebPCoderTests/Pods-SDWebImageWebPCoderTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImageWebPCoder.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libwebp.framework",
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SDWebImageWebPCoderTests/Pods-SDWebImageWebPCoderTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -624,14 +619,8 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchos*]" = (
-					"WEBP_USE_INTRINSICS=1",
-					"$(inherited)",
-				);
-				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchsimulator*]" = (
-					"WEBP_USE_INTRINSICS=1",
-					"$(inherited)",
-				);
+				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchos*]" = "WEBP_USE_INTRINSICS=1 $(inherited)";
+				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchsimulator*]" = "WEBP_USE_INTRINSICS=1 $(inherited)";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -699,14 +688,8 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchos*]" = (
-					"WEBP_USE_INTRINSICS=1",
-					"$(inherited)",
-				);
-				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchsimulator*]" = (
-					"WEBP_USE_INTRINSICS=1",
-					"$(inherited)",
-				);
+				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchos*]" = "WEBP_USE_INTRINSICS=1 $(inherited)";
+				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchsimulator*]" = "WEBP_USE_INTRINSICS=1 $(inherited)";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
