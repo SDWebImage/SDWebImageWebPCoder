@@ -105,7 +105,6 @@ const int64_t kAsyncTestTimeout = 5;
     SDAnimatedImage *image = [SDAnimatedImage imageWithData:animatedImageData];
     imageView.image = image;
     XCTAssertNotNil(imageView.image);
-    XCTAssertNotNil(imageView.currentFrame); // current frame
 }
 
 - (void)test32AnimatedImageViewCategoryProgressive {
