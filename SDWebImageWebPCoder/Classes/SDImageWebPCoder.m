@@ -711,6 +711,18 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     uint32_t loopCount = WebPDemuxGetI(demuxer, WEBP_FF_LOOP_COUNT);
     NSMutableArray<SDWebPCoderFrame *> *frames = [NSMutableArray array];
     
+    _hasAnimation = hasAnimation;
+    _hasAlpha = hasAlpha;
+    _canvasWidth = canvasWidth;
+    _canvasHeight = canvasHeight;
+    _frameCount = frameCount;
+    _loopCount = loopCount;
+    
+    // If static WebP, does not need to parse the frame blend index
+    if (frameCount <= 1) {
+        return YES;
+    }
+    
     // We should loop all the frames and scan each frames' blendFromIndex for later decoding, this can also ensure all frames is valid
     do {
         SDWebPCoderFrame *frame = [[SDWebPCoderFrame alloc] init];
@@ -748,12 +760,6 @@ static void FreeImageData(void *info, const void *data, size_t size) {
         return NO;
     }
     _frames = [frames copy];
-    _hasAnimation = hasAnimation;
-    _hasAlpha = hasAlpha;
-    _canvasWidth = canvasWidth;
-    _canvasHeight = canvasHeight;
-    _frameCount = frameCount;
-    _loopCount = loopCount;
     
     return YES;
 }
@@ -774,6 +780,9 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     if (index >= _frameCount) {
         return 0;
     }
+    if (_frameCount <= 1) {
+        return 0;
+    }
     return _frames[index].duration;
 }
 
@@ -783,8 +792,37 @@ static void FreeImageData(void *info, const void *data, size_t size) {
         return nil;
     }
     SD_LOCK(_lock);
-    image = [self safeAnimatedImageFrameAtIndex:index];
+    if (_frameCount <= 1) {
+        image = [self safeStaticImageFrame];
+    } else {
+        image = [self safeAnimatedImageFrameAtIndex:index];
+    }
     SD_UNLOCK(_lock);
+    return image;
+}
+
+- (UIImage *)safeStaticImageFrame {
+    UIImage *image;
+    if (!_colorSpace) {
+        _colorSpace = [self sd_colorSpaceWithDemuxer:_demux];
+    }
+    // Static WebP image
+    WebPIterator iter;
+    if (!WebPDemuxGetFrame(_demux, 1, &iter)) {
+        WebPDemuxReleaseIterator(&iter);
+        return nil;
+    }
+    CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:_colorSpace];
+    if (!imageRef) {
+        return nil;
+    }
+#if SD_UIKIT || SD_WATCH
+    image = [[UIImage alloc] initWithCGImage:imageRef scale:_scale orientation:UIImageOrientationUp];
+#else
+    image = [[UIImage alloc] initWithCGImage:imageRef scale:_scale orientation:kCGImagePropertyOrientationUp];
+#endif
+    CGImageRelease(imageRef);
+    WebPDemuxReleaseIterator(&iter);
     return image;
 }
 
