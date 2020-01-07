@@ -10,6 +10,7 @@
 @import XCTest;
 #import <SDWebImage/SDWebImage.h>
 #import <SDWebImageWebPCoder/SDWebImageWebPCoder.h>
+#import <objc/runtime.h>
 
 const int64_t kAsyncTestTimeout = 5;
 
@@ -170,6 +171,18 @@ const int64_t kAsyncTestTimeout = 5;
                 break;
         }
     }
+}
+
+- (void)test34StaticImageNotCreateCGContext {
+    NSURL *staticWebPURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImageStatic" withExtension:@"webp"];
+    NSData *data = [NSData dataWithContentsOfURL:staticWebPURL];
+    SDImageWebPCoder *coder = [[SDImageWebPCoder alloc] initWithAnimatedImageData:data options:nil];
+    XCTAssertTrue(coder.animatedImageFrameCount == 1);
+    UIImage *image = [coder animatedImageFrameAtIndex:0];
+    XCTAssertNotNil(image);
+    Ivar ivar = class_getInstanceVariable(coder.class, "_canvas");
+    CGContextRef canvas = ((CGContextRef (*)(id, Ivar))object_getIvar)(coder, ivar);
+    XCTAssert(canvas == NULL);
 }
 
 @end
