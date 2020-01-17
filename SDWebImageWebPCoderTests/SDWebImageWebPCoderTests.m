@@ -10,6 +10,7 @@
 @import XCTest;
 #import <SDWebImage/SDWebImage.h>
 #import <SDWebImageWebPCoder/SDWebImageWebPCoder.h>
+#import <Expecta/Expecta.h>
 #import <objc/runtime.h>
 
 const int64_t kAsyncTestTimeout = 5;
@@ -193,45 +194,83 @@ const int64_t kAsyncTestTimeout = 5;
   withLocalImageURL:(NSURL *)imageUrl
    supportsEncoding:(BOOL)supportsEncoding
     isAnimatedImage:(BOOL)isAnimated {
+    SDImageFormat encodingFormat = SDImageFormatWebP;
+    
     NSData *inputImageData = [NSData dataWithContentsOfURL:imageUrl];
-    XCTAssertNotNil(inputImageData, @"Input image data should not be nil");
+    expect(inputImageData).toNot.beNil();
     SDImageFormat inputImageFormat = [NSData sd_imageFormatForImageData:inputImageData];
-    XCTAssert(inputImageFormat != SDImageFormatUndefined, @"Input image format should not be undefined");
+    expect(inputImageFormat).toNot.equal(SDImageFormatUndefined);
     
     // 1 - check if we can decode - should be true
-    XCTAssertTrue([coder canDecodeFromData:inputImageData]);
+    expect([coder canDecodeFromData:inputImageData]).to.beTruthy();
     
     // 2 - decode from NSData to UIImage and check it
     UIImage *inputImage = [coder decodedImageWithData:inputImageData options:nil];
-    XCTAssertNotNil(inputImage, @"The decoded image from input data should not be nil");
+    expect(inputImage).toNot.beNil();
     
     if (isAnimated) {
         // 2a - check images count > 0 (only for animated images)
-        XCTAssertTrue(inputImage.sd_isAnimated, @"The decoded image should be animated");
+        expect(inputImage.sd_isAnimated).to.beTruthy();
         
         // 2b - check image size and scale for each frameImage (only for animated images)
 #if SD_UIKIT
         CGSize imageSize = inputImage.size;
         CGFloat imageScale = inputImage.scale;
         [inputImage.images enumerateObjectsUsingBlock:^(UIImage * frameImage, NSUInteger idx, BOOL * stop) {
-            XCTAssertTrue(CGSizeEqualToSize(imageSize, frameImage.size), @"Each frame size should match the image size");
-            XCTAssertEqual(imageScale, frameImage.scale, @"Each frame scale should match the image scale");
+            expect(imageSize).to.equal(frameImage.size);
+            expect(imageScale).to.equal(frameImage.scale);
         }];
 #endif
     }
     
+    // 3 - check thumbnail decoding
+    CGFloat pixelWidth = inputImage.size.width;
+    CGFloat pixelHeight = inputImage.size.height;
+    expect(pixelWidth).beGreaterThan(0);
+    expect(pixelHeight).beGreaterThan(0);
+    // check thumnail with scratch
+    CGFloat thumbnailWidth = 50;
+    CGFloat thumbnailHeight = 50;
+    UIImage *thumbImage = [coder decodedImageWithData:inputImageData options:@{
+        SDImageCoderDecodeThumbnailPixelSize : @(CGSizeMake(thumbnailWidth, thumbnailHeight)),
+        SDImageCoderDecodePreserveAspectRatio : @(NO)
+    }];
+    expect(thumbImage).toNot.beNil();
+    expect(thumbImage.size).equal(CGSizeMake(thumbnailWidth, thumbnailHeight));
+    // check thumnail with aspect ratio limit
+    thumbImage = [coder decodedImageWithData:inputImageData options:@{
+        SDImageCoderDecodeThumbnailPixelSize : @(CGSizeMake(thumbnailWidth, thumbnailHeight)),
+        SDImageCoderDecodePreserveAspectRatio : @(YES)
+    }];
+    expect(thumbImage).toNot.beNil();
+    CGFloat ratio = pixelWidth / pixelHeight;
+    CGFloat thumbnailRatio = thumbnailWidth / thumbnailHeight;
+    CGSize thumbnailPixelSize;
+    if (ratio > thumbnailRatio) {
+        thumbnailPixelSize = CGSizeMake(thumbnailWidth, round(thumbnailWidth / ratio));
+    } else {
+        thumbnailPixelSize = CGSizeMake(round(thumbnailHeight * ratio), thumbnailHeight);
+    }
+    // Image/IO's thumbnail API does not always use round to preserve precision, we check ABS <= 1
+    expect(ABS(thumbImage.size.width - thumbnailPixelSize.width) <= 1);
+    expect(ABS(thumbImage.size.height - thumbnailPixelSize.height) <= 1);
+    
+    
     if (supportsEncoding) {
-        // 3 - check if we can encode to the original format
-        XCTAssertTrue([coder canEncodeToFormat:inputImageFormat], @"Coder should be able to encode");
+        // 4 - check if we can encode to the original format
+        if (encodingFormat == SDImageFormatUndefined) {
+            encodingFormat = inputImageFormat;
+        }
+        expect([coder canEncodeToFormat:encodingFormat]).to.beTruthy();
         
-        // 4 - encode from UIImage to NSData using the inputImageFormat and check it
-        NSData *outputImageData = [coder encodedDataWithImage:inputImage format:inputImageFormat options:nil];
-        XCTAssertNotNil(outputImageData, @"The encoded image data should not be nil");
+        // 5 - encode from UIImage to NSData using the inputImageFormat and check it
+        NSData *outputImageData = [coder encodedDataWithImage:inputImage format:encodingFormat options:nil];
+        expect(outputImageData).toNot.beNil();
         UIImage *outputImage = [coder decodedImageWithData:outputImageData options:nil];
-        XCTAssertTrue(CGSizeEqualToSize(outputImage.size, inputImage.size), @"Output and input image size should match");
-        XCTAssertEqual(outputImage.scale, inputImage.scale, @"Output and input image scale should match");
+        expect(outputImage.size).to.equal(inputImage.size);
+        expect(outputImage.scale).to.equal(inputImage.scale);
 #if SD_UIKIT
-        XCTAssertEqual(outputImage.images.count, inputImage.images.count, @"Output and input image frame count should match");
+        expect(outputImage.images.count).to.equal(inputImage.images.count);
 #endif
     }
 }
