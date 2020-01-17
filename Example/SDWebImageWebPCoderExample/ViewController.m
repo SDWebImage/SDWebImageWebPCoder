@@ -28,12 +28,12 @@
     self.imageView1.contentMode = UIViewContentModeScaleAspectFit;
     [self.view addSubview:self.imageView1];
     
-    self.imageView2 = [SDAnimatedImageView new];
+    self.imageView2 = [UIImageView new];
     self.imageView2.contentMode = UIViewContentModeScaleAspectFit;
     [self.view addSubview:self.imageView2];
     
     NSURL *staticWebPURL = [NSURL URLWithString:@"https://www.gstatic.com/webp/gallery/2.webp"];
-    NSURL *animatedWebPURL = [NSURL URLWithString:@"http://littlesvr.ca/apng/images/world-cup-2014-42.webp"];
+    NSURL *animatedWebPURL = [NSURL URLWithString:@"http://littlesvr.ca/apng/images/SteamEngine.webp"];
     
     [self.imageView1 sd_setImageWithURL:staticWebPURL placeholderImage:nil options:0 context:@{SDWebImageContextImageThumbnailPixelSize : @(CGSizeMake(300, 300))} progress:nil completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
         if (image) {
@@ -46,7 +46,7 @@
             }
         });
     }];
-    [self.imageView2 sd_setImageWithURL:animatedWebPURL completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+    [self.imageView2 sd_setImageWithURL:animatedWebPURL placeholderImage:nil options:0 context:@{SDWebImageContextImageThumbnailPixelSize : @(CGSizeMake(200, 100))} progress:nil completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
         if (image) {
             NSLog(@"%@", @"Animated WebP load success");
         }

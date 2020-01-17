@@ -192,10 +192,13 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
         return nil;
     }
     CGColorSpaceRef colorSpace = [self sd_createColorSpaceWithDemuxer:demuxer];
+    int canvasWidth = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_WIDTH);
+    int canvasHeight = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_HEIGHT);
     
     if (!hasAnimation || decodeFirstFrame) {
         // first frame for animated webp image
-        CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:colorSpace preserveAspectRatio:preserveAspectRatio thumbnailSize:thumbnailSize];
+        CGSize scaledSize = SDCalculateThumbnailSize(CGSizeMake(canvasWidth, canvasHeight), preserveAspectRatio, thumbnailSize);
+        CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:colorSpace scaledSize:scaledSize];
         CGColorSpaceRelease(colorSpace);
 #if SD_UIKIT || SD_WATCH
         UIImage *firstFrameImage = [[UIImage alloc] initWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
@@ -209,8 +212,6 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
         return firstFrameImage;
     }
     
-    int canvasWidth = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_WIDTH);
-    int canvasHeight = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_HEIGHT);
     BOOL hasAlpha = flags & ALPHA_FLAG;
     CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host;
     bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
@@ -223,6 +224,10 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
         CGColorSpaceRelease(colorSpace);
         return nil;
     }
+    CGContextSetAllowsAntialiasing(canvas, YES);
+    CGContextSetShouldAntialias(canvas, YES);
+    CGContextSetInterpolationQuality(canvas, kCGInterpolationHigh);
+    
     
     int loopCount = WebPDemuxGetI(demuxer, WEBP_FF_LOOP_COUNT);
     NSMutableArray<SDImageFrame *> *frames = [NSMutableArray array];
@@ -383,16 +388,16 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     CGFloat xScale = canvasWidth / canvasFullSize.width;
     CGFloat yScale = canvasHeight / canvasFullSize.height;
     
-    CGFloat tmpX = iter.x_offset * xScale;
-    CGFloat tmpY = (canvasFullSize.height - iter.height - iter.y_offset) * yScale;
-    CGFloat tmpWidth = iter.width * xScale;
-    CGFloat tmpHeight = iter.height * yScale;
+    CGFloat tmpX = ceil(iter.x_offset * xScale);
+    CGFloat tmpY = ceil((canvasFullSize.height - iter.height - iter.y_offset) * yScale);
+    CGFloat tmpWidth = ceil(iter.width * xScale);
+    CGFloat tmpHeight = ceil(iter.height * yScale);
     CGRect imageRect = CGRectMake(tmpX, tmpY, tmpWidth, tmpHeight);
     
     if (iter.dispose_method == WEBP_MUX_DISPOSE_BACKGROUND) {
         CGContextClearRect(canvas, imageRect);
     } else {
-        CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:colorSpaceRef preserveAspectRatio:preserveAspectRatio thumbnailSize:thumbnailSize];
+        CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:colorSpaceRef scaledSize:imageRect.size];
         if (!imageRef) {
             return;
         }
@@ -407,23 +412,23 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
 }
 
 - (nullable CGImageRef)sd_drawnWebpImageWithCanvas:(CGContextRef)canvas iterator:(WebPIterator)iter colorSpace:(nonnull CGColorSpaceRef)colorSpaceRef preserveAspectRatio:(BOOL)preserveAspectRatio thumbnailSize:(CGSize)thumbnailSize canvasFullSize:(CGSize)canvasFullSize CF_RETURNS_RETAINED {
-    CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:colorSpaceRef preserveAspectRatio:preserveAspectRatio thumbnailSize:thumbnailSize];
+    size_t canvasWidth = CGBitmapContextGetWidth(canvas);
+    size_t canvasHeight = CGBitmapContextGetHeight(canvas);
+    CGFloat xScale = canvasFullSize.width / canvasWidth;
+    CGFloat yScale = canvasFullSize.height / canvasHeight;
+    
+    CGFloat tmpX = ceil(iter.x_offset / xScale);
+    CGFloat tmpY = ceil((canvasFullSize.height - iter.height - iter.y_offset) / yScale);
+    CGFloat tmpWidth = ceil(iter.width / xScale);
+    CGFloat tmpHeight = ceil(iter.height / yScale);
+    CGRect imageRect = CGRectMake(tmpX, tmpY, tmpWidth, tmpHeight);
+    
+    CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:colorSpaceRef scaledSize:imageRect.size];
     if (!imageRef) {
         return nil;
     }
     
-    size_t canvasWidth = CGBitmapContextGetWidth(canvas);
-    size_t canvasHeight = CGBitmapContextGetHeight(canvas);
-    CGFloat xScale = canvasWidth / canvasFullSize.width;
-    CGFloat yScale = canvasHeight / canvasFullSize.height;
-    
-    CGFloat tmpX = iter.x_offset * xScale;
-    CGFloat tmpY = (canvasFullSize.height - iter.height - iter.y_offset) * yScale;
-    CGFloat tmpWidth = iter.width * xScale;
-    CGFloat tmpHeight = iter.height * yScale;
-    CGRect imageRect = CGRectMake(tmpX, tmpY, tmpWidth, tmpHeight);
     BOOL shouldBlend = iter.blend_method == WEBP_MUX_BLEND;
-    
     // If not blend, cover the target image rect. (firstly clear then draw)
     if (!shouldBlend) {
         CGContextClearRect(canvas, imageRect);
@@ -440,7 +445,7 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     return newImageRef;
 }
 
-- (nullable CGImageRef)sd_createWebpImageWithData:(WebPData)webpData colorSpace:(nonnull CGColorSpaceRef)colorSpaceRef preserveAspectRatio:(BOOL)preserveAspectRatio thumbnailSize:(CGSize)thumbnailSize CF_RETURNS_RETAINED {
+- (nullable CGImageRef)sd_createWebpImageWithData:(WebPData)webpData colorSpace:(nonnull CGColorSpaceRef)colorSpaceRef scaledSize:(CGSize)scaledSize CF_RETURNS_RETAINED {
     WebPDecoderConfig config;
     if (!WebPInitDecoderConfig(&config)) {
         return nil;
@@ -458,24 +463,16 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     config.options.use_threads = 1;
     config.output.colorspace = MODE_bgrA;
     
-    int width = config.input.width;
-    int height = config.input.height;
-    CGSize resultSize = SDCalculateThumbnailSize(CGSizeMake(width, height), preserveAspectRatio, thumbnailSize);
-    if (resultSize.width != width || resultSize.height != height) {
-        // Use scaling
+    // Check whether we should use thumbnail scale
+    if (scaledSize.width != 0 && scaledSize.height != 0) {
+        config.options.scaled_width = scaledSize.width;
+        config.options.scaled_height = scaledSize.height;
         config.options.use_scaling = 1;
-        config.options.scaled_width = resultSize.width;
-        config.options.scaled_height = resultSize.height;
     }
     
     // Decode the WebP image data into a RGBA value array
     if (WebPDecode(webpData.bytes, webpData.size, &config) != VP8_STATUS_OK) {
         return nil;
-    }
-    
-    if (config.options.use_scaling) {
-        width = config.options.scaled_width;
-        height = config.options.scaled_height;
     }
     
     // Construct a UIImage from the decoded RGBA value array
@@ -484,8 +481,10 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     size_t bitsPerComponent = 8;
     size_t bitsPerPixel = 32;
     size_t bytesPerRow = config.output.u.RGBA.stride;
+    int width = config.output.width;
+    int height = config.output.height;
     CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
-    CGImageRef imageRef = CGImageCreate(resultSize.width, resultSize.height, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpaceRef, bitmapInfo, provider, NULL, NO, renderingIntent);
+    CGImageRef imageRef = CGImageCreate(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpaceRef, bitmapInfo, provider, NULL, NO, renderingIntent);
     
     CGDataProviderRelease(provider);
     
@@ -917,7 +916,8 @@ static void FreeImageData(void *info, const void *data, size_t size) {
         WebPDemuxReleaseIterator(&iter);
         return nil;
     }
-    CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:_colorSpace preserveAspectRatio:_preserveAspectRatio thumbnailSize:_thumbnailSize];
+    CGSize scaledSize = SDCalculateThumbnailSize(CGSizeMake(_canvasWidth, _canvasHeight), _preserveAspectRatio, _thumbnailSize);
+    CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:_colorSpace scaledSize:scaledSize];
     if (!imageRef) {
         return nil;
     }
