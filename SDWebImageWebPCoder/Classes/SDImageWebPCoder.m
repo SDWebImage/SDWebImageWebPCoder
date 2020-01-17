@@ -194,11 +194,11 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     CGColorSpaceRef colorSpace = [self sd_createColorSpaceWithDemuxer:demuxer];
     int canvasWidth = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_WIDTH);
     int canvasHeight = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_HEIGHT);
+    // Check whether we need to use thumbnail
+    CGSize scaledSize = SDCalculateThumbnailSize(CGSizeMake(canvasWidth, canvasHeight), preserveAspectRatio, thumbnailSize);
     
     if (!hasAnimation || decodeFirstFrame) {
         // first frame for animated webp image
-        CGSize scaledSize = SDCalculateThumbnailSize(CGSizeMake(canvasWidth, canvasHeight), preserveAspectRatio, thumbnailSize);
-        // Create thumbnail if need
         CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:colorSpace scaledSize:scaledSize];
         CGColorSpaceRelease(colorSpace);
 #if SD_UIKIT || SD_WATCH
@@ -228,10 +228,11 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     
     do {
         @autoreleasepool {
-            CGImageRef imageRef = [self sd_drawnWebpImageWithCanvas:canvas iterator:iter colorSpace:colorSpace];
+            CGImageRef imageRef = [self sd_drawnWebpImageWithCanvas:canvas iterator:iter colorSpace:colorSpace scaledSize:scaledSize];
             if (!imageRef) {
                 continue;
             }
+
 #if SD_UIKIT || SD_WATCH
             UIImage *image = [[UIImage alloc] initWithCGImage:imageRef scale:scale orientation:UIImageOrientationUp];
 #else
@@ -399,12 +400,13 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     }
 }
 
-- (nullable CGImageRef)sd_drawnWebpImageWithCanvas:(CGContextRef)canvas iterator:(WebPIterator)iter colorSpace:(nonnull CGColorSpaceRef)colorSpaceRef CF_RETURNS_RETAINED {
+- (nullable CGImageRef)sd_drawnWebpImageWithCanvas:(CGContextRef)canvas iterator:(WebPIterator)iter colorSpace:(nonnull CGColorSpaceRef)colorSpaceRef scaledSize:(CGSize)scaledSize CF_RETURNS_RETAINED {
     CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:colorSpaceRef scaledSize:CGSizeZero];
     if (!imageRef) {
         return nil;
     }
     
+    size_t canvasWidth = CGBitmapContextGetWidth(canvas);
     size_t canvasHeight = CGBitmapContextGetHeight(canvas);
     CGFloat tmpX = iter.x_offset;
     CGFloat tmpY = canvasHeight - iter.height - iter.y_offset;
@@ -423,6 +425,17 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
 
     if (iter.dispose_method == WEBP_MUX_DISPOSE_BACKGROUND) {
         CGContextClearRect(canvas, imageRect);
+    }
+    
+    // Check whether we need to use thumbnail
+    if (!CGSizeEqualToSize(CGSizeMake(canvasWidth, canvasHeight), scaledSize)) {
+        // Important: For Animated WebP thumbnail generation, we can not just use a scaled small canvas and draw each thumbnail frame
+        // This works **On Theory**. However, image scale down loss details. Animated WebP use the partial pixels with blend mode / dispose method with offset, to cover previous canvas status
+        // Because of this reason, even each frame contains small zigzag, the final animation contains visible glitch, this is not we want.
+        // So, always create the full pixels canvas (even though this consume more RAM), after drawn on the canvas, re-scale again with the final size
+        CGImageRef scaledImageRef = [SDImageCoderHelper CGImageCreateScaled:newImageRef size:scaledSize];
+        CGImageRelease(newImageRef);
+        newImageRef = scaledImageRef;
     }
     
     return newImageRef;
@@ -899,6 +912,7 @@ static void FreeImageData(void *info, const void *data, size_t size) {
         WebPDemuxReleaseIterator(&iter);
         return nil;
     }
+    // Check whether we need to use thumbnail
     CGSize scaledSize = SDCalculateThumbnailSize(CGSizeMake(_canvasWidth, _canvasHeight), _preserveAspectRatio, _thumbnailSize);
     CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:_colorSpace scaledSize:scaledSize];
     if (!imageRef) {
@@ -915,9 +929,6 @@ static void FreeImageData(void *info, const void *data, size_t size) {
 }
 
 - (UIImage *)safeAnimatedImageFrameAtIndex:(NSUInteger)index {
-    if (!_colorSpace) {
-        _colorSpace = [self sd_createColorSpaceWithDemuxer:_demux];
-    }
     if (!_canvas) {
         CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host;
         bitmapInfo |= _hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
@@ -926,6 +937,9 @@ static void FreeImageData(void *info, const void *data, size_t size) {
             return nil;
         }
         _canvas = canvas;
+    }
+    if (!_colorSpace) {
+        _colorSpace = [self sd_createColorSpaceWithDemuxer:_demux];
     }
     
     SDWebPCoderFrame *frame = _frames[index];
@@ -946,7 +960,7 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     } else {
         // Else, this can happen when one image set to different imageViews or one loop end. So we should clear the canvas. Then draw until the canvas is ready.
         if (_currentBlendIndex != NSNotFound) {
-            CGContextClearRect(_canvas, CGRectMake(0, 0, CGBitmapContextGetWidth(_canvas), CGBitmapContextGetHeight(_canvas)));
+            CGContextClearRect(_canvas, CGRectMake(0, 0, _canvasWidth, _canvasHeight));
         }
         
         // Then, loop from the blend from index, draw each of previous frames on the canvas.
@@ -975,7 +989,9 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     _currentBlendIndex = index;
     
     // Now the canvas is ready, which respects of dispose method behavior. Just do normal decoding and produce image.
-    CGImageRef imageRef = [self sd_drawnWebpImageWithCanvas:_canvas iterator:iter colorSpace:_colorSpace];
+    // Check whether we need to use thumbnail
+    CGSize scaledSize = SDCalculateThumbnailSize(CGSizeMake(_canvasWidth, _canvasHeight), _preserveAspectRatio, _thumbnailSize);
+    CGImageRef imageRef = [self sd_drawnWebpImageWithCanvas:_canvas iterator:iter colorSpace:_colorSpace scaledSize:scaledSize];
     if (!imageRef) {
         return nil;
     }
