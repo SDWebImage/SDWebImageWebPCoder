@@ -124,6 +124,26 @@ let webpData: Data
 let image = SDImageWebPCoder.shared.decodedImage(with: data, options: nil)
 ```
 
+### Thumbnail Decoding
+
++ Objective-C
+
+```objective-c
+// WebP thumbnail image decoding
+NSData *webpData;
+CGSize thumbnailSize = CGSizeMake(300, 300);
+UIImage *thumbnailImage = [[SDImageWebPCoder sharedCoder] decodedImageWithData:webpData options:@{SDImageCoderDecodeThumbnailPixelSize : @(thumbnailSize}];
+```
+
++ Swift
+
+```swift
+// WebP thumbnail image decoding
+let webpData: Data
+let thumbnailSize = CGSize(width: 300, height: 300)
+let image = SDImageWebPCoder.shared.decodedImage(with: data, options: [.decodeThumbnailPixelSize: thumbnailSize])
+```
+
 ### Encoding
 
 + Objective-c
