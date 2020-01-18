@@ -91,9 +91,9 @@ SDWebImageDownloader.shared.setValue("image/webp,image/*,*/*;q=0.8", forHTTPHead
 + Objective-C
 
 ```objective-c
-// WebP image loading
-UIImageView *imageView;
+// WebP online image loading
 NSURL *webpURL;
+UIImageView *imageView;
 [imageView sd_setImageWithURL:webpURL];
 ```
 
@@ -104,6 +104,28 @@ NSURL *webpURL;
 let webpURL: URL
 let imageView: UIImageView
 imageView.sd_setImage(with: webpURL)
+```
+
+### Progressive Animation Loading (0.5.0+)
+
++ Objective-C
+
+```objective-c
+// WebP progressive loading for animated image
+NSURL *webpURL;
+SDAnimatedImageView *imageView;
+imageView.shouldIncrementalLoad = YES;
+[imageView sd_setImageWithURL:webpURL placeholderImage:nil options:SDWebImageProgressiveLoad];
+```
+
++ Swift
+
+```swift
+// WebP progressive loading for animated image
+let webpURL: URL
+let imageView: SDAnimatedImageView
+imageView.shouldIncrementalLoad = true
+imageView.sd_setImage(with: webpURL, placeholderImage: nil, options: [.progressiveLoad])
 ```
 
 ### Decoding
@@ -124,7 +146,7 @@ let webpData: Data
 let image = SDImageWebPCoder.shared.decodedImage(with: data, options: nil)
 ```
 
-### Thumbnail Decoding
+### Thumbnail Decoding (0.4.0+)
 
 + Objective-C
 
