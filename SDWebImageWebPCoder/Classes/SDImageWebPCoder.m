@@ -353,7 +353,11 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
         SD_LOCK(_lock);
         image = [self safeStaticImageFrame];
         SD_UNLOCK(_lock);
+        image.sd_imageFormat = SDImageFormatWebP;
+        image.sd_isDecoded = YES;
+        return image;
     }
+    
     // For Static WebP images
     int width = 0;
     int height = 0;
