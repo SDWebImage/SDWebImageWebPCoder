@@ -86,6 +86,7 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
 @implementation SDImageWebPCoder {
     WebPIDecoder *_idec;
     WebPDemuxer *_demux;
+    WebPData *_webpdata; // Copied for progressive animation demuxer
     NSData *_imageData;
     CGFloat _scale;
     NSUInteger _loopCount;
@@ -112,6 +113,10 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     if (_demux) {
         WebPDemuxDelete(_demux);
         _demux = NULL;
+    }
+    if (_webpdata) {
+        WebPDataClear(_webpdata);
+        _webpdata = NULL;
     }
     if (_canvas) {
         CGContextRelease(_canvas);
@@ -290,6 +295,8 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
             preserveAspectRatio = preserveAspectRatioValue.boolValue;
         }
         _preserveAspectRatio = preserveAspectRatio;
+        _currentBlendIndex = NSNotFound;
+        _lock = dispatch_semaphore_create(1);
     }
     return self;
 }
@@ -300,11 +307,41 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     }
     _imageData = data;
     _finished = finished;
-    VP8StatusCode status = WebPIUpdate(_idec, data.bytes, data.length);
-    if (status != VP8_STATUS_OK && status != VP8_STATUS_SUSPENDED) {
-        return;
+    if (!_demux) {
+        VP8StatusCode status = WebPIUpdate(_idec, data.bytes, data.length);
+        if (status == VP8_STATUS_OK || status == VP8_STATUS_SUSPENDED) {
+            return;
+        }
+        // This case may be Animated WebP progressive decode
+        if (status == VP8_STATUS_UNSUPPORTED_FEATURE) {
+            WebPDemuxState state;
+            WebPData tmpData;
+            WebPDataInit(&tmpData);
+            tmpData.bytes = data.bytes;
+            tmpData.size = data.length;
+            // Copy to avoid the NSData dealloc and VP8 internal retain the pointer
+            _webpdata = malloc(sizeof(WebPData));
+            WebPDataCopy(&tmpData, _webpdata);
+            _demux = WebPDemuxPartial(_webpdata, &state);
+        }
+    } else {
+        // libwebp current have no API to update demuxer, so we always delete and recreate demuxer
+        WebPDemuxDelete(_demux);
+        _demux = NULL;
+        WebPDemuxState state;
+        WebPData tmpData;
+        WebPDataInit(&tmpData);
+        tmpData.bytes = data.bytes;
+        tmpData.size = data.length;
+        // Copy to avoid the NSData dealloc and VP8 internal retain the pointer
+        WebPDataClear(_webpdata);
+        WebPDataCopy(&tmpData, _webpdata);
+        _demux = WebPDemuxPartial(_webpdata, &state);
     }
-    // libwebp current does not support progressive decoding for animated image, so no need to scan and update the frame information
+    
+    if (_demux) {
+        [self scanAndCheckFramesValidWithDemuxer:_demux];
+    }
 }
 
 - (UIImage *)incrementalDecodedImageWithOptions:(SDImageCoderOptions *)options {
@@ -832,6 +869,10 @@ static void FreeImageData(void *info, const void *data, size_t size) {
     
     // We should loop all the frames and scan each frames' blendFromIndex for later decoding, this can also ensure all frames is valid
     do {
+        if (!iter.complete) {
+            // Skip partial frame
+            continue;
+        }
         SDWebPCoderFrame *frame = [[SDWebPCoderFrame alloc] init];
         frame.index = iterIndex;
         frame.duration = [self sd_frameDurationWithIterator:iter];
