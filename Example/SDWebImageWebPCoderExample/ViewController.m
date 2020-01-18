@@ -22,6 +22,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
+    [SDImageCache.sharedImageCache clearDiskOnCompletion:nil];
+    
     [[SDImageCodersManager sharedManager] addCoder:[SDImageWebPCoder sharedCoder]];
     
     self.imageView1 = [UIImageView new];
@@ -46,7 +48,7 @@
             }
         });
     }];
-    [self.imageView2 sd_setImageWithURL:animatedWebPURL completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+    [self.imageView2 sd_setImageWithURL:animatedWebPURL placeholderImage:nil options:SDWebImageProgressiveLoad completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
         if (image) {
             NSLog(@"%@", @"Animated WebP load success");
         }
