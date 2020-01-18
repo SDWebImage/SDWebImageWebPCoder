@@ -959,18 +959,34 @@ static void FreeImageData(void *info, const void *data, size_t size) {
 
 - (UIImage *)safeStaticImageFrame {
     UIImage *image;
-    if (!_colorSpace) {
-        _colorSpace = [self sd_createColorSpaceWithDemuxer:_demux];
-    }
     // Static WebP image
     WebPIterator iter;
     if (!WebPDemuxGetFrame(_demux, 1, &iter)) {
         WebPDemuxReleaseIterator(&iter);
         return nil;
     }
+    if (!_colorSpace) {
+        _colorSpace = [self sd_createColorSpaceWithDemuxer:_demux];
+    }
     // Check whether we need to use thumbnail
-    CGSize scaledSize = SDCalculateThumbnailSize(CGSizeMake(_canvasWidth, _canvasHeight), _preserveAspectRatio, _thumbnailSize);
-    CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:_colorSpace scaledSize:scaledSize];
+    CGImageRef imageRef;
+    if (_hasAnimation) {
+        // If have animation, we still need to allocate a CGContext, because the poster frame may be smaller than canvas
+        if (!_canvas) {
+            CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host;
+            bitmapInfo |= _hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
+            CGContextRef canvas = CGBitmapContextCreate(NULL, _canvasWidth, _canvasHeight, 8, 0, [SDImageCoderHelper colorSpaceGetDeviceRGB], bitmapInfo);
+            if (!canvas) {
+                return nil;
+            }
+            _canvas = canvas;
+        }
+        CGSize scaledSize = SDCalculateThumbnailSize(CGSizeMake(_canvasWidth, _canvasHeight), _preserveAspectRatio, _thumbnailSize);
+        imageRef = [self sd_drawnWebpImageWithCanvas:_canvas iterator:iter colorSpace:_colorSpace scaledSize:scaledSize];
+    } else {
+        CGSize scaledSize = SDCalculateThumbnailSize(CGSizeMake(iter.width, iter.height), _preserveAspectRatio, _thumbnailSize);
+        imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:_colorSpace scaledSize:scaledSize];
+    }
     if (!imageRef) {
         return nil;
     }
