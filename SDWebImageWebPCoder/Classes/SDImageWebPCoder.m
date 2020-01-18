@@ -362,6 +362,13 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
                 scale = 1;
             }
         }
+        CGSize scaledSize = SDCalculateThumbnailSize(CGSizeMake(width, height), _preserveAspectRatio, _thumbnailSize);
+        // Check whether we need to use thumbnail
+        if (!CGSizeEqualToSize(CGSizeMake(width, height), scaledSize)) {
+            CGImageRef scaledImageRef = [SDImageCoderHelper CGImageCreateScaled:newImageRef size:scaledSize];
+            CGImageRelease(newImageRef);
+            newImageRef = scaledImageRef;
+        }
         
 #if SD_UIKIT || SD_WATCH
         image = [[UIImage alloc] initWithCGImage:newImageRef scale:scale orientation:UIImageOrientationUp];
