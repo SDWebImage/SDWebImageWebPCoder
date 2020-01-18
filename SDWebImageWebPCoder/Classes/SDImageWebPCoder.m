@@ -347,6 +347,14 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
 - (UIImage *)incrementalDecodedImageWithOptions:(SDImageCoderOptions *)options {
     UIImage *image;
     
+    // For Animated WebP Images, progressive decoding only return the first frame.
+    // If you want progressive animation, use the SDAniamtedCoder protocol method instead.
+    if (_demux) {
+        SD_LOCK(_lock);
+        image = [self safeStaticImageFrame];
+        SD_UNLOCK(_lock);
+    }
+    // For Static WebP images
     int width = 0;
     int height = 0;
     int last_y = 0;
