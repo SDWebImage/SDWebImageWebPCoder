@@ -43,4 +43,4 @@ script:
   - mv ~/Library/Developer/Xcode/DerivedData/ ./DerivedData/iOS
 
 after_success:
-    - bash <(curl -s https://codecov.io/bash) -D './DerivedData/iOS' -J '^SDWebImageWebPCoder$' -F 'iOS'
+    - bash <(curl -s https://codecov.io/bash) -D './DerivedData/iOS' -J '^SDWebImageWebPCoder$' -c -X gcov -F ios
