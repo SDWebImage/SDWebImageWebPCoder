@@ -38,6 +38,8 @@ const int64_t kAsyncTestTimeout = 5;
 @implementation SDWebImageWebPCoderTests
 
 + (void)setUp {
+    [SDImageCache.sharedImageCache clearMemory];
+    [SDImageCache.sharedImageCache clearDiskOnCompletion:nil];
     [[SDImageCodersManager sharedManager] addCoder:[SDImageWebPCoder sharedCoder]];
 }
 
