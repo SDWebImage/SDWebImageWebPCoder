@@ -11,6 +11,6 @@
       location = "group:Example/Pods/Pods.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:SDWebImageWebPCoderTests/Pods/Pods.xcodeproj">
+      location = "group:Tests/Pods/Pods.xcodeproj">
    </FileRef>
 </Workspace>

@@ -38,7 +38,7 @@ script:
   - mkdir DerivedData
 
   - echo Run the tests
-  - pod install --project-directory=SDWebImageWebPCoderTests
+  - pod install --project-directory=Tests
   - xcodebuild clean test -workspace SDWebImageWebPCoder.xcworkspace -scheme 'SDWebImageWebPCoderTests' -sdk iphonesimulator -destination 'name=iPhone 11 Pro' -configuration Debug -UseModernBuildSystem=NO | xcpretty -c
   - mv ~/Library/Developer/Xcode/DerivedData/ ./DerivedData/iOS
 

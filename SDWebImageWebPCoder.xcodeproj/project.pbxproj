@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -43,7 +43,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		28D8AA3D3015E075692FD3E3 /* Pods-SDWebImageWebPCoderTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageWebPCoderTests.debug.xcconfig"; path = "SDWebImageWebPCoderTests/Pods/Target Support Files/Pods-SDWebImageWebPCoderTests/Pods-SDWebImageWebPCoderTests.debug.xcconfig"; sourceTree = "<group>"; };
+		28D8AA3D3015E075692FD3E3 /* Pods-SDWebImageWebPCoderTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageWebPCoderTests.debug.xcconfig"; path = "Tests/Pods/Target Support Files/Pods-SDWebImageWebPCoderTests/Pods-SDWebImageWebPCoderTests.debug.xcconfig"; sourceTree = "<group>"; };
 		3217BE7B220547EB003D0310 /* SDWebImageWebPCoder.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = SDWebImageWebPCoder.modulemap; sourceTree = "<group>"; };
 		3219F3B1228B0453003822A6 /* TestImageBlendAnimated.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = TestImageBlendAnimated.webp; sourceTree = "<group>"; };
 		46F21AD7D1692EBAC4D0FF33 /* Pods_SDWebImageWebPCoderTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SDWebImageWebPCoderTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -70,7 +70,7 @@
 		80BFF26E2136BE7900B95470 /* SDWebImageWebPCoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDWebImageWebPCoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		80BFF2772136BEE000B95470 /* SDWebImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDWebImage.framework; path = Carthage/Build/watchOS/SDWebImage.framework; sourceTree = "<group>"; };
 		80BFF2782136BEE000B95470 /* libwebp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libwebp.framework; path = Carthage/Build/watchOS/libwebp.framework; sourceTree = "<group>"; };
-		D92E6791BF088D1A101E670E /* Pods-SDWebImageWebPCoderTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageWebPCoderTests.release.xcconfig"; path = "SDWebImageWebPCoderTests/Pods/Target Support Files/Pods-SDWebImageWebPCoderTests/Pods-SDWebImageWebPCoderTests.release.xcconfig"; sourceTree = "<group>"; };
+		D92E6791BF088D1A101E670E /* Pods-SDWebImageWebPCoderTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageWebPCoderTests.release.xcconfig"; path = "Tests/Pods/Target Support Files/Pods-SDWebImageWebPCoderTests/Pods-SDWebImageWebPCoderTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,7 +134,7 @@
 			isa = PBXGroup;
 			children = (
 				806E77A82136A2E900A316D2 /* SDImageWebPCoder */,
-				808C918C213FD131004B0F7C /* SDWebImageWebPCoderTests */,
+				808C918C213FD131004B0F7C /* Tests */,
 				806E779E2136A1C000A316D2 /* Products */,
 				80BFF2312136AA7D00B95470 /* Frameworks */,
 				52FB3B532EE8775B69517E2E /* Pods */,
@@ -192,14 +192,14 @@
 			path = Assets;
 			sourceTree = "<group>";
 		};
-		808C918C213FD131004B0F7C /* SDWebImageWebPCoderTests */ = {
+		808C918C213FD131004B0F7C /* Tests */ = {
 			isa = PBXGroup;
 			children = (
 				808C9199213FD2B2004B0F7C /* Images */,
 				808C918D213FD131004B0F7C /* SDWebImageWebPCoderTests.m */,
 				808C918F213FD131004B0F7C /* Info.plist */,
 			);
-			path = SDWebImageWebPCoderTests;
+			path = Tests;
 			sourceTree = "<group>";
 		};
 		808C9199213FD2B2004B0F7C /* Images */ = {
@@ -619,8 +619,14 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchos*]" = "WEBP_USE_INTRINSICS=1 $(inherited)";
-				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchsimulator*]" = "WEBP_USE_INTRINSICS=1 $(inherited)";
+				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchos*]" = (
+					"WEBP_USE_INTRINSICS=1",
+					"$(inherited)",
+				);
+				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchsimulator*]" = (
+					"WEBP_USE_INTRINSICS=1",
+					"$(inherited)",
+				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -688,8 +694,14 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchos*]" = "WEBP_USE_INTRINSICS=1 $(inherited)";
-				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchsimulator*]" = "WEBP_USE_INTRINSICS=1 $(inherited)";
+				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchos*]" = (
+					"WEBP_USE_INTRINSICS=1",
+					"$(inherited)",
+				);
+				"GCC_PREPROCESSOR_DEFINITIONS[sdk=watchsimulator*]" = (
+					"WEBP_USE_INTRINSICS=1",
+					"$(inherited)",
+				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -766,7 +778,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = SDWebImageWebPCoderTests/Info.plist;
+				INFOPLIST_FILE = Tests/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = org.SDWebImage.SDWebImageWebPCoderTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -776,7 +788,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D92E6791BF088D1A101E670E /* Pods-SDWebImageWebPCoderTests.release.xcconfig */;
 			buildSettings = {
-				INFOPLIST_FILE = SDWebImageWebPCoderTests/Info.plist;
+				INFOPLIST_FILE = Tests/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = org.SDWebImage.SDWebImageWebPCoderTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
