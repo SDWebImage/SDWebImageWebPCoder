@@ -25,11 +25,6 @@ const int64_t kAsyncTestTimeout = 5;
     isAnimatedImage:(BOOL)isAnimated;
 @end
 
-// Internal header
-@interface SDAnimatedImageView ()
-@property (nonatomic, assign) BOOL isProgressive;
-@end
-
 @interface SDWebPCoderFrame : NSObject
 @property (nonatomic, assign) NSUInteger index; // Frame index (zero based)
 @property (nonatomic, assign) NSUInteger blendFromIndex; // The nearest previous frame index which blend mode is WEBP_MUX_BLEND
@@ -122,7 +117,6 @@ const int64_t kAsyncTestTimeout = 5;
             if (image) {
                 XCTAssertTrue(image.sd_isIncremental);
                 XCTAssertTrue([image conformsToProtocol:@protocol(SDAnimatedImage)]);
-                XCTAssertTrue(imageView.isProgressive);
             }
         });
     } completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
