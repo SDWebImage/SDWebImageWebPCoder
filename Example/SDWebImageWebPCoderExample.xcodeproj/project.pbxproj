@@ -17,7 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		21B3CA4F30EA7284BBF9F6DC /* Pods-SDWebImageWebPCoderExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageWebPCoderExample.debug.xcconfig"; path = "Pods/Target Support Files/Pods-SDWebImageWebPCoderExample/Pods-SDWebImageWebPCoderExample.debug.xcconfig"; sourceTree = "<group>"; };
+		21B3CA4F30EA7284BBF9F6DC /* Pods-SDWebImageWebPCoderExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageWebPCoderExample.debug.xcconfig"; path = "../Pods/Target Support Files/Pods-SDWebImageWebPCoderExample/Pods-SDWebImageWebPCoderExample.debug.xcconfig"; sourceTree = "<group>"; };
 		803D79CE213597CB00C815FC /* SDWebImageWebPCoderExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SDWebImageWebPCoderExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		803D79D1213597CB00C815FC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		803D79D2213597CB00C815FC /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -29,7 +29,7 @@
 		803D79DF213597CC00C815FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		803D79E0213597CC00C815FC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		A4247F756BA5BBDD6FFE3E26 /* Pods_SDWebImageWebPCoderExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SDWebImageWebPCoderExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		ABF474EBA40C51CBDE1C9406 /* Pods-SDWebImageWebPCoderExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageWebPCoderExample.release.xcconfig"; path = "Pods/Target Support Files/Pods-SDWebImageWebPCoderExample/Pods-SDWebImageWebPCoderExample.release.xcconfig"; sourceTree = "<group>"; };
+		ABF474EBA40C51CBDE1C9406 /* Pods-SDWebImageWebPCoderExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageWebPCoderExample.release.xcconfig"; path = "../Pods/Target Support Files/Pods-SDWebImageWebPCoderExample/Pods-SDWebImageWebPCoderExample.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

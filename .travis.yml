@@ -30,15 +30,14 @@ script:
   - pod lib lint --allow-warnings
 
   - echo Build example
-  - pod install --project-directory=Example
-  - xcodebuild build clean -workspace SDWebImageWebPCoder.xcworkspace -scheme SDWebImageWebPCoderExample -sdk iphonesimulator -destination 'name=iPhone 11 Pro' -configuration Debug | xcpretty -c
+  - pod install
+  - xcodebuild build clean -workspace SDWebImageWebPCoder.xcworkspace -scheme SDWebImageWebPCoderExample -sdk iphonesimulator -destination 'name=iPhone 11 Pro' -configuration Debug -UseModernBuildSystem=NO | xcpretty -c
 
   - echo Clean DerivedData
   - rm -rf ~/Library/Developer/Xcode/DerivedData/
   - mkdir DerivedData
 
   - echo Run the tests
-  - pod install --project-directory=Tests
   - xcodebuild clean test -workspace SDWebImageWebPCoder.xcworkspace -scheme 'SDWebImageWebPCoderTests' -sdk iphonesimulator -destination 'name=iPhone 11 Pro' -configuration Debug -UseModernBuildSystem=NO | xcpretty -c
   - mv ~/Library/Developer/Xcode/DerivedData/ ./DerivedData/iOS
 
