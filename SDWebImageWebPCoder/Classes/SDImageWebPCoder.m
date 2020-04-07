@@ -609,12 +609,16 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     if (options[SDImageCoderEncodeCompressionQuality]) {
         compressionQuality = [options[SDImageCoderEncodeCompressionQuality] doubleValue];
     }
+    NSUInteger maxFileSize = 0;
+    if (options[SDImageCoderEncodeMaxFileSize]) {
+        maxFileSize = [options[SDImageCoderEncodeMaxFileSize] unsignedIntegerValue];
+    }
     NSArray<SDImageFrame *> *frames = [SDImageCoderHelper framesFromAnimatedImage:image];
     
     BOOL encodeFirstFrame = [options[SDImageCoderEncodeFirstFrameOnly] boolValue];
     if (encodeFirstFrame || frames.count == 0) {
         // for static single webp image
-        data = [self sd_encodedWebpDataWithImage:image.CGImage quality:compressionQuality];
+        data = [self sd_encodedWebpDataWithImage:image.CGImage quality:compressionQuality fileSize:maxFileSize];
     } else {
         // for animated webp image
         WebPMux *mux = WebPMuxNew();
@@ -623,7 +627,7 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
         }
         for (size_t i = 0; i < frames.count; i++) {
             SDImageFrame *currentFrame = frames[i];
-            NSData *webpData = [self sd_encodedWebpDataWithImage:currentFrame.image.CGImage quality:compressionQuality];
+            NSData *webpData = [self sd_encodedWebpDataWithImage:currentFrame.image.CGImage quality:compressionQuality fileSize:maxFileSize];
             int duration = currentFrame.duration * 1000;
             WebPMuxFrameInfo frame = { .bitstream.bytes = webpData.bytes,
                 .bitstream.size = webpData.length,
@@ -660,7 +664,7 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     return data;
 }
 
-- (nullable NSData *)sd_encodedWebpDataWithImage:(nullable CGImageRef)imageRef quality:(double)quality {
+- (nullable NSData *)sd_encodedWebpDataWithImage:(nullable CGImageRef)imageRef quality:(double)quality fileSize:(NSUInteger)fileSize {
     NSData *webpData;
     if (!imageRef) {
         return nil;
@@ -704,7 +708,7 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
         return nil;
     }
     
-    uint8_t *rgba = NULL;
+    uint8_t *rgba = NULL; // RGBA Buffer managed by CFData, don't call `free` on it, instead call `CFRelease` on `dataRef`
     // We could not assume that input CGImage's color mode is always RGB888/RGBA8888. Convert all other cases to target color mode using vImage
     if (byteOrderNormal && ((alphaInfo == kCGImageAlphaNone) || (alphaInfo == kCGImageAlphaLast))) {
         // If the input CGImage is already RGB888/RGBA8888
@@ -758,34 +762,58 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
         
         rgba = dest.data; // Converted buffer
         bytesPerRow = dest.rowBytes; // Converted bytePerRow
-        CFRelease(dataRef);
-        dataRef = NULL;
+        CFRelease(dataRef); // Use CFData to manage bytes for free, the same code path for error handling
+        dataRef = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, rgba, bytesPerRow * height, kCFAllocatorDefault);
     }
     
-    uint8_t *data = NULL; // Output WebP data
     float qualityFactor = quality * 100; // WebP quality is 0-100
     // Encode RGB888/RGBA8888 buffer to WebP data
-    size_t size;
-    if (hasAlpha) {
-        size = WebPEncodeRGBA(rgba, (int)width, (int)height, (int)bytesPerRow, qualityFactor, &data);
-    } else {
-        size = WebPEncodeRGB(rgba, (int)width, (int)height, (int)bytesPerRow, qualityFactor, &data);
+    // Using the libwebp advanced API: https://developers.google.com/speed/webp/docs/api#advanced_encoding_api
+    WebPConfig config;
+    WebPPicture picture;
+    WebPMemoryWriter writer;
+    
+    if (!WebPConfigPreset(&config, WEBP_PRESET_DEFAULT, qualityFactor) ||
+        !WebPPictureInit(&picture)) {
+        // shouldn't happen, except if system installation is broken
+        CFRelease(dataRef);
+        return nil;
     }
-    if (dataRef) {
-        CFRelease(dataRef); // free non-converted rgba buffer
-        dataRef = NULL;
+
+    config.target_size = (int)fileSize; // Max filesize for output, 0 means use quality instead
+    config.thread_level = 1; // Thread encoding for fast
+    config.lossless = 0; // Disable lossless encoding (If we need, can add new Encoding Options in future version)
+    picture.use_argb = config.lossless; // Lossy encoding use YUV for internel bitstream
+    picture.width = (int)width;
+    picture.height = (int)height;
+    picture.writer = WebPMemoryWrite; // Output in memory data buffer
+    picture.custom_ptr = &writer;
+    WebPMemoryWriterInit(&writer);
+    
+    int result;
+    if (hasAlpha) {
+        result = WebPPictureImportRGBA(&picture, rgba, (int)bytesPerRow);
     } else {
-        free(rgba); // free converted rgba buffer
-        rgba = NULL;
+        result = WebPPictureImportRGB(&picture, rgba, (int)bytesPerRow);
+    }
+    if (!result) {
+        WebPMemoryWriterClear(&writer);
+        CFRelease(dataRef);
+        return nil;
     }
     
-    if (size) {
+    result = WebPEncode(&config, &picture);
+    CFRelease(dataRef); // Free bitmap buffer
+    WebPPictureFree(&picture);
+    
+    if (result) {
         // success
-        webpData = [NSData dataWithBytes:data length:size];
+        webpData = [NSData dataWithBytes:writer.mem length:writer.size];
+    } else {
+        // failed
+        webpData = nil;
     }
-    if (data) {
-        WebPFree(data);
-    }
+    WebPMemoryWriterClear(&writer);
     
     return webpData;
 }
