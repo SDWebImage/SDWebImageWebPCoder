@@ -42,8 +42,10 @@
             NSLog(@"%@", @"Static WebP load success");
         }
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            NSData *webpData = [image sd_imageDataAsFormat:SDImageFormatWebP];
+            NSUInteger maxFileSize = 4096;
+            NSData *webpData = [SDImageWebPCoder.sharedCoder encodedDataWithImage:image format:SDImageFormatWebP options:@{SDImageCoderEncodeMaxFileSize : @(maxFileSize)}];
             if (webpData) {
+                NSCAssert(webpData.length <= maxFileSize, @"WebP Encoding with max file size limit works");
                 NSLog(@"%@", @"WebP encoding success");
             }
         });

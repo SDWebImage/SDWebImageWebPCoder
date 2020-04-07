@@ -182,6 +182,20 @@ const int64_t kAsyncTestTimeout = 5;
     XCTAssert(canvas == NULL);
 }
 
+- (void)test45WebPEncodingMaxFileSize {
+    NSURL *staticWebPURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImageStatic" withExtension:@"webp"];
+    NSData *data = [NSData dataWithContentsOfURL:staticWebPURL];
+    UIImage *image = [UIImage sd_imageWithWebPData:data];
+    NSData *dataWithNoLimit = [SDImageWebPCoder.sharedCoder encodedDataWithImage:image format:SDImageFormatWebP options:nil];
+    XCTAssertNotNil(dataWithNoLimit);
+    NSUInteger maxFileSize = 8192;
+    NSData *dataWithLimit = [SDImageWebPCoder.sharedCoder encodedDataWithImage:image format:SDImageFormatWebP options:@{SDImageCoderEncodeMaxFileSize : @(maxFileSize)}];
+    XCTAssertNotNil(dataWithLimit);
+    XCTAssertGreaterThan(dataWithNoLimit.length, dataWithLimit.length);
+    XCTAssertGreaterThan(dataWithNoLimit.length, maxFileSize);
+    XCTAssertLessThanOrEqual(dataWithLimit.length, maxFileSize);
+}
+
 @end
 
 @implementation SDWebImageWebPCoderTests (Helpers)
