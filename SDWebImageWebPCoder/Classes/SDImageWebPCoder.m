@@ -781,6 +781,7 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     }
 
     config.target_size = (int)fileSize; // Max filesize for output, 0 means use quality instead
+    config.pass = fileSize > 0 ? 6 : 1; // Use 6 passes for file size limited encoding, which is the default value of `cwebp` command line
     config.thread_level = 1; // Thread encoding for fast
     config.lossless = 0; // Disable lossless encoding (If we need, can add new Encoding Options in future version)
     picture.use_argb = config.lossless; // Lossy encoding use YUV for internel bitstream
