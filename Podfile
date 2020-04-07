@@ -1,0 +1,18 @@
+use_frameworks!
+
+example_project_path = 'Example/SDWebImageWebPCoderExample'
+test_project_path = 'Tests/SDWebImageWebPCoderTests'
+workspace 'SDWebImageWebPCoder.xcworkspace'
+
+target 'SDWebImageWebPCoderExample' do
+  platform :ios, '8.0'
+  project example_project_path
+  pod 'SDWebImageWebPCoder', :path => './'
+end
+
+target 'SDWebImageWebPCoderTests' do
+  platform :ios, '8.0'
+  project test_project_path
+  pod 'Expecta'
+  pod 'SDWebImageWebPCoder', :path => './'
+end

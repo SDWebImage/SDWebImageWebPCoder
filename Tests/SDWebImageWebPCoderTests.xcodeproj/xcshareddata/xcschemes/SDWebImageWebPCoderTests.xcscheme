@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0940"
+   LastUpgradeVersion = "1140"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -9,15 +9,15 @@
          <BuildActionEntry
             buildForTesting = "YES"
             buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "808C918A213FD130004B0F7C"
                BuildableName = "SDWebImageWebPCoderTests.xctest"
                BlueprintName = "SDWebImageWebPCoderTests"
-               ReferencedContainer = "container:SDWebImageWebPCoder.xcodeproj">
+               ReferencedContainer = "container:SDWebImageWebPCoderTests.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -36,7 +36,7 @@
                BlueprintIdentifier = "808C918A213FD130004B0F7C"
                BuildableName = "SDWebImageWebPCoderTests.xctest"
                BlueprintName = "SDWebImageWebPCoderTests"
-               ReferencedContainer = "container:SDWebImageWebPCoder.xcodeproj">
+               ReferencedContainer = "container:SDWebImageWebPCoderTests.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -51,15 +51,6 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "808C918A213FD130004B0F7C"
-            BuildableName = "SDWebImageWebPCoderTests.xctest"
-            BlueprintName = "SDWebImageWebPCoderTests"
-            ReferencedContainer = "container:SDWebImageWebPCoder.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -73,7 +64,7 @@
             BlueprintIdentifier = "808C918A213FD130004B0F7C"
             BuildableName = "SDWebImageWebPCoderTests.xctest"
             BlueprintName = "SDWebImageWebPCoderTests"
-            ReferencedContainer = "container:SDWebImageWebPCoder.xcodeproj">
+            ReferencedContainer = "container:SDWebImageWebPCoderTests.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>
