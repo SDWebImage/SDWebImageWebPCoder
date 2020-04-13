@@ -178,7 +178,6 @@ NSData *webpData = [[SDImageWebPCoder sharedCoder] encodedDataWithImage:image fo
 // Encode Quality
 NSData *lossyWebpData = [[SDImageWebPCoder sharedCoder] encodedDataWithImage:image format:SDImageFormatWebP options:@{SDImageCoderEncodeCompressionQuality : @(0.1)}]; // [0, 1] compression quality
 NSData *limitedWebpData = [[SDImageWebPCoder sharedCoder] encodedDataWithImage:image format:SDImageFormatWebP options:@{SDImageCoderEncodeMaxFileSize : @(1024 * 10)}]; // v0.6.0 feature, limit output file size <= 10KB
-NSData *thumbnailWebpData = [[SDImageWebPCoder sharedCoder] encodedDataWithImage:image format:SDImageFormatWebP options:@{SDImageCoderEncodeMaxPixelSize : @(CGSizeMake(200, 200)}]; // v0.6.1 feature, encoding max pixel size
 ```
 
 + Swift
@@ -189,6 +188,23 @@ let image: UIImage
 let webpData = SDImageWebPCoder.shared.encodedData(with: image, format: .webP, options: nil)
 let lossyWebpData = SDImageWebPCoder.shared.encodedData(with: image, format: .webP, options: [.encodeCompressionQuality: 0.1]) // [0, 1] compression quality
 let limitedWebpData = SDImageWebPCoder.shared.encodedData(with: image, format: .webP, options: [.encodeMaxFileSize: 1024 * 10]) // v0.6.0 feature, limit output file size <= 10KB
+```
+
+### Thumbnail Encoding (0.6.1+)
+
++ Objective-C
+
+```objective-c
+// WebP image thumbnail encoding
+UIImage *image;
+NSData *thumbnailWebpData = [[SDImageWebPCoder sharedCoder] encodedDataWithImage:image format:SDImageFormatWebP options:@{SDImageCoderEncodeMaxPixelSize : @(CGSizeMake(200, 200)}]; // v0.6.1 feature, encoding max pixel size
+```
+
++ Swift
+
+```swift
+// WebP image thumbnail encoding
+let image: UIImage
 let thumbnailWebpData = SDImageWebPCoder.shared.encodedData(with: image, format: .webP, options: [.encodeMaxPixelSize: CGSize(width: 200, height: 200)]) // v0.6.1 feature, encoding max pixel size
 ```
 
