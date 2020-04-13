@@ -262,8 +262,8 @@ const int64_t kAsyncTestTimeout = 5;
         thumbnailPixelSize = CGSizeMake(round(thumbnailHeight * ratio), thumbnailHeight);
     }
     // Image/IO's thumbnail API does not always use round to preserve precision, we check ABS <= 1
-    expect(ABS(thumbImage.size.width - thumbnailPixelSize.width) <= 1);
-    expect(ABS(thumbImage.size.height - thumbnailPixelSize.height) <= 1);
+    expect(ABS(thumbImage.size.width - thumbnailPixelSize.width)).beLessThanOrEqualTo(1);
+    expect(ABS(thumbImage.size.height - thumbnailPixelSize.height)).beLessThanOrEqualTo(1);
     
     
     if (supportsEncoding) {
@@ -281,6 +281,25 @@ const int64_t kAsyncTestTimeout = 5;
         expect(outputImage.scale).to.equal(inputImage.scale);
 #if SD_UIKIT
         expect(outputImage.images.count).to.equal(inputImage.images.count);
+#endif
+        
+        // check max pixel size encoding with scratch
+        CGFloat maxWidth = 50;
+        CGFloat maxHeight = 50;
+        CGFloat maxRatio = maxWidth / maxHeight;
+        CGSize maxPixelSize;
+        if (ratio > maxRatio) {
+            maxPixelSize = CGSizeMake(maxWidth, round(maxWidth / ratio));
+        } else {
+            maxPixelSize = CGSizeMake(round(maxHeight * ratio), maxHeight);
+        }
+        NSData *outputMaxImageData = [coder encodedDataWithImage:inputImage format:encodingFormat options:@{SDImageCoderEncodeMaxPixelSize : @(CGSizeMake(maxWidth, maxHeight))}];
+        UIImage *outputMaxImage = [coder decodedImageWithData:outputMaxImageData options:nil];
+        // Image/IO's thumbnail API does not always use round to preserve precision, we check ABS <= 1
+        expect(ABS(outputMaxImage.size.width - maxPixelSize.width)).beLessThanOrEqualTo(1);
+        expect(ABS(outputMaxImage.size.height - maxPixelSize.height)).beLessThanOrEqualTo(1);
+#if SD_UIKIT
+        expect(outputMaxImage.images.count).to.equal(inputImage.images.count);
 #endif
     }
 }
