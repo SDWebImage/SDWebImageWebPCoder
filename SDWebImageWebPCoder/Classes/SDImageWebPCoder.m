@@ -86,7 +86,6 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
 @implementation SDImageWebPCoder {
     WebPIDecoder *_idec;
     WebPDemuxer *_demux;
-    WebPData *_webpdata; // Copied for progressive animation demuxer
     NSData *_imageData;
     CGFloat _scale;
     NSUInteger _loopCount;
@@ -113,10 +112,6 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     if (_demux) {
         WebPDemuxDelete(_demux);
         _demux = NULL;
-    }
-    if (_webpdata) {
-        WebPDataClear(_webpdata);
-        _webpdata = NULL;
     }
     if (_canvas) {
         CGContextRelease(_canvas);
@@ -305,41 +300,36 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     if (_finished) {
         return;
     }
-    _imageData = data;
     _finished = finished;
-    if (!_demux) {
-        VP8StatusCode status = WebPIUpdate(_idec, data.bytes, data.length);
-        if (status == VP8_STATUS_OK || status == VP8_STATUS_SUSPENDED) {
+    // check whether we can detect Animated WebP or Static WebP, they need different codec (Demuxer or IDecoder)
+    if (!_hasAnimation) {
+        _imageData = [data copy];
+        VP8StatusCode status = WebPIUpdate(_idec, _imageData.bytes, _imageData.length);
+        // For Static WebP, all things done.
+        // For Animated WebP (currently use `VP8_STATUS_UNSUPPORTED_FEATURE` to check), continue to create demuxer
+        if (status != VP8_STATUS_UNSUPPORTED_FEATURE) {
             return;
         }
-        // This case may be Animated WebP progressive decode
-        if (status == VP8_STATUS_UNSUPPORTED_FEATURE) {
-            WebPDemuxState state;
-            WebPData tmpData;
-            WebPDataInit(&tmpData);
-            tmpData.bytes = data.bytes;
-            tmpData.size = data.length;
-            // Copy to avoid the NSData dealloc and VP8 internal retain the pointer
-            _webpdata = malloc(sizeof(WebPData));
-            WebPDataCopy(&tmpData, _webpdata);
-            _demux = WebPDemuxPartial(_webpdata, &state);
-        }
-    } else {
-        // libwebp current have no API to update demuxer, so we always delete and recreate demuxer
+        _hasAnimation = YES;
+    }
+    // libwebp current have no API to update demuxer, so we always delete and recreate demuxer
+    // Use lock to avoid progressive animation decoding thread safe issue
+    SD_LOCK(_lock);
+    if (_demux) {
+        // next line `_imageData = nil` ARC will release the raw buffer, but need release the demuxer firstly because libwebp don't use retain/release rule
         WebPDemuxDelete(_demux);
         _demux = NULL;
-        WebPDemuxState state;
-        WebPData tmpData;
-        WebPDataInit(&tmpData);
-        tmpData.bytes = data.bytes;
-        tmpData.size = data.length;
-        // Copy to avoid the NSData dealloc and VP8 internal retain the pointer
-        WebPDataClear(_webpdata);
-        WebPDataCopy(&tmpData, _webpdata);
-        _demux = WebPDemuxPartial(_webpdata, &state);
     }
+    _imageData = [data copy];
+    WebPData webpData;
+    WebPDataInit(&webpData);
+    webpData.bytes = _imageData.bytes;
+    webpData.size = _imageData.length;
+    WebPDemuxState state;
+    _demux = WebPDemuxPartial(&webpData, &state);
+    SD_UNLOCK(_lock);
     
-    if (_demux) {
+    if (_demux && state != WEBP_DEMUX_PARSE_ERROR) {
         [self scanAndCheckFramesValidWithDemuxer:_demux];
     }
 }
