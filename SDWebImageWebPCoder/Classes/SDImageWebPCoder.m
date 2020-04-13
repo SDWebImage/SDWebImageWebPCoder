@@ -609,6 +609,15 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     if (options[SDImageCoderEncodeCompressionQuality]) {
         compressionQuality = [options[SDImageCoderEncodeCompressionQuality] doubleValue];
     }
+    CGSize maxPixelSize = CGSizeZero;
+    NSValue *maxPixelSizeValue = options[SDImageCoderEncodeMaxPixelSize];
+    if (maxPixelSizeValue != nil) {
+#if SD_MAC
+        maxPixelSize = maxPixelSizeValue.sizeValue;
+#else
+        maxPixelSize = maxPixelSizeValue.CGSizeValue;
+#endif
+    }
     NSUInteger maxFileSize = 0;
     if (options[SDImageCoderEncodeMaxFileSize]) {
         maxFileSize = [options[SDImageCoderEncodeMaxFileSize] unsignedIntegerValue];
@@ -618,7 +627,7 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     BOOL encodeFirstFrame = [options[SDImageCoderEncodeFirstFrameOnly] boolValue];
     if (encodeFirstFrame || frames.count == 0) {
         // for static single webp image
-        data = [self sd_encodedWebpDataWithImage:image.CGImage quality:compressionQuality fileSize:maxFileSize];
+        data = [self sd_encodedWebpDataWithImage:image.CGImage quality:compressionQuality maxPixelSize:maxPixelSize maxFileSize:maxFileSize];
     } else {
         // for animated webp image
         WebPMux *mux = WebPMuxNew();
@@ -627,7 +636,7 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
         }
         for (size_t i = 0; i < frames.count; i++) {
             SDImageFrame *currentFrame = frames[i];
-            NSData *webpData = [self sd_encodedWebpDataWithImage:currentFrame.image.CGImage quality:compressionQuality fileSize:maxFileSize];
+            NSData *webpData = [self sd_encodedWebpDataWithImage:currentFrame.image.CGImage quality:compressionQuality maxPixelSize:maxPixelSize maxFileSize:maxFileSize];
             int duration = currentFrame.duration * 1000;
             WebPMuxFrameInfo frame = { .bitstream.bytes = webpData.bytes,
                 .bitstream.size = webpData.length,
@@ -664,7 +673,7 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     return data;
 }
 
-- (nullable NSData *)sd_encodedWebpDataWithImage:(nullable CGImageRef)imageRef quality:(double)quality fileSize:(NSUInteger)fileSize {
+- (nullable NSData *)sd_encodedWebpDataWithImage:(nullable CGImageRef)imageRef quality:(double)quality maxPixelSize:(CGSize)maxPixelSize maxFileSize:(NSUInteger)maxFileSize {
     NSData *webpData;
     if (!imageRef) {
         return nil;
@@ -780,11 +789,11 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
         return nil;
     }
 
-    config.target_size = (int)fileSize; // Max filesize for output, 0 means use quality instead
-    config.pass = fileSize > 0 ? 6 : 1; // Use 6 passes for file size limited encoding, which is the default value of `cwebp` command line
+    config.target_size = (int)maxFileSize; // Max filesize for output, 0 means use quality instead
+    config.pass = maxFileSize > 0 ? 6 : 1; // Use 6 passes for file size limited encoding, which is the default value of `cwebp` command line
     config.thread_level = 1; // Thread encoding for fast
     config.lossless = 0; // Disable lossless encoding (If we need, can add new Encoding Options in future version)
-    picture.use_argb = config.lossless; // Lossy encoding use YUV for internel bitstream
+    picture.use_argb = 0; // Lossy encoding use YUV for internel bitstream
     picture.width = (int)width;
     picture.height = (int)height;
     picture.writer = WebPMemoryWrite; // Output in memory data buffer
@@ -803,9 +812,21 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
         return nil;
     }
     
+    // Check if need to scale pixel size
+    if (maxPixelSize.width > 0 && maxPixelSize.height > 0 && width > maxPixelSize.width && height > maxPixelSize.height) {
+        CGSize scaledSize = SDCalculateThumbnailSize(CGSizeMake(width, height), YES, maxPixelSize);
+        result = WebPPictureRescale(&picture, scaledSize.width, scaledSize.height);
+        if (!result) {
+            WebPMemoryWriterClear(&writer);
+            WebPPictureFree(&picture);
+            CFRelease(dataRef);
+            return nil;
+        }
+    }
+    
     result = WebPEncode(&config, &picture);
-    CFRelease(dataRef); // Free bitmap buffer
     WebPPictureFree(&picture);
+    CFRelease(dataRef); // Free bitmap buffer
     
     if (result) {
         // success
