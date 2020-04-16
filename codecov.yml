@@ -1,7 +1,7 @@
 coverage:
   ignore:
     - "Example"
-    - "SDWebImageWebPCoderTests"
+    - "Tests"
   status:
     project:
       default: off

@@ -186,6 +186,7 @@ NSData *limitedWebpData = [[SDImageWebPCoder sharedCoder] encodedDataWithImage:i
 // WebP image encoding
 let image: UIImage
 let webpData = SDImageWebPCoder.shared.encodedData(with: image, format: .webP, options: nil)
+// Encode Quality
 let lossyWebpData = SDImageWebPCoder.shared.encodedData(with: image, format: .webP, options: [.encodeCompressionQuality: 0.1]) // [0, 1] compression quality
 let limitedWebpData = SDImageWebPCoder.shared.encodedData(with: image, format: .webP, options: [.encodeMaxFileSize: 1024 * 10]) // v0.6.0 feature, limit output file size <= 10KB
 ```
