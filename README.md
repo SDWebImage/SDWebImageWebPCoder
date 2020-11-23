@@ -14,8 +14,8 @@ SDWebImageWebPCoder supports both WebP decoding and encoding, for Static WebP or
 
 ## Requirements
 
-+ iOS 8
-+ macOS 10.10
++ iOS 9.0
++ macOS 10.11
 + tvOS 9.0
 + watchOS 2.0
 
