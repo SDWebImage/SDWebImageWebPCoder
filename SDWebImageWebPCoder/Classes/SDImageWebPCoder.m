@@ -841,9 +841,9 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     return webpData;
 }
 
-- (void) updateWebPOptionsToConfig:(WebPConfig*)config
-                             maxFileSize:(NSUInteger)maxFileSize
-                                 options:(nullable SDImageCoderOptions *)options {
+- (void) updateWebPOptionsToConfig:(WebPConfig * _Nonnull)config
+                       maxFileSize:(NSUInteger)maxFileSize
+                           options:(nullable SDImageCoderOptions *)options {
 
     config->target_size = (int)maxFileSize; // Max filesize for output, 0 means use quality instead
     config->pass = maxFileSize > 0 ? 6 : 1; // Use 6 passes for file size limited encoding, which is the default value of `cwebp` command line

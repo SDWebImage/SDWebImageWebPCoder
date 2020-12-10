@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		220A6239257EAFB300262720 /* SDWebImageWebPCoderDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = 220A6237257EAFB300262720 /* SDWebImageWebPCoderDefine.m */; };
 		220A623A257EAFB300262720 /* SDWebImageWebPCoderDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = 220A6237257EAFB300262720 /* SDWebImageWebPCoderDefine.m */; };
 		220A623B257EAFB300262720 /* SDWebImageWebPCoderDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = 220A6237257EAFB300262720 /* SDWebImageWebPCoderDefine.m */; };
 		220A623C257EAFB300262720 /* SDWebImageWebPCoderDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = 220A6237257EAFB300262720 /* SDWebImageWebPCoderDefine.m */; };
@@ -15,6 +14,7 @@
 		220A623E257EAFB300262720 /* SDWebImageWebPCoderDefine.h in Headers */ = {isa = PBXBuildFile; fileRef = 220A6238257EAFB300262720 /* SDWebImageWebPCoderDefine.h */; };
 		220A623F257EAFB300262720 /* SDWebImageWebPCoderDefine.h in Headers */ = {isa = PBXBuildFile; fileRef = 220A6238257EAFB300262720 /* SDWebImageWebPCoderDefine.h */; };
 		220A6240257EAFB300262720 /* SDWebImageWebPCoderDefine.h in Headers */ = {isa = PBXBuildFile; fileRef = 220A6238257EAFB300262720 /* SDWebImageWebPCoderDefine.h */; };
+		228EA36125825A52005903D9 /* SDWebImageWebPCoderDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = 220A6237257EAFB300262720 /* SDWebImageWebPCoderDefine.m */; };
 		806E77B32136A2E900A316D2 /* UIImage+WebP.m in Sources */ = {isa = PBXBuildFile; fileRef = 806E77AA2136A2E900A316D2 /* UIImage+WebP.m */; };
 		806E77B42136A2E900A316D2 /* SDImageWebPCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 806E77AB2136A2E900A316D2 /* SDImageWebPCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		806E77B62136A2E900A316D2 /* UIImage+WebP.h in Headers */ = {isa = PBXBuildFile; fileRef = 806E77AD2136A2E900A316D2 /* UIImage+WebP.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -432,7 +432,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				220A6239257EAFB300262720 /* SDWebImageWebPCoderDefine.m in Sources */,
+				228EA36125825A52005903D9 /* SDWebImageWebPCoderDefine.m in Sources */,
 				806E77B72136A2E900A316D2 /* SDImageWebPCoder.m in Sources */,
 				806E77B32136A2E900A316D2 /* UIImage+WebP.m in Sources */,
 			);
