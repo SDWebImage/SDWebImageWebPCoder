@@ -44,7 +44,7 @@ const int64_t kAsyncTestTimeout = 5;
 
 - (void)test01ThatWEBPWorks {
     XCTestExpectation *expectation = [self expectationWithDescription:@"WEBP"];
-    NSURL *imageURL = [NSURL URLWithString:@"http://www.ioncannon.net/wp-content/uploads/2011/06/test2.webp"];
+    NSURL *imageURL = [NSURL URLWithString:@"https://www.gstatic.com/webp/gallery3/1_webp_ll.png"];
     [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:imageURL options:0 progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
         if (image && data && !error && finished) {
             [expectation fulfill];
@@ -57,7 +57,7 @@ const int64_t kAsyncTestTimeout = 5;
 
 - (void)test02ThatProgressiveWebPWorks {
     XCTestExpectation *expectation = [self expectationWithDescription:@"Progressive WebP download"];
-    NSURL *imageURL = [NSURL URLWithString:@"http://www.ioncannon.net/wp-content/uploads/2011/06/test9.webp"];
+    NSURL *imageURL = [NSURL URLWithString:@"https://www.gstatic.com/webp/gallery3/3_webp_ll.png"];
     [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:imageURL options:SDWebImageDownloaderProgressiveLoad progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, BOOL finished) {
         if (image && data && !error && finished) {
             [expectation fulfill];
