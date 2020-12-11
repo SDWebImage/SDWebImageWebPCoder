@@ -13,6 +13,19 @@
 #import <SDWebImageWebPCoder/SDWebImageWebPCoderDefine.h>
 #import <Expecta/Expecta.h>
 #import <objc/runtime.h>
+#if __has_include("webp/decode.h") && __has_include("webp/encode.h") && __has_include("webp/demux.h") && __has_include("webp/mux.h")
+#import "webp/decode.h"
+#import "webp/encode.h"
+#import "webp/demux.h"
+#import "webp/mux.h"
+#elif __has_include(<libwebp/decode.h>) && __has_include(<libwebp/encode.h>) && __has_include(<libwebp/demux.h>) && __has_include(<libwebp/mux.h>)
+#import <libwebp/decode.h>
+#import <libwebp/encode.h>
+#import <libwebp/demux.h>
+#import <libwebp/mux.h>
+#else
+@import libwebp;
+#endif
 
 const int64_t kAsyncTestTimeout = 5;
 
@@ -29,6 +42,12 @@ const int64_t kAsyncTestTimeout = 5;
 @interface SDWebPCoderFrame : NSObject
 @property (nonatomic, assign) NSUInteger index; // Frame index (zero based)
 @property (nonatomic, assign) NSUInteger blendFromIndex; // The nearest previous frame index which blend mode is WEBP_MUX_BLEND
+@end
+
+@interface SDImageWebPCoder ()
+- (void) updateWebPOptionsToConfig:(WebPConfig * _Nonnull)config
+                       maxFileSize:(NSUInteger)maxFileSize
+                           options:(nullable SDImageCoderOptions *)options;
 @end
 
 @implementation SDWebImageWebPCoderTests
