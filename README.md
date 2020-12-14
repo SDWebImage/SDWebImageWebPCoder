@@ -212,6 +212,30 @@ let thumbnailWebpData = SDImageWebPCoder.shared.encodedData(with: image, format:
 
 See more documentation in [SDWebImage Wiki - Coders](https://github.com/SDWebImage/SDWebImage/wiki/Advanced-Usage#custom-coder-420)
 
+### Advanced WebP codec options (0.8+)
+
+The WebP codec [libwebp](https://developers.google.com/speed/webp/docs/api) we use, supports some advanced control options for encoding/decoding. You can pass them to libwebp by using the wrapper top level API:
+
+```objective-c
+UIImage *image;
+SDImageCoderOptions *options = @{SDImageCoderEncodeWebPMethod: @(0), SDImageCoderEncodeWebPAlphaCompression: @(100)};
+NSData *data = [SDImageWebPCoder.sharedCoder encodedDataWithImage:image format:SDImageFormatWebP options:options];
+// Will translate into:
+// config->method = 0;
+// config->alpha_quality = 100;
+```
+
++ Swift
+
+```swift
+let image: UIImage
+let options = [.encodeWebPMethod: 0, .encodeWebPAlphaCompression: 100]
+let data = SDImageWebPCoder.shared.encodedData(with: image, format: .webP, options: options)
+// Will translate into:
+// config->method = 0;
+// config->alpha_quality = 100;
+```
+
 ## Example
 
 To run the example project, clone the repo, and run `pod install` from the root directory first. Then open `SDWebImageWebPCoder.xcworkspace`.
