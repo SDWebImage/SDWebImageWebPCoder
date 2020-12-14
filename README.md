@@ -216,6 +216,8 @@ See more documentation in [SDWebImage Wiki - Coders](https://github.com/SDWebIma
 
 The WebP codec [libwebp](https://developers.google.com/speed/webp/docs/api) we use, supports some advanced control options for encoding/decoding. You can pass them to libwebp by using the wrapper top level API:
 
++ Objective-C
+
 ```objective-c
 UIImage *image;
 SDImageCoderOptions *options = @{SDImageCoderEncodeWebPMethod: @(0), SDImageCoderEncodeWebPAlphaCompression: @(100)};
