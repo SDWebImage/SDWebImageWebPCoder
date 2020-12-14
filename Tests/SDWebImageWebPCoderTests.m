@@ -10,8 +10,22 @@
 @import XCTest;
 #import <SDWebImage/SDWebImage.h>
 #import <SDWebImageWebPCoder/SDWebImageWebPCoder.h>
+#import <SDWebImageWebPCoder/SDWebImageWebPCoderDefine.h>
 #import <Expecta/Expecta.h>
 #import <objc/runtime.h>
+#if __has_include("webp/decode.h") && __has_include("webp/encode.h") && __has_include("webp/demux.h") && __has_include("webp/mux.h")
+#import "webp/decode.h"
+#import "webp/encode.h"
+#import "webp/demux.h"
+#import "webp/mux.h"
+#elif __has_include(<libwebp/decode.h>) && __has_include(<libwebp/encode.h>) && __has_include(<libwebp/demux.h>) && __has_include(<libwebp/mux.h>)
+#import <libwebp/decode.h>
+#import <libwebp/encode.h>
+#import <libwebp/demux.h>
+#import <libwebp/mux.h>
+#else
+@import libwebp;
+#endif
 
 const int64_t kAsyncTestTimeout = 5;
 
@@ -28,6 +42,12 @@ const int64_t kAsyncTestTimeout = 5;
 @interface SDWebPCoderFrame : NSObject
 @property (nonatomic, assign) NSUInteger index; // Frame index (zero based)
 @property (nonatomic, assign) NSUInteger blendFromIndex; // The nearest previous frame index which blend mode is WEBP_MUX_BLEND
+@end
+
+@interface SDImageWebPCoder ()
+- (void) updateWebPOptionsToConfig:(WebPConfig * _Nonnull)config
+                       maxFileSize:(NSUInteger)maxFileSize
+                           options:(nullable SDImageCoderOptions *)options;
 @end
 
 @implementation SDWebImageWebPCoderTests
@@ -194,6 +214,54 @@ const int64_t kAsyncTestTimeout = 5;
     XCTAssertGreaterThan(dataWithNoLimit.length, dataWithLimit.length);
     XCTAssertGreaterThan(dataWithNoLimit.length, maxFileSize);
     XCTAssertLessThanOrEqual(dataWithLimit.length, maxFileSize);
+}
+
+- (void)testEncodingSettings {
+    WebPConfig config;
+    WebPConfigPreset(&config, WEBP_PRESET_DEFAULT, 0.2);
+
+    SDImageCoderOptions *options = @{ SDImageCoderEncodeWebPMethod: @1,
+                                      SDImageCoderEncodeWebPPass: @2,
+                                      SDImageCoderEncodeWebPPreprocessing: @3,
+                                      SDImageCoderEncodeWebPThreadLevel: @4,
+                                      SDImageCoderEncodeWebPLowMemory: @5,
+                                      SDImageCoderEncodeWebPTargetPSNR: @6,
+                                      SDImageCoderEncodeWebPSegments: @7,
+                                      SDImageCoderEncodeWebPSnsStrength: @8,
+                                      SDImageCoderEncodeWebPFilterStrength: @9,
+                                      SDImageCoderEncodeWebPFilterSharpness: @10,
+                                      SDImageCoderEncodeWebPFilterType: @11,
+                                      SDImageCoderEncodeWebPAutofilter: @12,
+                                      SDImageCoderEncodeWebPAlphaCompression: @13,
+                                      SDImageCoderEncodeWebPAlphaFiltering: @14,
+                                      SDImageCoderEncodeWebPAlphaQuality: @15,
+                                      SDImageCoderEncodeWebPShowCompressed: @16,
+                                      SDImageCoderEncodeWebPPartitions: @17,
+                                      SDImageCoderEncodeWebPPartitionLimit: @18,
+                                      SDImageCoderEncodeWebPUseSharpYuv: @19 };
+
+    [SDImageWebPCoder.sharedCoder updateWebPOptionsToConfig:&config maxFileSize:1200 options:options];
+
+    expect(config.method).to.equal(1);
+    expect(config.pass).to.equal(2);
+    expect(config.preprocessing).to.equal(3);
+    expect(config.thread_level).to.equal(4);
+    expect(config.low_memory).to.equal(5);
+    expect(config.target_PSNR).to.equal(6);
+    expect(config.segments).to.equal(7);
+    expect(config.sns_strength).to.equal(8);
+    expect(config.filter_strength).to.equal(9);
+    expect(config.filter_sharpness).to.equal(10);
+    expect(config.filter_type).to.equal(11);
+    expect(config.autofilter).to.equal(12);
+    expect(config.alpha_compression).to.equal(13);
+    expect(config.alpha_filtering).to.equal(14);
+    expect(config.alpha_quality).to.equal(15);
+    expect(config.show_compressed).to.equal(16);
+    expect(config.partitions).to.equal(17);
+    expect(config.partition_limit).to.equal(18);
+    expect(config.use_sharp_yuv).to.equal(19);
+
 }
 
 @end

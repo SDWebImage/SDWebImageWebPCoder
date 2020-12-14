@@ -23,6 +23,7 @@
 #endif
 
 #import <Accelerate/Accelerate.h>
+#import "SDWebImageWebPCoderDefine.h"
 
 /// Calculate the actual thumnail pixel size
 static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio, CGSize thumbnailSize) {
@@ -617,7 +618,11 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     BOOL encodeFirstFrame = [options[SDImageCoderEncodeFirstFrameOnly] boolValue];
     if (encodeFirstFrame || frames.count == 0) {
         // for static single webp image
-        data = [self sd_encodedWebpDataWithImage:image.CGImage quality:compressionQuality maxPixelSize:maxPixelSize maxFileSize:maxFileSize];
+        data = [self sd_encodedWebpDataWithImage:image.CGImage
+                                         quality:compressionQuality
+                                    maxPixelSize:maxPixelSize
+                                     maxFileSize:maxFileSize
+                                         options:options];
     } else {
         // for animated webp image
         WebPMux *mux = WebPMuxNew();
@@ -626,7 +631,11 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
         }
         for (size_t i = 0; i < frames.count; i++) {
             SDImageFrame *currentFrame = frames[i];
-            NSData *webpData = [self sd_encodedWebpDataWithImage:currentFrame.image.CGImage quality:compressionQuality maxPixelSize:maxPixelSize maxFileSize:maxFileSize];
+            NSData *webpData = [self sd_encodedWebpDataWithImage:currentFrame.image.CGImage
+                                                         quality:compressionQuality
+                                                    maxPixelSize:maxPixelSize
+                                                     maxFileSize:maxFileSize
+                                                         options:options];
             int duration = currentFrame.duration * 1000;
             WebPMuxFrameInfo frame = { .bitstream.bytes = webpData.bytes,
                 .bitstream.size = webpData.length,
@@ -663,7 +672,12 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     return data;
 }
 
-- (nullable NSData *)sd_encodedWebpDataWithImage:(nullable CGImageRef)imageRef quality:(double)quality maxPixelSize:(CGSize)maxPixelSize maxFileSize:(NSUInteger)maxFileSize {
+- (nullable NSData *)sd_encodedWebpDataWithImage:(nullable CGImageRef)imageRef
+                                         quality:(double)quality
+                                    maxPixelSize:(CGSize)maxPixelSize
+                                     maxFileSize:(NSUInteger)maxFileSize
+                                         options:(nullable SDImageCoderOptions *)options
+{
     NSData *webpData;
     if (!imageRef) {
         return nil;
@@ -779,10 +793,7 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
         return nil;
     }
 
-    config.target_size = (int)maxFileSize; // Max filesize for output, 0 means use quality instead
-    config.pass = maxFileSize > 0 ? 6 : 1; // Use 6 passes for file size limited encoding, which is the default value of `cwebp` command line
-    config.thread_level = 1; // Thread encoding for fast
-    config.lossless = 0; // Disable lossless encoding (If we need, can add new Encoding Options in future version)
+    [self updateWebPOptionsToConfig:&config maxFileSize:maxFileSize options:options];
     picture.use_argb = 0; // Lossy encoding use YUV for internel bitstream
     picture.width = (int)width;
     picture.height = (int)height;
@@ -828,6 +839,89 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     WebPMemoryWriterClear(&writer);
     
     return webpData;
+}
+
+- (void) updateWebPOptionsToConfig:(WebPConfig * _Nonnull)config
+                       maxFileSize:(NSUInteger)maxFileSize
+                           options:(nullable SDImageCoderOptions *)options {
+
+    config->target_size = (int)maxFileSize; // Max filesize for output, 0 means use quality instead
+    config->pass = maxFileSize > 0 ? 6 : 1; // Use 6 passes for file size limited encoding, which is the default value of `cwebp` command line
+    config->lossless = 0; // Disable lossless encoding (If we need, can add new Encoding Options in future version)
+
+    if ([options[SDImageCoderEncodeWebPMethod] intValue]) {
+        config->method = [options[SDImageCoderEncodeWebPMethod] intValue];
+    }
+    if ([options[SDImageCoderEncodeWebPPass] intValue]) {
+        config->pass = [options[SDImageCoderEncodeWebPPass] intValue];
+    }
+    if ([options[SDImageCoderEncodeWebPPreprocessing] intValue]) {
+        config->preprocessing = [options[SDImageCoderEncodeWebPPreprocessing] intValue];
+    }
+    if ([options[SDImageCoderEncodeWebPThreadLevel] intValue]) {
+        config->thread_level = [options[SDImageCoderEncodeWebPThreadLevel] intValue];
+    } else {
+        config->thread_level = 1;
+    }
+    if ([options[SDImageCoderEncodeWebPLowMemory] intValue]) {
+        config->low_memory = [options[SDImageCoderEncodeWebPLowMemory] intValue];
+    }
+
+    if ([options[SDImageCoderEncodeWebPTargetPSNR] floatValue]) {
+        config->target_PSNR = [options[SDImageCoderEncodeWebPTargetPSNR] floatValue];
+    }
+
+    if ([options[SDImageCoderEncodeWebPSegments] intValue]) {
+        config->segments = [options[SDImageCoderEncodeWebPSegments] intValue];
+    }
+
+    if ([options[SDImageCoderEncodeWebPSnsStrength] intValue]) {
+        config->sns_strength = [options[SDImageCoderEncodeWebPSnsStrength] intValue];
+    }
+
+    if ([options[SDImageCoderEncodeWebPFilterStrength] intValue]) {
+        config->filter_strength = [options[SDImageCoderEncodeWebPFilterStrength] intValue];
+    }
+
+    if ([options[SDImageCoderEncodeWebPFilterSharpness] intValue]) {
+        config->filter_sharpness = [options[SDImageCoderEncodeWebPFilterSharpness] intValue];
+    }
+
+    if ([options[SDImageCoderEncodeWebPFilterType] intValue]) {
+        config->filter_type = [options[SDImageCoderEncodeWebPFilterType] intValue];
+    }
+
+    if ([options[SDImageCoderEncodeWebPAutofilter] intValue]) {
+        config->autofilter = [options[SDImageCoderEncodeWebPAutofilter] intValue];
+    }
+
+    if ([options[SDImageCoderEncodeWebPAlphaCompression] intValue]) {
+        config->alpha_compression = [options[SDImageCoderEncodeWebPAlphaCompression] intValue];
+    }
+
+    if ([options[SDImageCoderEncodeWebPAlphaFiltering] intValue]) {
+        config->alpha_filtering = [options[SDImageCoderEncodeWebPAlphaFiltering] intValue];
+    }
+
+    if ([options[SDImageCoderEncodeWebPAlphaQuality] intValue]) {
+        config->alpha_quality = [options[SDImageCoderEncodeWebPAlphaQuality] intValue];
+    }
+
+    if ([options[SDImageCoderEncodeWebPShowCompressed] intValue]) {
+        config->show_compressed = [options[SDImageCoderEncodeWebPShowCompressed] intValue];
+    }
+
+    if ([options[SDImageCoderEncodeWebPPartitions] intValue]) {
+        config->partitions = [options[SDImageCoderEncodeWebPPartitions] intValue];
+    }
+
+    if ([options[SDImageCoderEncodeWebPPartitionLimit] intValue]) {
+        config->partition_limit = [options[SDImageCoderEncodeWebPPartitionLimit] intValue];
+    }
+
+    if ([options[SDImageCoderEncodeWebPUseSharpYuv] intValue]) {
+        config->use_sharp_yuv = [options[SDImageCoderEncodeWebPUseSharpYuv] intValue];
+    }
 }
 
 static void FreeImageData(void *info, const void *data, size_t size) {

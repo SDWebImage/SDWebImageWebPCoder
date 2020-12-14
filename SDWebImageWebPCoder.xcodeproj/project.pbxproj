@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		220A623A257EAFB300262720 /* SDWebImageWebPCoderDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = 220A6237257EAFB300262720 /* SDWebImageWebPCoderDefine.m */; };
+		220A623B257EAFB300262720 /* SDWebImageWebPCoderDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = 220A6237257EAFB300262720 /* SDWebImageWebPCoderDefine.m */; };
+		220A623C257EAFB300262720 /* SDWebImageWebPCoderDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = 220A6237257EAFB300262720 /* SDWebImageWebPCoderDefine.m */; };
+		220A623D257EAFB300262720 /* SDWebImageWebPCoderDefine.h in Headers */ = {isa = PBXBuildFile; fileRef = 220A6238257EAFB300262720 /* SDWebImageWebPCoderDefine.h */; };
+		220A623E257EAFB300262720 /* SDWebImageWebPCoderDefine.h in Headers */ = {isa = PBXBuildFile; fileRef = 220A6238257EAFB300262720 /* SDWebImageWebPCoderDefine.h */; };
+		220A623F257EAFB300262720 /* SDWebImageWebPCoderDefine.h in Headers */ = {isa = PBXBuildFile; fileRef = 220A6238257EAFB300262720 /* SDWebImageWebPCoderDefine.h */; };
+		220A6240257EAFB300262720 /* SDWebImageWebPCoderDefine.h in Headers */ = {isa = PBXBuildFile; fileRef = 220A6238257EAFB300262720 /* SDWebImageWebPCoderDefine.h */; };
+		228EA36125825A52005903D9 /* SDWebImageWebPCoderDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = 220A6237257EAFB300262720 /* SDWebImageWebPCoderDefine.m */; };
 		806E77B32136A2E900A316D2 /* UIImage+WebP.m in Sources */ = {isa = PBXBuildFile; fileRef = 806E77AA2136A2E900A316D2 /* UIImage+WebP.m */; };
 		806E77B42136A2E900A316D2 /* SDImageWebPCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 806E77AB2136A2E900A316D2 /* SDImageWebPCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		806E77B62136A2E900A316D2 /* UIImage+WebP.h in Headers */ = {isa = PBXBuildFile; fileRef = 806E77AD2136A2E900A316D2 /* UIImage+WebP.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -38,6 +46,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		220A6237257EAFB300262720 /* SDWebImageWebPCoderDefine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDWebImageWebPCoderDefine.m; sourceTree = "<group>"; };
+		220A6238257EAFB300262720 /* SDWebImageWebPCoderDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDWebImageWebPCoderDefine.h; sourceTree = "<group>"; };
 		28D8AA3D3015E075692FD3E3 /* Pods-SDWebImageWebPCoderTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageWebPCoderTests.debug.xcconfig"; path = "Tests/Pods/Target Support Files/Pods-SDWebImageWebPCoderTests/Pods-SDWebImageWebPCoderTests.debug.xcconfig"; sourceTree = "<group>"; };
 		3217BE7B220547EB003D0310 /* SDWebImageWebPCoder.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = SDWebImageWebPCoder.modulemap; sourceTree = "<group>"; };
 		46F21AD7D1692EBAC4D0FF33 /* Pods_SDWebImageWebPCoderTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SDWebImageWebPCoderTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -146,6 +156,8 @@
 		806E77A92136A2E900A316D2 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				220A6238257EAFB300262720 /* SDWebImageWebPCoderDefine.h */,
+				220A6237257EAFB300262720 /* SDWebImageWebPCoderDefine.m */,
 				806E77AB2136A2E900A316D2 /* SDImageWebPCoder.h */,
 				806E77AE2136A2E900A316D2 /* SDImageWebPCoder.m */,
 				806E77AD2136A2E900A316D2 /* UIImage+WebP.h */,
@@ -228,6 +240,7 @@
 			files = (
 				806E77C72136A7AD00A316D2 /* SDWebImageWebPCoder.h in Headers */,
 				806E77B62136A2E900A316D2 /* UIImage+WebP.h in Headers */,
+				220A623D257EAFB300262720 /* SDWebImageWebPCoderDefine.h in Headers */,
 				806E77B42136A2E900A316D2 /* SDImageWebPCoder.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -238,6 +251,7 @@
 			files = (
 				80BFF2502136BC1500B95470 /* UIImage+WebP.h in Headers */,
 				80BFF24D2136BC0600B95470 /* SDWebImageWebPCoder.h in Headers */,
+				220A623E257EAFB300262720 /* SDWebImageWebPCoderDefine.h in Headers */,
 				80BFF24E2136BC1000B95470 /* SDImageWebPCoder.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -248,6 +262,7 @@
 			files = (
 				80BFF2632136BE2200B95470 /* SDWebImageWebPCoder.h in Headers */,
 				80BFF2612136BE1C00B95470 /* UIImage+WebP.h in Headers */,
+				220A623F257EAFB300262720 /* SDWebImageWebPCoderDefine.h in Headers */,
 				80BFF25F2136BE1700B95470 /* SDImageWebPCoder.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -258,6 +273,7 @@
 			files = (
 				80BFF27F2136BEF200B95470 /* SDWebImageWebPCoder.h in Headers */,
 				80BFF27D2136BEED00B95470 /* UIImage+WebP.h in Headers */,
+				220A6240257EAFB300262720 /* SDWebImageWebPCoderDefine.h in Headers */,
 				80BFF27B2136BEE700B95470 /* SDImageWebPCoder.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -416,6 +432,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				228EA36125825A52005903D9 /* SDWebImageWebPCoderDefine.m in Sources */,
 				806E77B72136A2E900A316D2 /* SDImageWebPCoder.m in Sources */,
 				806E77B32136A2E900A316D2 /* UIImage+WebP.m in Sources */,
 			);
@@ -425,6 +442,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				220A623A257EAFB300262720 /* SDWebImageWebPCoderDefine.m in Sources */,
 				80BFF24F2136BC1300B95470 /* SDImageWebPCoder.m in Sources */,
 				80BFF2512136BC1800B95470 /* UIImage+WebP.m in Sources */,
 			);
@@ -434,6 +452,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				220A623B257EAFB300262720 /* SDWebImageWebPCoderDefine.m in Sources */,
 				80BFF2602136BE1A00B95470 /* SDImageWebPCoder.m in Sources */,
 				80BFF2622136BE1F00B95470 /* UIImage+WebP.m in Sources */,
 			);
@@ -443,6 +462,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				220A623C257EAFB300262720 /* SDWebImageWebPCoderDefine.m in Sources */,
 				80BFF27C2136BEEB00B95470 /* SDImageWebPCoder.m in Sources */,
 				80BFF27E2136BEF000B95470 /* UIImage+WebP.m in Sources */,
 			);
