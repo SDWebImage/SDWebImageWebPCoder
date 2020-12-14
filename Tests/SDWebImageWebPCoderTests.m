@@ -10,7 +10,6 @@
 @import XCTest;
 #import <SDWebImage/SDWebImage.h>
 #import <SDWebImageWebPCoder/SDWebImageWebPCoder.h>
-#import <SDWebImageWebPCoder/SDWebImageWebPCoderDefine.h>
 #import <Expecta/Expecta.h>
 #import <objc/runtime.h>
 #if __has_include("webp/decode.h") && __has_include("webp/encode.h") && __has_include("webp/demux.h") && __has_include("webp/mux.h")
