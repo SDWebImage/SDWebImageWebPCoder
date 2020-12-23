@@ -219,7 +219,7 @@ const int64_t kAsyncTestTimeout = 5;
     WebPConfig config;
     WebPConfigPreset(&config, WEBP_PRESET_DEFAULT, 0.2);
 
-    SDImageCoderOptions *options = @{ SDImageCoderEncodeWebPMethod: @1,
+    SDImageCoderOptions *options = @{ SDImageCoderEncodeWebPMethod: @0,
                                       SDImageCoderEncodeWebPPass: @2,
                                       SDImageCoderEncodeWebPPreprocessing: @3,
                                       SDImageCoderEncodeWebPThreadLevel: @4,
@@ -241,7 +241,7 @@ const int64_t kAsyncTestTimeout = 5;
 
     [SDImageWebPCoder.sharedCoder updateWebPOptionsToConfig:&config maxFileSize:1200 options:options];
 
-    expect(config.method).to.equal(1);
+    expect(config.method).to.equal(0);
     expect(config.pass).to.equal(2);
     expect(config.preprocessing).to.equal(3);
     expect(config.thread_level).to.equal(4);
@@ -260,7 +260,36 @@ const int64_t kAsyncTestTimeout = 5;
     expect(config.partitions).to.equal(17);
     expect(config.partition_limit).to.equal(18);
     expect(config.use_sharp_yuv).to.equal(19);
+}
 
+- (void)testEncodingSettingsDefaultValue {
+    // Ensure that default value is used for values that haven't been defined in options.
+    WebPConfig config;
+    WebPConfigPreset(&config, WEBP_PRESET_DEFAULT, 0.2);
+
+    SDImageCoderOptions *options = @{
+        SDImageCoderEncodeWebPThreadLevel: @4,
+        SDImageCoderEncodeWebPTargetPSNR: @6.9
+    };
+
+    [SDImageWebPCoder.sharedCoder updateWebPOptionsToConfig:&config maxFileSize:1200 options:options];
+
+    expect(config.method).to.equal(4);
+    expect(config.target_PSNR).to.equal(6.9);
+}
+
+- (void)testEncodingSettingsIncorrectType {
+    // Ensure that default value is used if incorrect type of value is given as option.
+    WebPConfig config;
+    WebPConfigPreset(&config, WEBP_PRESET_DEFAULT, 0.2);
+
+    SDImageCoderOptions *options = @{
+        SDImageCoderEncodeWebPMethod: @"Foo"
+    };
+
+    [SDImageWebPCoder.sharedCoder updateWebPOptionsToConfig:&config maxFileSize:1200 options:options];
+
+    expect(config.method).to.equal(4);
 }
 
 @end

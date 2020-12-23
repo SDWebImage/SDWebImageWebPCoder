@@ -884,6 +884,30 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     return webpData;
 }
 
+- (int) getIntValueFor:(SDImageCoderOption) option
+          defaultValue:(int) defaultValue
+               options:(nullable SDImageCoderOptions *)options {
+    id value = [options objectForKey:option];
+    if (value != nil) {
+        if ([value isKindOfClass: [NSNumber class]]) {
+            return [value intValue];
+        }
+    }
+    return defaultValue;
+}
+
+- (float) getFloatValueFor:(SDImageCoderOption) option
+            defaultValue:(float) defaultValue
+                 options:(nullable SDImageCoderOptions *)options {
+    id value = [options objectForKey:option];
+    if (value != nil) {
+        if ([value isKindOfClass: [NSNumber class]]) {
+            return [value floatValue];
+        }
+    }
+    return defaultValue;
+}
+
 - (void) updateWebPOptionsToConfig:(WebPConfig * _Nonnull)config
                        maxFileSize:(NSUInteger)maxFileSize
                            options:(nullable SDImageCoderOptions *)options {
@@ -891,80 +915,26 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     config->target_size = (int)maxFileSize; // Max filesize for output, 0 means use quality instead
     config->pass = maxFileSize > 0 ? 6 : 1; // Use 6 passes for file size limited encoding, which is the default value of `cwebp` command line
     config->lossless = 0; // Disable lossless encoding (If we need, can add new Encoding Options in future version)
-
-    if ([options[SDImageCoderEncodeWebPMethod] intValue]) {
-        config->method = [options[SDImageCoderEncodeWebPMethod] intValue];
-    }
-    if ([options[SDImageCoderEncodeWebPPass] intValue]) {
-        config->pass = [options[SDImageCoderEncodeWebPPass] intValue];
-    }
-    if ([options[SDImageCoderEncodeWebPPreprocessing] intValue]) {
-        config->preprocessing = [options[SDImageCoderEncodeWebPPreprocessing] intValue];
-    }
-    if ([options[SDImageCoderEncodeWebPThreadLevel] intValue]) {
-        config->thread_level = [options[SDImageCoderEncodeWebPThreadLevel] intValue];
-    } else {
-        config->thread_level = 1;
-    }
-    if ([options[SDImageCoderEncodeWebPLowMemory] intValue]) {
-        config->low_memory = [options[SDImageCoderEncodeWebPLowMemory] intValue];
-    }
-
-    if ([options[SDImageCoderEncodeWebPTargetPSNR] floatValue]) {
-        config->target_PSNR = [options[SDImageCoderEncodeWebPTargetPSNR] floatValue];
-    }
-
-    if ([options[SDImageCoderEncodeWebPSegments] intValue]) {
-        config->segments = [options[SDImageCoderEncodeWebPSegments] intValue];
-    }
-
-    if ([options[SDImageCoderEncodeWebPSnsStrength] intValue]) {
-        config->sns_strength = [options[SDImageCoderEncodeWebPSnsStrength] intValue];
-    }
-
-    if ([options[SDImageCoderEncodeWebPFilterStrength] intValue]) {
-        config->filter_strength = [options[SDImageCoderEncodeWebPFilterStrength] intValue];
-    }
-
-    if ([options[SDImageCoderEncodeWebPFilterSharpness] intValue]) {
-        config->filter_sharpness = [options[SDImageCoderEncodeWebPFilterSharpness] intValue];
-    }
-
-    if ([options[SDImageCoderEncodeWebPFilterType] intValue]) {
-        config->filter_type = [options[SDImageCoderEncodeWebPFilterType] intValue];
-    }
-
-    if ([options[SDImageCoderEncodeWebPAutofilter] intValue]) {
-        config->autofilter = [options[SDImageCoderEncodeWebPAutofilter] intValue];
-    }
-
-    if ([options[SDImageCoderEncodeWebPAlphaCompression] intValue]) {
-        config->alpha_compression = [options[SDImageCoderEncodeWebPAlphaCompression] intValue];
-    }
-
-    if ([options[SDImageCoderEncodeWebPAlphaFiltering] intValue]) {
-        config->alpha_filtering = [options[SDImageCoderEncodeWebPAlphaFiltering] intValue];
-    }
-
-    if ([options[SDImageCoderEncodeWebPAlphaQuality] intValue]) {
-        config->alpha_quality = [options[SDImageCoderEncodeWebPAlphaQuality] intValue];
-    }
-
-    if ([options[SDImageCoderEncodeWebPShowCompressed] intValue]) {
-        config->show_compressed = [options[SDImageCoderEncodeWebPShowCompressed] intValue];
-    }
-
-    if ([options[SDImageCoderEncodeWebPPartitions] intValue]) {
-        config->partitions = [options[SDImageCoderEncodeWebPPartitions] intValue];
-    }
-
-    if ([options[SDImageCoderEncodeWebPPartitionLimit] intValue]) {
-        config->partition_limit = [options[SDImageCoderEncodeWebPPartitionLimit] intValue];
-    }
-
-    if ([options[SDImageCoderEncodeWebPUseSharpYuv] intValue]) {
-        config->use_sharp_yuv = [options[SDImageCoderEncodeWebPUseSharpYuv] intValue];
-    }
+    
+    config->method = [self getIntValueFor: SDImageCoderEncodeWebPMethod defaultValue: config->method options:options];
+    config->pass = [self getIntValueFor: SDImageCoderEncodeWebPPass defaultValue: config->pass options:options];
+    config->preprocessing = [self getIntValueFor: SDImageCoderEncodeWebPPreprocessing defaultValue: config->preprocessing options:options];
+    config->thread_level = [self getIntValueFor: SDImageCoderEncodeWebPThreadLevel defaultValue: 1 options:options];
+    config->low_memory = [self getIntValueFor: SDImageCoderEncodeWebPLowMemory defaultValue: config->low_memory options:options];
+    config->target_PSNR = [self getFloatValueFor: SDImageCoderEncodeWebPTargetPSNR defaultValue: config->target_PSNR options:options];
+    config->segments = [self getIntValueFor: SDImageCoderEncodeWebPSegments defaultValue: config->segments options:options];
+    config->sns_strength = [self getIntValueFor: SDImageCoderEncodeWebPSnsStrength defaultValue: config->sns_strength options:options];
+    config->filter_strength = [self getIntValueFor: SDImageCoderEncodeWebPFilterStrength defaultValue: config->filter_strength options:options];
+    config->filter_sharpness = [self getIntValueFor: SDImageCoderEncodeWebPFilterSharpness defaultValue: config->filter_sharpness options:options];
+    config->filter_type = [self getIntValueFor: SDImageCoderEncodeWebPFilterType defaultValue: config->filter_type options:options];
+    config->autofilter = [self getIntValueFor: SDImageCoderEncodeWebPAutofilter defaultValue: config->autofilter options:options];
+    config->alpha_compression = [self getIntValueFor: SDImageCoderEncodeWebPAlphaCompression defaultValue: config->alpha_compression options:options];
+    config->alpha_filtering = [self getIntValueFor: SDImageCoderEncodeWebPAlphaFiltering defaultValue: config->alpha_filtering options:options];
+    config->alpha_quality = [self getIntValueFor: SDImageCoderEncodeWebPAlphaQuality defaultValue: config->alpha_quality options:options];
+    config->show_compressed = [self getIntValueFor: SDImageCoderEncodeWebPShowCompressed defaultValue: config->show_compressed options:options];
+    config->partitions = [self getIntValueFor: SDImageCoderEncodeWebPPartitions defaultValue: config->partitions options:options];
+    config->partition_limit = [self getIntValueFor: SDImageCoderEncodeWebPPartitionLimit defaultValue: config->partition_limit options:options];
+    config->use_sharp_yuv = [self getIntValueFor: SDImageCoderEncodeWebPUseSharpYuv defaultValue: config->use_sharp_yuv options:options];
 }
 
 static void FreeImageData(void *info, const void *data, size_t size) {
