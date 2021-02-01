@@ -736,6 +736,9 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     }
     
     size_t bytesPerRow = CGImageGetBytesPerRow(imageRef);
+    size_t bitsPerComponent = CGImageGetBitsPerComponent(imageRef);
+    size_t bitsPerPixel = CGImageGetBitsPerPixel(imageRef);
+    size_t components = bitsPerPixel / bitsPerComponent;
     CGBitmapInfo bitmapInfo = CGImageGetBitmapInfo(imageRef);
     CGImageAlphaInfo alphaInfo = bitmapInfo & kCGBitmapAlphaInfoMask;
     CGBitmapInfo byteOrderInfo = bitmapInfo & kCGBitmapByteOrderMask;
@@ -766,7 +769,9 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     
     uint8_t *rgba = NULL; // RGBA Buffer managed by CFData, don't call `free` on it, instead call `CFRelease` on `dataRef`
     // We could not assume that input CGImage's color mode is always RGB888/RGBA8888. Convert all other cases to target color mode using vImage
-    if (byteOrderNormal && ((alphaInfo == kCGImageAlphaNone) || (alphaInfo == kCGImageAlphaLast))) {
+    BOOL isRGB888 = byteOrderNormal && alphaInfo == kCGImageAlphaNone && components == 3;
+    BOOL isRGBA8888 = byteOrderNormal && alphaInfo == kCGImageAlphaLast && components == 4;
+    if (isRGB888 || isRGBA8888) {
         // If the input CGImage is already RGB888/RGBA8888
         rgba = (uint8_t *)CFDataGetBytePtr(dataRef);
     } else {
@@ -775,8 +780,8 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
         vImage_Error error = kvImageNoError;
         
         vImage_CGImageFormat srcFormat = {
-            .bitsPerComponent = (uint32_t)CGImageGetBitsPerComponent(imageRef),
-            .bitsPerPixel = (uint32_t)CGImageGetBitsPerPixel(imageRef),
+            .bitsPerComponent = (uint32_t)bitsPerComponent,
+            .bitsPerPixel = (uint32_t)bitsPerPixel,
             .colorSpace = CGImageGetColorSpace(imageRef),
             .bitmapInfo = bitmapInfo
         };
