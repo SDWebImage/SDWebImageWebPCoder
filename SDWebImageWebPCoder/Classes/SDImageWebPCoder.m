@@ -766,11 +766,14 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     if (!dataRef) {
         return nil;
     }
+    // Check colorSpace is RGB/RGBA
+    CGColorSpaceRef colorSpace = CGImageGetColorSpace(imageRef);
+    BOOL isRGB = CGColorSpaceGetModel(colorSpace) == kCGColorSpaceModelRGB;
     
     uint8_t *rgba = NULL; // RGBA Buffer managed by CFData, don't call `free` on it, instead call `CFRelease` on `dataRef`
     // We could not assume that input CGImage's color mode is always RGB888/RGBA8888. Convert all other cases to target color mode using vImage
-    BOOL isRGB888 = byteOrderNormal && alphaInfo == kCGImageAlphaNone && components == 3;
-    BOOL isRGBA8888 = byteOrderNormal && alphaInfo == kCGImageAlphaLast && components == 4;
+    BOOL isRGB888 = isRGB && byteOrderNormal && alphaInfo == kCGImageAlphaNone && components == 3;
+    BOOL isRGBA8888 = isRGB && byteOrderNormal && alphaInfo == kCGImageAlphaLast && components == 4;
     if (isRGB888 || isRGBA8888) {
         // If the input CGImage is already RGB888/RGBA8888
         rgba = (uint8_t *)CFDataGetBytePtr(dataRef);
@@ -782,7 +785,7 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
         vImage_CGImageFormat srcFormat = {
             .bitsPerComponent = (uint32_t)bitsPerComponent,
             .bitsPerPixel = (uint32_t)bitsPerPixel,
-            .colorSpace = CGImageGetColorSpace(imageRef),
+            .colorSpace = colorSpace,
             .bitmapInfo = bitmapInfo
         };
         vImage_CGImageFormat destFormat = {
