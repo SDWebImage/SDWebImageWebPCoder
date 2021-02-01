@@ -786,7 +786,8 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
             .bitsPerComponent = (uint32_t)bitsPerComponent,
             .bitsPerPixel = (uint32_t)bitsPerPixel,
             .colorSpace = colorSpace,
-            .bitmapInfo = bitmapInfo
+            .bitmapInfo = bitmapInfo,
+            .renderingIntent = CGImageGetRenderingIntent(imageRef)
         };
         vImage_CGImageFormat destFormat = {
             .bitsPerComponent = 8,
@@ -801,14 +802,15 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
             return nil;
         }
         
-        vImage_Buffer src = {
-            .data = (uint8_t *)CFDataGetBytePtr(dataRef),
-            .width = width,
-            .height = height,
-            .rowBytes = bytesPerRow
-        };
-        vImage_Buffer dest;
+        vImage_Buffer src;
+        error = vImageBuffer_InitWithCGImage(&src, &srcFormat, nil, imageRef, kvImageNoFlags);
+        if (error != kvImageNoError) {
+            vImageConverter_Release(convertor);
+            CFRelease(dataRef);
+            return nil;
+        }
         
+        vImage_Buffer dest;
         error = vImageBuffer_Init(&dest, height, width, destFormat.bitsPerPixel, kvImageNoFlags);
         if (error != kvImageNoError) {
             vImageConverter_Release(convertor);
