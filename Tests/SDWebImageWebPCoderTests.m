@@ -292,6 +292,35 @@ const int64_t kAsyncTestTimeout = 5;
     expect(config.method).to.equal(4);
 }
 
+
+- (void)testEncodingGrayscaleImage {
+    NSURL *grayscaleImageURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestImageGrayscale" withExtension:@"jpg"];
+    NSData *grayscaleImageData = [NSData dataWithContentsOfURL:grayscaleImageURL];
+    UIImage *grayscaleImage = [[UIImage alloc] initWithData:grayscaleImageData];
+    expect(grayscaleImage).notTo.beNil();
+    
+    NSData *webpData = [SDImageWebPCoder.sharedCoder encodedDataWithImage:grayscaleImage format:SDImageFormatWebP options:nil];
+    expect(webpData).notTo.beNil();
+    
+    UIImage *decodedImage = [UIImage sd_imageWithData:webpData];
+    expect(decodedImage).notTo.beNil();
+    
+    // Sample to verify that encoded WebP image's color is correct.
+    // The wrong case before bugfix is that each column color will repeats 3 times.
+    CGPoint point1 = CGPointMake(271, 764);
+    CGPoint point2 = CGPointMake(round(point1.x + decodedImage.size.width / 3), point1.y);
+    UIColor *color1 = [decodedImage sd_colorAtPoint:point1];
+    UIColor *color2 = [decodedImage sd_colorAtPoint:point2];
+    CGFloat r1, r2;
+    CGFloat g1, g2;
+    CGFloat b1, b2;
+    [color1 getRed:&r1 green:&g1 blue:&b1 alpha:nil];
+    [color2 getRed:&r2 green:&g2 blue:&b2 alpha:nil];
+    expect(255 * r1).notTo.equal(255 * r2);
+    expect(255 * g1).notTo.equal(255 * g2);
+    expect(255 * b1).notTo.equal(255 * b2);
+}
+
 @end
 
 @implementation SDWebImageWebPCoderTests (Helpers)
