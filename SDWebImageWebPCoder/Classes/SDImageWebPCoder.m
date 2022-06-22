@@ -68,38 +68,6 @@ else OSSpinLockUnlock(&lock##_deprecated);
 #endif
 #endif
 
-/// Calculate the actual thumnail pixel size
-static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio, CGSize thumbnailSize) {
-    CGFloat width = fullSize.width;
-    CGFloat height = fullSize.height;
-    CGFloat resultWidth;
-    CGFloat resultHeight;
-    
-    if (width == 0 || height == 0 || thumbnailSize.width == 0 || thumbnailSize.height == 0 || (width <= thumbnailSize.width && height <= thumbnailSize.height)) {
-        // Full Pixel
-        resultWidth = width;
-        resultHeight = height;
-    } else {
-        // Thumbnail
-        if (preserveAspectRatio) {
-            CGFloat pixelRatio = width / height;
-            CGFloat thumbnailRatio = thumbnailSize.width / thumbnailSize.height;
-            if (pixelRatio > thumbnailRatio) {
-                resultWidth = thumbnailSize.width;
-                resultHeight = ceil(thumbnailSize.width / pixelRatio);
-            } else {
-                resultHeight = thumbnailSize.height;
-                resultWidth = ceil(thumbnailSize.height * pixelRatio);
-            }
-        } else {
-            resultWidth = thumbnailSize.width;
-            resultHeight = thumbnailSize.height;
-        }
-    }
-    
-    return CGSizeMake(resultWidth, resultHeight);
-}
-
 @interface SDWebPCoderFrame : NSObject
 
 @property (nonatomic, assign) NSUInteger index; // Frame index (zero based)
@@ -231,7 +199,7 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     int canvasWidth = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_WIDTH);
     int canvasHeight = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_HEIGHT);
     // Check whether we need to use thumbnail
-    CGSize scaledSize = SDCalculateThumbnailSize(CGSizeMake(canvasWidth, canvasHeight), preserveAspectRatio, thumbnailSize);
+    CGSize scaledSize = [SDImageCoderHelper scaledSizeWithImageSize:CGSizeMake(canvasWidth, canvasHeight) scaleSize:thumbnailSize preserveAspectRatio:preserveAspectRatio shouldScaleUp:NO];
     
     if (!hasAnimation || decodeFirstFrame) {
         // first frame for animated webp image
@@ -437,7 +405,7 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
                 scale = 1;
             }
         }
-        CGSize scaledSize = SDCalculateThumbnailSize(CGSizeMake(width, height), _preserveAspectRatio, _thumbnailSize);
+        CGSize scaledSize = [SDImageCoderHelper scaledSizeWithImageSize:CGSizeMake(width, height) scaleSize:_thumbnailSize preserveAspectRatio:_preserveAspectRatio shouldScaleUp:NO];
         // Check whether we need to use thumbnail
         if (!CGSizeEqualToSize(CGSizeMake(width, height), scaledSize)) {
             CGImageRef scaledImageRef = [SDImageCoderHelper CGImageCreateScaled:newImageRef size:scaledSize];
@@ -860,8 +828,8 @@ static CGSize SDCalculateThumbnailSize(CGSize fullSize, BOOL preserveAspectRatio
     }
     
     // Check if need to scale pixel size
-    if (maxPixelSize.width > 0 && maxPixelSize.height > 0 && (width > maxPixelSize.width || height > maxPixelSize.height)) {
-        CGSize scaledSize = SDCalculateThumbnailSize(CGSizeMake(width, height), YES, maxPixelSize);
+    CGSize scaledSize = [SDImageCoderHelper scaledSizeWithImageSize:CGSizeMake(width, height) scaleSize:maxPixelSize preserveAspectRatio:YES shouldScaleUp:NO];
+    if (!CGSizeEqualToSize(scaledSize, CGSizeMake(width, height))) {
         result = WebPPictureRescale(&picture, scaledSize.width, scaledSize.height);
         if (!result) {
             WebPMemoryWriterClear(&writer);
@@ -1132,10 +1100,10 @@ static float GetFloatValueForKey(NSDictionary * _Nonnull dictionary, NSString * 
             }
             _canvas = canvas;
         }
-        CGSize scaledSize = SDCalculateThumbnailSize(CGSizeMake(_canvasWidth, _canvasHeight), _preserveAspectRatio, _thumbnailSize);
+        CGSize scaledSize = [SDImageCoderHelper scaledSizeWithImageSize:CGSizeMake(_canvasWidth, _canvasHeight) scaleSize:_thumbnailSize preserveAspectRatio:_preserveAspectRatio shouldScaleUp:NO];
         imageRef = [self sd_drawnWebpImageWithCanvas:_canvas iterator:iter colorSpace:_colorSpace scaledSize:scaledSize];
     } else {
-        CGSize scaledSize = SDCalculateThumbnailSize(CGSizeMake(iter.width, iter.height), _preserveAspectRatio, _thumbnailSize);
+        CGSize scaledSize = [SDImageCoderHelper scaledSizeWithImageSize:CGSizeMake(iter.width, iter.height) scaleSize:_thumbnailSize preserveAspectRatio:_preserveAspectRatio shouldScaleUp:NO];
         imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:_colorSpace scaledSize:scaledSize];
     }
     if (!imageRef) {
@@ -1213,7 +1181,7 @@ static float GetFloatValueForKey(NSDictionary * _Nonnull dictionary, NSString * 
     
     // Now the canvas is ready, which respects of dispose method behavior. Just do normal decoding and produce image.
     // Check whether we need to use thumbnail
-    CGSize scaledSize = SDCalculateThumbnailSize(CGSizeMake(_canvasWidth, _canvasHeight), _preserveAspectRatio, _thumbnailSize);
+    CGSize scaledSize = [SDImageCoderHelper scaledSizeWithImageSize:CGSizeMake(_canvasWidth, _canvasHeight) scaleSize:_thumbnailSize preserveAspectRatio:_preserveAspectRatio shouldScaleUp:NO];
     CGImageRef imageRef = [self sd_drawnWebpImageWithCanvas:_canvas iterator:iter colorSpace:_colorSpace scaledSize:scaledSize];
     if (!imageRef) {
         return nil;
