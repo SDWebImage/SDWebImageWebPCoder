@@ -8,6 +8,7 @@ target 'SDWebImageWebPCoderExample' do
   platform :ios, '9.0'
   project example_project_path
   pod 'SDWebImageWebPCoder', :path => './'
+  pod 'SDWebImage', :path => '../SDWebImage'
 end
 
 target 'SDWebImageWebPCoderTests' do
@@ -15,4 +16,5 @@ target 'SDWebImageWebPCoderTests' do
   project test_project_path
   pod 'Expecta'
   pod 'SDWebImageWebPCoder', :path => './'
+  pod 'SDWebImage', :path => '../SDWebImage'
 end
