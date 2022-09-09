@@ -331,11 +331,10 @@ else OSSpinLockUnlock(&lock##_deprecated);
     webpData.size = _imageData.length;
     WebPDemuxState state;
     _demux = WebPDemuxPartial(&webpData, &state);
-    SD_UNLOCK(_lock);
-    
     if (_demux && state != WEBP_DEMUX_PARSE_ERROR) {
         [self scanAndCheckFramesValidWithDemuxer:_demux];
     }
+    SD_UNLOCK(_lock);
 }
 
 - (UIImage *)incrementalDecodedImageWithOptions:(SDImageCoderOptions *)options {
@@ -986,7 +985,6 @@ static float GetFloatValueForKey(NSDictionary * _Nonnull dictionary, NSString * 
     _hasAlpha = hasAlpha;
     _canvasWidth = canvasWidth;
     _canvasHeight = canvasHeight;
-    _frameCount = frameCount;
     _loopCount = loopCount;
     
     // If static WebP, does not need to parse the frame blend index
@@ -1032,8 +1030,10 @@ static float GetFloatValueForKey(NSDictionary * _Nonnull dictionary, NSString * 
     WebPDemuxReleaseIterator(&iter);
     
     if (frames.count != frameCount) {
+        // frames not match, do not override current value
         return NO;
     }
+    _frameCount = frameCount;
     _frames = [frames copy];
     
     return YES;
@@ -1052,27 +1052,57 @@ static float GetFloatValueForKey(NSDictionary * _Nonnull dictionary, NSString * 
 }
 
 - (NSTimeInterval)animatedImageDurationAtIndex:(NSUInteger)index {
-    if (index >= _frameCount) {
-        return 0;
+    NSTimeInterval duration;
+    // Incremental Animation decoding may update frames when new bytes available
+    // Which should use lock to ensure frame count and frames match, ensure atomic logic
+    if (_idec != NULL) {
+        SD_LOCK(_lock);
+        if (index >= _frames.count) {
+            SD_UNLOCK(_lock);
+            return 0;
+        }
+        duration = _frames[index].duration;
+        SD_UNLOCK(_lock);
+    } else {
+        if (index >= _frames.count) {
+            return 0;
+        }
+        duration = _frames[index].duration;
     }
-    if (_frameCount <= 1) {
-        return 0;
-    }
-    return _frames[index].duration;
+    return duration;
 }
 
 - (UIImage *)animatedImageFrameAtIndex:(NSUInteger)index {
     UIImage *image;
-    if (index >= _frameCount) {
-        return nil;
-    }
-    SD_LOCK(_lock);
-    if (_frameCount <= 1) {
-        image = [self safeStaticImageFrame];
+    // Incremental Animation decoding may update frames when new bytes available
+    // Which should use lock to ensure frame count and frames match, ensure atomic logic
+    if (_idec != NULL) {
+        SD_LOCK(_lock);
+        if (index >= _frames.count) {
+            SD_UNLOCK(_lock);
+            return nil;
+        }
+        if (_frames.count <= 1) {
+            image = [self safeStaticImageFrame];
+        } else {
+            image = [self safeAnimatedImageFrameAtIndex:index];
+        }
+        SD_UNLOCK(_lock);
     } else {
-        image = [self safeAnimatedImageFrameAtIndex:index];
+        // Animation Decoding need a lock on the canvas (which is shared), but the _frames is immutable and no lock needed
+        if (index >= _frames.count) {
+            return nil;
+        }
+        if (_frames.count <= 1) {
+            SD_LOCK(_lock);
+            image = [self safeStaticImageFrame];
+            SD_UNLOCK(_lock);
+        } else {
+            SD_LOCK(_lock);
+            image = [self safeAnimatedImageFrameAtIndex:index];
+            SD_UNLOCK(_lock);
+        }
     }
-    SD_UNLOCK(_lock);
     return image;
 }
 
