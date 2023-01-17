@@ -156,7 +156,7 @@ let image = SDImageWebPCoder.shared.decodedImage(with: data, options: nil)
 // WebP thumbnail image decoding
 NSData *webpData;
 CGSize thumbnailSize = CGSizeMake(300, 300);
-UIImage *thumbnailImage = [[SDImageWebPCoder sharedCoder] decodedImageWithData:webpData options:@{SDImageCoderDecodeThumbnailPixelSize : @(thumbnailSize}];
+UIImage *thumbnailImage = [[SDImageWebPCoder sharedCoder] decodedImageWithData:webpData options:@{SDImageCoderDecodeThumbnailPixelSize : @(thumbnailSize)}];
 ```
 
 + Swift
@@ -205,7 +205,7 @@ let limitedWebpData = SDImageWebPCoder.shared.encodedData(with: image, format: .
 ```objective-c
 // WebP image thumbnail encoding
 UIImage *image;
-NSData *thumbnailWebpData = [[SDImageWebPCoder sharedCoder] encodedDataWithImage:image format:SDImageFormatWebP options:@{SDImageCoderEncodeMaxPixelSize : @(CGSizeMake(200, 200)}]; // v0.6.1 feature, encoding max pixel size
+NSData *thumbnailWebpData = [[SDImageWebPCoder sharedCoder] encodedDataWithImage:image format:SDImageFormatWebP options:@{SDImageCoderEncodeMaxPixelSize : @(CGSizeMake(200, 200))}]; // v0.6.1 feature, encoding max pixel size
 ```
 
 + Swift
@@ -237,7 +237,7 @@ NSData *awebpData = [[SDImageWebPCoder sharedCoder] encodedDataWithFrames:frames
 ```swift
 // Animated encoding
 var frames: [SDImageFrame] = []
-for i in [0..<images.count] {
+for i in 0..<images.count {
     let frame = SDImageFrame(image: images[i], duration: 0.1)
     frames.append(frame)
 }
