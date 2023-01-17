@@ -595,6 +595,24 @@ else OSSpinLockUnlock(&lock##_deprecated);
     if (!image) {
         return nil;
     }
+    NSArray<SDImageFrame *> *frames = [SDImageCoderHelper framesFromAnimatedImage:image];
+    if (!frames || frames.count == 0) {
+        SDImageFrame *frame = [SDImageFrame frameWithImage:image duration:0];
+        frames = @[frame];
+    }
+    return [self encodedDataWithFrames:frames loopCount:image.sd_imageLoopCount format:format options:options];
+}
+
+- (NSData *)encodedDataWithFrames:(NSArray<SDImageFrame *> *)frames loopCount:(NSUInteger)loopCount format:(SDImageFormat)format options:(SDImageCoderOptions *)options {
+    UIImage *image = frames.firstObject.image; // Primary image
+    if (!image) {
+        return nil;
+    }
+    CGImageRef imageRef = image.CGImage;
+    if (!imageRef) {
+        // Earily return, supports CGImage only
+        return nil;
+    }
     
     NSData *data;
     
@@ -615,12 +633,11 @@ else OSSpinLockUnlock(&lock##_deprecated);
     if (options[SDImageCoderEncodeMaxFileSize]) {
         maxFileSize = [options[SDImageCoderEncodeMaxFileSize] unsignedIntegerValue];
     }
-    NSArray<SDImageFrame *> *frames = [SDImageCoderHelper framesFromAnimatedImage:image];
     
     BOOL encodeFirstFrame = [options[SDImageCoderEncodeFirstFrameOnly] boolValue];
-    if (encodeFirstFrame || frames.count == 0) {
+    if (encodeFirstFrame || frames.count <= 1) {
         // for static single webp image
-        data = [self sd_encodedWebpDataWithImage:image.CGImage
+        data = [self sd_encodedWebpDataWithImage:imageRef
                                          quality:compressionQuality
                                     maxPixelSize:maxPixelSize
                                      maxFileSize:maxFileSize
@@ -652,9 +669,8 @@ else OSSpinLockUnlock(&lock##_deprecated);
             }
         }
         
-        int loopCount = (int)image.sd_imageLoopCount;
         WebPMuxAnimParams params = { .bgcolor = 0,
-            .loop_count = loopCount
+            .loop_count = (int)loopCount
         };
         if (WebPMuxSetAnimationParams(mux, &params) != WEBP_MUX_OK) {
             WebPMuxDelete(mux);
