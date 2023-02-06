@@ -307,8 +307,7 @@ else OSSpinLockUnlock(&lock##_deprecated);
     _finished = finished;
     // check whether we can detect Animated WebP or Static WebP, they need different codec (Demuxer or IDecoder)
     if (!_hasAnimation) {
-        _imageData = [data copy];
-        VP8StatusCode status = WebPIUpdate(_idec, _imageData.bytes, _imageData.length);
+        VP8StatusCode status = WebPIUpdate(_idec, data.bytes, data.length);
         // For Static WebP, all things done.
         // For Animated WebP (currently use `VP8_STATUS_UNSUPPORTED_FEATURE` to check), continue to create demuxer
         if (status != VP8_STATUS_UNSUPPORTED_FEATURE) {
@@ -324,7 +323,7 @@ else OSSpinLockUnlock(&lock##_deprecated);
         WebPDemuxDelete(_demux);
         _demux = NULL;
     }
-    _imageData = [data copy];
+    _imageData = data;
     WebPData webpData;
     WebPDataInit(&webpData);
     webpData.bytes = _imageData.bytes;
