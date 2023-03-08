@@ -106,6 +106,7 @@ else OSSpinLockUnlock(&lock##_deprecated);
     NSUInteger _currentBlendIndex;
     BOOL _preserveAspectRatio;
     CGSize _thumbnailSize;
+    BOOL _lazyDecode;
 }
 
 - (void)dealloc {
@@ -232,7 +233,7 @@ else OSSpinLockUnlock(&lock##_deprecated);
     
     do {
         @autoreleasepool {
-            CGImageRef imageRef = [self sd_drawnWebpImageWithCanvas:canvas iterator:iter colorSpace:colorSpace scaledSize:scaledSize];
+            CGImageRef imageRef = [self sd_drawnWebpImageWithCanvas:canvas iterator:iter colorSpace:colorSpace scaledSize:scaledSize lazyDecode:NO];
             if (!imageRef) {
                 continue;
             }
@@ -448,8 +449,14 @@ else OSSpinLockUnlock(&lock##_deprecated);
     }
 }
 
-- (nullable CGImageRef)sd_drawnWebpImageWithCanvas:(CGContextRef)canvas iterator:(WebPIterator)iter colorSpace:(nonnull CGColorSpaceRef)colorSpaceRef scaledSize:(CGSize)scaledSize CF_RETURNS_RETAINED {
-    CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:colorSpaceRef scaledSize:CGSizeZero];
+- (nullable CGImageRef)sd_drawnWebpImageWithCanvas:(CGContextRef)canvas iterator:(WebPIterator)iter colorSpace:(nonnull CGColorSpaceRef)colorSpaceRef scaledSize:(CGSize)scaledSize lazyDecode:(BOOL)lazyDecode CF_RETURNS_RETAINED {
+    CGSize decodeSize;
+    if (!lazyDecode) {
+        decodeSize = CGSizeZero;
+    } else {
+        decodeSize = scaledSize;
+    }
+    CGImageRef imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:colorSpaceRef scaledSize:decodeSize];
     if (!imageRef) {
         return nil;
     }
@@ -475,15 +482,18 @@ else OSSpinLockUnlock(&lock##_deprecated);
         CGContextClearRect(canvas, imageRect);
     }
     
-    // Check whether we need to use thumbnail
-    if (!CGSizeEqualToSize(CGSizeMake(canvasWidth, canvasHeight), scaledSize)) {
-        // Important: For Animated WebP thumbnail generation, we can not just use a scaled small canvas and draw each thumbnail frame
-        // This works **On Theory**. However, image scale down loss details. Animated WebP use the partial pixels with blend mode / dispose method with offset, to cover previous canvas status
-        // Because of this reason, even each frame contains small zigzag, the final animation contains visible glitch, this is not we want.
-        // So, always create the full pixels canvas (even though this consume more RAM), after drawn on the canvas, re-scale again with the final size
-        CGImageRef scaledImageRef = [SDImageCoderHelper CGImageCreateScaled:newImageRef size:scaledSize];
-        CGImageRelease(newImageRef);
-        newImageRef = scaledImageRef;
+    if (!lazyDecode) {
+        // Check whether we need to use thumbnail
+        if (!CGSizeEqualToSize(CGSizeMake(canvasWidth, canvasHeight), scaledSize)) {
+            // Important: For Animated WebP thumbnail generation, we can not just use a scaled small canvas and draw each thumbnail frame
+            // This works **On Theory**. However, image scale down loss details. Animated WebP use the partial pixels with blend mode / dispose method with offset, to cover previous canvas status
+            // Because of this reason, even each frame contains small zigzag, the final animation contains visible glitch, this is not we want.
+            // So, always create the full pixels canvas (even though this consume more RAM), after drawn on the canvas, re-scale again with the final size
+            CGImageRef scaledImageRef = [SDImageCoderHelper CGImageCreateScaled:newImageRef size:scaledSize];
+            CGImageRelease(newImageRef);
+            newImageRef = scaledImageRef;
+        }
+
     }
     
     return newImageRef;
@@ -510,6 +520,7 @@ else OSSpinLockUnlock(&lock##_deprecated);
     // Use scaling for thumbnail
     if (scaledSize.width != 0 && scaledSize.height != 0) {
         config.options.use_scaling = 1;
+        config.options.no_fancy_upsampling = 1;
         config.options.scaled_width = scaledSize.width;
         config.options.scaled_height = scaledSize.height;
     }
@@ -966,6 +977,12 @@ static float GetFloatValueForKey(NSDictionary * _Nonnull dictionary, NSString * 
             preserveAspectRatio = preserveAspectRatioValue.boolValue;
         }
         _preserveAspectRatio = preserveAspectRatio;
+        BOOL lazyDecode = NO; // Defaults NO for animated image coder
+        NSNumber *lazyDecodeValue = options[SDImageCoderDecodeUseLazyDecoding];
+        if (lazyDecodeValue != nil) {
+            lazyDecode = lazyDecodeValue.boolValue;
+        }
+        _lazyDecode = lazyDecode;
         _scale = scale;
         _demux = demuxer;
         _imageData = data;
@@ -1146,7 +1163,7 @@ static float GetFloatValueForKey(NSDictionary * _Nonnull dictionary, NSString * 
             _canvas = canvas;
         }
         CGSize scaledSize = [SDImageCoderHelper scaledSizeWithImageSize:CGSizeMake(_canvasWidth, _canvasHeight) scaleSize:_thumbnailSize preserveAspectRatio:_preserveAspectRatio shouldScaleUp:NO];
-        imageRef = [self sd_drawnWebpImageWithCanvas:_canvas iterator:iter colorSpace:_colorSpace scaledSize:scaledSize];
+        imageRef = [self sd_drawnWebpImageWithCanvas:_canvas iterator:iter colorSpace:_colorSpace scaledSize:scaledSize lazyDecode:NO];
     } else {
         CGSize scaledSize = [SDImageCoderHelper scaledSizeWithImageSize:CGSizeMake(iter.width, iter.height) scaleSize:_thumbnailSize preserveAspectRatio:_preserveAspectRatio shouldScaleUp:NO];
         imageRef = [self sd_createWebpImageWithData:iter.fragment colorSpace:_colorSpace scaledSize:scaledSize];
@@ -1227,7 +1244,7 @@ static float GetFloatValueForKey(NSDictionary * _Nonnull dictionary, NSString * 
     // Now the canvas is ready, which respects of dispose method behavior. Just do normal decoding and produce image.
     // Check whether we need to use thumbnail
     CGSize scaledSize = [SDImageCoderHelper scaledSizeWithImageSize:CGSizeMake(_canvasWidth, _canvasHeight) scaleSize:_thumbnailSize preserveAspectRatio:_preserveAspectRatio shouldScaleUp:NO];
-    CGImageRef imageRef = [self sd_drawnWebpImageWithCanvas:_canvas iterator:iter colorSpace:_colorSpace scaledSize:scaledSize];
+    CGImageRef imageRef = [self sd_drawnWebpImageWithCanvas:_canvas iterator:iter colorSpace:_colorSpace scaledSize:scaledSize lazyDecode:_lazyDecode];
     if (!imageRef) {
         return nil;
     }
