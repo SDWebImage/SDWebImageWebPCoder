@@ -68,6 +68,14 @@ else OSSpinLockUnlock(&lock##_deprecated);
 #endif
 #endif
 
+static inline CGImageRef __nullable CGBitmapContextCreateScaledImage(cg_nullable CGContextRef canvas, CGSize scaledSize) CF_RETURNS_RETAINED {
+    if (!canvas) return NULL;
+    CGContextSaveGState(canvas);
+    CGContextScaleCTM(canvas, scaledSize.width, scaledSize.height);
+    CGContextRestoreGState(canvas);
+    return CGBitmapContextCreateImage(canvas);
+}
+
 @interface SDWebPCoderFrame : NSObject
 
 @property (nonatomic, assign) NSUInteger index; // Frame index (zero based)
@@ -389,7 +397,14 @@ else OSSpinLockUnlock(&lock##_deprecated);
         
         // Only draw the last_y image height, keep remains transparent, in Core Graphics coordinate system
         CGContextDrawImage(canvas, CGRectMake(0, height - last_y, width, last_y), imageRef);
-        CGImageRef newImageRef = CGBitmapContextCreateImage(canvas);
+        // Check whether we need to use thumbnail
+        CGImageRef newImageRef;
+        CGSize scaledSize = [SDImageCoderHelper scaledSizeWithImageSize:CGSizeMake(width, height) scaleSize:_thumbnailSize preserveAspectRatio:_preserveAspectRatio shouldScaleUp:NO];
+        if (!CGSizeEqualToSize(CGSizeMake(width, height), scaledSize)) {
+            newImageRef = CGBitmapContextCreateScaledImage(canvas, scaledSize);
+        } else {
+            newImageRef = CGBitmapContextCreateImage(canvas);
+        }
         CGImageRelease(imageRef);
         if (!newImageRef) {
             CGContextRelease(canvas);
@@ -402,13 +417,6 @@ else OSSpinLockUnlock(&lock##_deprecated);
             if (scale < 1) {
                 scale = 1;
             }
-        }
-        CGSize scaledSize = [SDImageCoderHelper scaledSizeWithImageSize:CGSizeMake(width, height) scaleSize:_thumbnailSize preserveAspectRatio:_preserveAspectRatio shouldScaleUp:NO];
-        // Check whether we need to use thumbnail
-        if (!CGSizeEqualToSize(CGSizeMake(width, height), scaledSize)) {
-            CGImageRef scaledImageRef = [SDImageCoderHelper CGImageCreateScaled:newImageRef size:scaledSize];
-            CGImageRelease(newImageRef);
-            newImageRef = scaledImageRef;
         }
         
 #if SD_UIKIT || SD_WATCH
@@ -467,23 +475,20 @@ else OSSpinLockUnlock(&lock##_deprecated);
         CGContextClearRect(canvas, imageRect);
     }
     CGContextDrawImage(canvas, imageRect, imageRef);
-    CGImageRef newImageRef = CGBitmapContextCreateImage(canvas);
+    
+    CGImageRef newImageRef;
+    // Check whether we need to use thumbnail
+    if (!CGSizeEqualToSize(CGSizeMake(canvasWidth, canvasHeight), scaledSize)) {
+        // Use CoreGraphics canvas to scale down, no need extra allocation
+        newImageRef = CGBitmapContextCreateScaledImage(canvas, scaledSize);
+    } else {
+        newImageRef = CGBitmapContextCreateImage(canvas);
+    }
     
     CGImageRelease(imageRef);
 
     if (iter.dispose_method == WEBP_MUX_DISPOSE_BACKGROUND) {
         CGContextClearRect(canvas, imageRect);
-    }
-    
-    // Check whether we need to use thumbnail
-    if (!CGSizeEqualToSize(CGSizeMake(canvasWidth, canvasHeight), scaledSize)) {
-        // Important: For Animated WebP thumbnail generation, we can not just use a scaled small canvas and draw each thumbnail frame
-        // This works **On Theory**. However, image scale down loss details. Animated WebP use the partial pixels with blend mode / dispose method with offset, to cover previous canvas status
-        // Because of this reason, even each frame contains small zigzag, the final animation contains visible glitch, this is not we want.
-        // So, always create the full pixels canvas (even though this consume more RAM), after drawn on the canvas, re-scale again with the final size
-        CGImageRef scaledImageRef = [SDImageCoderHelper CGImageCreateScaled:newImageRef size:scaledSize];
-        CGImageRelease(newImageRef);
-        newImageRef = scaledImageRef;
     }
     
     return newImageRef;
