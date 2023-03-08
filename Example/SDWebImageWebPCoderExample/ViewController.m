@@ -37,10 +37,10 @@
     NSURL *staticWebPURL = [NSURL URLWithString:@"http://littlesvr.ca/apng/images/SteamEngine.webp"];
     NSURL *animatedWebPURL = [NSURL URLWithString:@"http://littlesvr.ca/apng/images/SteamEngine.webp?foo=bar"];
     
-    [self.imageView1 sd_setImageWithURL:staticWebPURL placeholderImage:nil options:0 context:@{SDWebImageContextImageThumbnailPixelSize : @(CGSizeMake(300, 300))} progress:nil completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-    }];
-    NSDictionary *decodeOptions = @{SDWebImageContextImageThumbnailPixelSize : @(CGSizeMake(300, 300)), SDImageCoderDecodeUseLazyDecoding: @(YES)}; // <---
-    [self.imageView2 sd_setImageWithURL:animatedWebPURL placeholderImage:nil options:0 context:@{SDWebImageContextImageDecodeOptions : decodeOptions} progress:nil completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+//    [self.imageView1 sd_setImageWithURL:staticWebPURL placeholderImage:nil options:0 context:@{SDWebImageContextImageThumbnailPixelSize : @(CGSizeMake(300, 300))} progress:nil completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+//    }];
+    NSDictionary *decodeOptions = @{SDImageCoderDecodeThumbnailPixelSize : @(CGSizeMake(300, 300)), SDImageCoderDecodeUseLazyDecoding: @(YES)}; // <---
+    [self.imageView2 sd_setImageWithURL:animatedWebPURL placeholderImage:nil options:0 context:@{SDWebImageContextImageDecodeOptions : decodeOptions, SDWebImageContextImageThumbnailPixelSize : @(CGSizeMake(300, 300))} progress:nil completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
     }];
 }
 
