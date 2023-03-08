@@ -782,7 +782,7 @@ static inline CGImageRef __nullable CGBitmapContextCreateScaledImage(cg_nullable
         }
         
         vImage_Buffer src;
-        error = vImageBuffer_InitWithCGImage(&src, &srcFormat, nil, imageRef, kvImageNoFlags);
+        error = vImageBuffer_InitWithCGImage(&src, &srcFormat, nil, imageRef, kvImageNoAllocate);
         if (error != kvImageNoError) {
             vImageConverter_Release(convertor);
             return nil;
@@ -792,7 +792,6 @@ static inline CGImageRef __nullable CGBitmapContextCreateScaledImage(cg_nullable
         error = vImageBuffer_Init(&dest, height, width, destFormat.bitsPerPixel, kvImageNoFlags);
         if (error != kvImageNoError) {
             vImageConverter_Release(convertor);
-            free(src.data);
             return nil;
         }
         
@@ -800,7 +799,6 @@ static inline CGImageRef __nullable CGBitmapContextCreateScaledImage(cg_nullable
         error = vImageConvert_AnyToAny(convertor, &src, &dest, NULL, kvImageNoFlags);
         
         // Free the buffer
-        free(src.data);
         vImageConverter_Release(convertor);
         if (error != kvImageNoError) {
             free(dest.data);
