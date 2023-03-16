@@ -763,7 +763,6 @@ static inline CGContextRef _Nullable CreateWebPCanvas(BOOL hasAlpha, CGSize canv
         !WebPPictureInit(&picture)) {
         // shouldn't happen, except if system installation is broken
         free(dest.data);
-//        CFRelease(dataRef);
         return nil;
     }
 
