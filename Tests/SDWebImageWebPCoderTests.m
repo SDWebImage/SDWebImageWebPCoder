@@ -129,6 +129,9 @@ const int64_t kAsyncTestTimeout = 5;
     XCTestExpectation *expectation = [self expectationWithDescription:@"test SDAnimatedImageView view category"];
     SDAnimatedImageView *imageView = [SDAnimatedImageView new];
     NSURL *testURL = [NSURL URLWithString:@"http://littlesvr.ca/apng/images/SteamEngine.webp"];
+    NSString *key = [SDWebImageManager.sharedManager cacheKeyForURL:testURL];
+    [SDImageCache.sharedImageCache removeImageFromMemoryForKey:key];
+    [SDImageCache.sharedImageCache removeImageFromDiskForKey:key];
     [imageView sd_setImageWithURL:testURL placeholderImage:nil options:SDWebImageProgressiveLoad progress:^(NSInteger receivedSize, NSInteger expectedSize, NSURL * _Nullable targetURL) {
         dispatch_async(dispatch_get_main_queue(), ^{
             UIImage *image = imageView.image;
