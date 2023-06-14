@@ -88,6 +88,20 @@ static inline CGContextRef _Nullable CreateWebPCanvas(BOOL hasAlpha, CGSize canv
     return canvas;
 }
 
+// TODO, share this logic for multiple coders, or do refactory in v6.0 (The coder plugin should provide image information back to Core, like `CGImageSourceCopyPropertiesAtIndex`)
+static inline CGSize SDCalculateScaleDownPixelSize(NSUInteger limitBytes, CGSize originalSize, NSUInteger frameCount, NSUInteger bytesPerPixel) {
+    if (CGSizeEqualToSize(originalSize, CGSizeZero)) return CGSizeMake(1, 1);
+    NSUInteger totalFramePixelSize = limitBytes / bytesPerPixel / (frameCount ?: 1);
+    CGFloat ratio = originalSize.height / originalSize.width;
+    CGFloat width = sqrt(totalFramePixelSize / ratio);
+    CGFloat height = width * ratio;
+    width = MAX(1, floor(width));
+    height = MAX(1, floor(height));
+    CGSize size = CGSizeMake(width, height);
+
+    return size;
+}
+
 @interface SDWebPCoderFrame : NSObject
 
 @property (nonatomic, assign) NSUInteger index; // Frame index (zero based)
@@ -126,6 +140,7 @@ static inline CGContextRef _Nullable CreateWebPCanvas(BOOL hasAlpha, CGSize canv
     NSUInteger _currentBlendIndex;
     BOOL _preserveAspectRatio;
     CGSize _thumbnailSize;
+    BOOL _limitBytes;
 }
 
 - (void)dealloc {
@@ -218,6 +233,24 @@ static inline CGContextRef _Nullable CreateWebPCanvas(BOOL hasAlpha, CGSize canv
     CGColorSpaceRef colorSpace = [self sd_createColorSpaceWithDemuxer:demuxer];
     int canvasWidth = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_WIDTH);
     int canvasHeight = WebPDemuxGetI(demuxer, WEBP_FF_CANVAS_HEIGHT);
+    uint32_t frameCount = WebPDemuxGetI(demuxer, WEBP_FF_FRAME_COUNT);
+    int loopCount = WebPDemuxGetI(demuxer, WEBP_FF_LOOP_COUNT);
+    
+    NSUInteger limitBytes = 0;
+    NSNumber *limitBytesValue = options[SDImageCoderDecodeScaleDownLimitBytes];
+    if (limitBytesValue != nil) {
+        limitBytes = limitBytesValue.unsignedIntegerValue;
+    }
+    // Scale down to limit bytes if need
+    if (limitBytes > 0) {
+        // Hack 32 BitsPerPixel
+        CGSize imageSize = CGSizeMake(canvasWidth, canvasHeight);
+        CGSize framePixelSize = SDCalculateScaleDownPixelSize(limitBytes, imageSize, frameCount, 4);
+        // Override thumbnail size
+        thumbnailSize = framePixelSize;
+        preserveAspectRatio = YES;
+    }
+    
     // Check whether we need to use thumbnail
     CGSize scaledSize = [SDImageCoderHelper scaledSizeWithImageSize:CGSizeMake(canvasWidth, canvasHeight) scaleSize:thumbnailSize preserveAspectRatio:preserveAspectRatio shouldScaleUp:NO];
     
@@ -245,7 +278,6 @@ static inline CGContextRef _Nullable CreateWebPCanvas(BOOL hasAlpha, CGSize canv
         return nil;
     }
     
-    int loopCount = WebPDemuxGetI(demuxer, WEBP_FF_LOOP_COUNT);
     NSMutableArray<SDImageFrame *> *frames = [NSMutableArray array];
     
     do {
@@ -312,6 +344,12 @@ static inline CGContextRef _Nullable CreateWebPCanvas(BOOL hasAlpha, CGSize canv
             preserveAspectRatio = preserveAspectRatioValue.boolValue;
         }
         _preserveAspectRatio = preserveAspectRatio;
+        NSUInteger limitBytes = 0;
+        NSNumber *limitBytesValue = options[SDImageCoderDecodeScaleDownLimitBytes];
+        if (limitBytesValue != nil) {
+            limitBytes = limitBytesValue.unsignedIntegerValue;
+        }
+        _limitBytes = limitBytes;
         _currentBlendIndex = NSNotFound;
         SD_LOCK_INIT(_lock);
     }
@@ -352,6 +390,15 @@ static inline CGContextRef _Nullable CreateWebPCanvas(BOOL hasAlpha, CGSize canv
         [self scanAndCheckFramesValidWithDemuxer:_demux];
     }
     SD_UNLOCK(_lock);
+    // Scale down to limit bytes if need
+    if (_limitBytes > 0) {
+        // Hack 32 BitsPerPixel
+        CGSize imageSize = CGSizeMake(_canvasWidth, _canvasHeight);
+        CGSize framePixelSize = SDCalculateScaleDownPixelSize(_limitBytes, imageSize, _frameCount, 4);
+        // Override thumbnail size
+        _thumbnailSize = framePixelSize;
+        _preserveAspectRatio = YES;
+    }
 }
 
 - (UIImage *)incrementalDecodedImageWithOptions:(SDImageCoderOptions *)options {
@@ -911,6 +958,21 @@ static float GetFloatValueForKey(NSDictionary * _Nonnull dictionary, NSString * 
             preserveAspectRatio = preserveAspectRatioValue.boolValue;
         }
         _preserveAspectRatio = preserveAspectRatio;
+        NSUInteger limitBytes = 0;
+        NSNumber *limitBytesValue = options[SDImageCoderDecodeScaleDownLimitBytes];
+        if (limitBytesValue != nil) {
+            limitBytes = limitBytesValue.unsignedIntegerValue;
+        }
+        _limitBytes = limitBytes;
+        // Scale down to limit bytes if need
+        if (_limitBytes > 0) {
+            // Hack 32 BitsPerPixel
+            CGSize imageSize = CGSizeMake(_canvasWidth, _canvasHeight);
+            CGSize framePixelSize = SDCalculateScaleDownPixelSize(_limitBytes, imageSize, _frameCount, 4);
+            // Override thumbnail size
+            _thumbnailSize = framePixelSize;
+            _preserveAspectRatio = YES;
+        }
         _scale = scale;
         _demux = demuxer;
         _imageData = data;
