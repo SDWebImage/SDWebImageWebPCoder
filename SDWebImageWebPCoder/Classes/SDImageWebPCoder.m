@@ -71,8 +71,8 @@ else OSSpinLockUnlock(&lock##_deprecated);
 /// Used for animated WebP, which need a canvas for decoding (rendering), possible apply a scale transform for thumbnail decoding (avoiding post-rescale using vImage)
 /// See more in #73
 static inline CGContextRef _Nullable CreateWebPCanvas(BOOL hasAlpha, CGSize canvasSize, CGSize thumbnailSize, BOOL preserveAspectRatio) {
-    CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host;
-    bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
+    // From SDWebImage v5.17.0, use runtime detection of bitmap info instead of hardcode.
+    CGBitmapInfo bitmapInfo = [SDImageCoderHelper preferredBitmapInfo:hasAlpha];
     // Check whether we need to use thumbnail
     CGSize scaledSize = [SDImageCoderHelper scaledSizeWithImageSize:CGSizeMake(canvasSize.width, canvasSize.height) scaleSize:thumbnailSize preserveAspectRatio:preserveAspectRatio shouldScaleUp:NO];
     CGContextRef canvas = CGBitmapContextCreate(NULL, scaledSize.width, scaledSize.height, 8, 0, [SDImageCoderHelper colorSpaceGetDeviceRGB], bitmapInfo);
@@ -86,6 +86,89 @@ static inline CGContextRef _Nullable CreateWebPCanvas(BOOL hasAlpha, CGSize canv
         CGContextScaleCTM(canvas, sx, sy);
     }
     return canvas;
+}
+
+WEBP_CSP_MODE ConvertCSPMode(CGBitmapInfo bitmapInfo) {
+    // Get alpha info, byteOrder info
+    CGImageAlphaInfo alphaInfo = bitmapInfo & kCGBitmapAlphaInfoMask;
+    CGBitmapInfo byteOrderInfo = bitmapInfo & kCGBitmapByteOrderMask;
+    BOOL byteOrderNormal = NO;
+    switch (byteOrderInfo) {
+        case kCGBitmapByteOrderDefault: {
+            byteOrderNormal = YES;
+        } break;
+        case kCGBitmapByteOrder32Little: {
+        } break;
+        case kCGBitmapByteOrder32Big: {
+            byteOrderNormal = YES;
+        } break;
+        default: break;
+    }
+    switch (alphaInfo) {
+        case kCGImageAlphaPremultipliedFirst: {
+            if (byteOrderNormal) {
+                // ARGB8888, premultiplied
+                return MODE_Argb;
+            } else {
+                // BGRA8888, premultiplied
+                return MODE_bgrA;
+            }
+        }
+            break;
+        case kCGImageAlphaPremultipliedLast: {
+            if (byteOrderNormal) {
+                // RGBA8888, premultiplied
+                return MODE_rgbA;
+            } else {
+                // ABGR8888, premultiplied
+                // Unsupported!
+                return MODE_LAST;
+            }
+        }
+            break;
+        case kCGImageAlphaNone: {
+            if (byteOrderNormal) {
+                // RGB
+                return MODE_RGB;
+            } else {
+                // BGR
+                return MODE_BGR;
+            }
+        }
+            break;
+        case kCGImageAlphaLast:
+        case kCGImageAlphaNoneSkipLast: {
+            if (byteOrderNormal) {
+                // RGBA or RGBX
+                return MODE_RGBA;
+            } else {
+                // ABGR or XBGR
+                // Unsupported!
+                return MODE_LAST;
+            }
+        }
+            break;
+        case kCGImageAlphaFirst:
+        case kCGImageAlphaNoneSkipFirst: {
+            if (byteOrderNormal) {
+                // ARGB or XRGB
+                return MODE_ARGB;
+            } else {
+                // BGRA or BGRX
+                return MODE_BGRA;
+            }
+        }
+            break;
+        case kCGImageAlphaOnly: {
+            // A
+            // Unsupported
+            return MODE_LAST;
+        }
+            break;
+        default:
+            break;
+    }
+    return MODE_LAST;
 }
 
 // TODO, share this logic for multiple coders, or do refactory in v6.0 (The coder plugin should provide image information back to Core, like `CGImageSourceCopyPropertiesAtIndex`)
@@ -264,6 +347,7 @@ static inline CGSize SDCalculateScaleDownPixelSize(NSUInteger limitBytes, CGSize
         UIImage *firstFrameImage = [[UIImage alloc] initWithCGImage:imageRef scale:scale orientation:kCGImagePropertyOrientationUp];
 #endif
         firstFrameImage.sd_imageFormat = SDImageFormatWebP;
+        firstFrameImage.sd_isDecoded = YES; // We handle byte alignment and alloc bitmap buffer
         CGImageRelease(imageRef);
         WebPDemuxReleaseIterator(&iter);
         WebPDemuxDelete(demuxer);
@@ -317,8 +401,8 @@ static inline CGSize SDCalculateScaleDownPixelSize(NSUInteger limitBytes, CGSize
 - (instancetype)initIncrementalWithOptions:(nullable SDImageCoderOptions *)options {
     self = [super init];
     if (self) {
-        // Progressive images need transparent, so always use premultiplied BGRA
-        _idec = WebPINewRGB(MODE_bgrA, NULL, 0, 0);
+        // Progressive images need transparent, so always use premultiplied RGBA
+        _idec = WebPINewRGB(MODE_rgbA, NULL, 0, 0);
         CGFloat scale = 1;
         NSNumber *scaleFactor = options[SDImageCoderDecodeScaleFactor];
         if (scaleFactor != nil) {
@@ -428,9 +512,10 @@ static inline CGSize SDCalculateScaleDownPixelSize(NSUInteger limitBytes, CGSize
         CGDataProviderRef provider =
         CGDataProviderCreateWithData(NULL, rgba, rgbaSize, NULL);
         CGColorSpaceRef colorSpaceRef = [SDImageCoderHelper colorSpaceGetDeviceRGB];
-        
-        CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host | kCGImageAlphaPremultipliedFirst;
+        // Because _idec use MODE_rgbA
+        CGBitmapInfo bitmapInfo = kCGBitmapByteOrderDefault | kCGImageAlphaPremultipliedLast;
         size_t components = 4;
+        BOOL shouldInterpolate = YES;
         CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
         // Why to use last_y for image height is because of libwebp's bug (https://bugs.chromium.org/p/webp/issues/detail?id=362)
         // It will not keep memory barrier safe on x86 architechure (macOS & iPhone simulator) but on ARM architecture (iPhone & iPad & tv & watch) it works great
@@ -438,7 +523,7 @@ static inline CGSize SDCalculateScaleDownPixelSize(NSUInteger limitBytes, CGSize
         // So this will cause our drawed image looks strange(above is the current part but below is the previous part)
         // We only grab the last_y height and draw the last_y height instead of total height image
         // Besides fix, this can enhance performance since we do not need to create extra bitmap
-        CGImageRef imageRef = CGImageCreate(width, last_y, 8, components * 8, components * width, colorSpaceRef, bitmapInfo, provider, NULL, NO, renderingIntent);
+        CGImageRef imageRef = CGImageCreate(width, last_y, 8, components * 8, components * width, colorSpaceRef, bitmapInfo, provider, NULL, shouldInterpolate, renderingIntent);
         
         CGDataProviderRelease(provider);
         
@@ -546,19 +631,43 @@ static inline CGSize SDCalculateScaleDownPixelSize(NSUInteger limitBytes, CGSize
     }
     
     BOOL hasAlpha = config.input.has_alpha;
-    // iOS prefer BGRA8888 (premultiplied) or BGRX8888 bitmapInfo for screen rendering, which is same as `UIGraphicsBeginImageContext()` or `- [CALayer drawInContext:]`
-    // use this bitmapInfo, combined with right colorspace, even without decode, can still avoid extra CA::Render::copy_image(which marked `Color Copied Images` from Instruments)
-    CGBitmapInfo bitmapInfo = kCGBitmapByteOrder32Host;
-    bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedFirst : kCGImageAlphaNoneSkipFirst;
+    // From SDWebImage v5.17.0, use runtime detection of bitmap info instead of hardcode.
+    CGBitmapInfo bitmapInfo = [SDImageCoderHelper preferredBitmapInfo:hasAlpha];
+    WEBP_CSP_MODE mode = ConvertCSPMode(bitmapInfo);
+    if (mode == MODE_LAST) {
+        NSAssert(NO, @"Unsupported libwebp preferred CGBitmapInfo: %d", bitmapInfo);
+        return nil;
+    }
+    config.output.colorspace = mode;
     config.options.use_threads = 1;
-    config.output.colorspace = MODE_bgrA;
+    
     
     // Use scaling for thumbnail
+    size_t width = config.input.width;
+    size_t height = config.input.height;
     if (scaledSize.width != 0 && scaledSize.height != 0) {
         config.options.use_scaling = 1;
         config.options.scaled_width = scaledSize.width;
         config.options.scaled_height = scaledSize.height;
+        width = scaledSize.width;
+        height = scaledSize.height;
     }
+    
+    // We alloc the buffer and do byte alignment by ourself. libwebp defaults does not byte alignment to `bitsPerPixel`, which cause the CoreAnimation unhappy and always trigger the `CA::Render::copy_image`
+    size_t bitsPerComponent = 8;
+    size_t components = (mode == MODE_RGB || mode == MODE_BGR) ? 3 : 4; // Actually always 4
+    size_t bitsPerPixel = bitsPerComponent * components;
+    // Read: https://github.com/path/FastImageCache#byte-alignment
+    // A properly aligned bytes-per-row value must be a multiple of 8 pixels × bytes per pixel
+    // For a typical ARGB image, the aligned bytes-per-row value is a multiple of 64.
+    size_t alignment = [SDImageCoderHelper preferredByteAlignment];
+    size_t bytesPerRow = SDByteAlign(width * (bitsPerPixel / 8), alignment);
+    
+    void *rgba = WebPMalloc(bytesPerRow * height);
+    config.output.is_external_memory = 1;
+    config.output.u.RGBA.rgba = rgba;
+    config.output.u.RGBA.stride = (int)bytesPerRow;
+    config.output.u.RGBA.size = height * bytesPerRow;
     
     // Decode the WebP image data into a RGBA value array
     if (WebPDecode(webpData.bytes, webpData.size, &config) != VP8_STATUS_OK) {
@@ -568,13 +677,9 @@ static inline CGSize SDCalculateScaleDownPixelSize(NSUInteger limitBytes, CGSize
     // Construct a UIImage from the decoded RGBA value array
     CGDataProviderRef provider =
     CGDataProviderCreateWithData(NULL, config.output.u.RGBA.rgba, config.output.u.RGBA.size, FreeImageData);
-    size_t bitsPerComponent = 8;
-    size_t bitsPerPixel = 32;
-    size_t bytesPerRow = config.output.u.RGBA.stride;
-    size_t width = config.output.width;
-    size_t height = config.output.height;
+    BOOL shouldInterpolate = YES;
     CGColorRenderingIntent renderingIntent = kCGRenderingIntentDefault;
-    CGImageRef imageRef = CGImageCreate(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpaceRef, bitmapInfo, provider, NULL, NO, renderingIntent);
+    CGImageRef imageRef = CGImageCreate(width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, colorSpaceRef, bitmapInfo, provider, NULL, shouldInterpolate, renderingIntent);
     
     CGDataProviderRelease(provider);
     
@@ -756,9 +861,6 @@ static inline CGSize SDCalculateScaleDownPixelSize(NSUInteger limitBytes, CGSize
     }
     
     size_t bytesPerRow = CGImageGetBytesPerRow(imageRef);
-    size_t bitsPerComponent = CGImageGetBitsPerComponent(imageRef);
-    size_t bitsPerPixel = CGImageGetBitsPerPixel(imageRef);
-    size_t components = bitsPerPixel / bitsPerComponent;
     CGBitmapInfo bitmapInfo = CGImageGetBitmapInfo(imageRef);
     CGImageAlphaInfo alphaInfo = bitmapInfo & kCGBitmapAlphaInfoMask;
     CGBitmapInfo byteOrderInfo = bitmapInfo & kCGBitmapByteOrderMask;
@@ -891,7 +993,7 @@ static inline CGSize SDCalculateScaleDownPixelSize(NSUInteger limitBytes, CGSize
 }
 
 static void FreeImageData(void *info, const void *data, size_t size) {
-    free((void *)data);
+    WebPFree((void *)data);
 }
 
 static int GetIntValueForKey(NSDictionary * _Nonnull dictionary, NSString * _Nonnull key, int defaultValue) {
@@ -1236,6 +1338,8 @@ static float GetFloatValueForKey(NSDictionary * _Nonnull dictionary, NSString * 
 #else
     image = [[UIImage alloc] initWithCGImage:imageRef scale:_scale orientation:kCGImagePropertyOrientationUp];
 #endif
+    image.sd_imageFormat = SDImageFormatWebP;
+    image.sd_isDecoded = YES; // We handle byte alignment and alloc bitmap buffer
     CGImageRelease(imageRef);
     
     WebPDemuxReleaseIterator(&iter);
