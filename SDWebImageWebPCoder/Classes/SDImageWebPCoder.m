@@ -347,7 +347,6 @@ static inline CGSize SDCalculateScaleDownPixelSize(NSUInteger limitBytes, CGSize
         UIImage *firstFrameImage = [[UIImage alloc] initWithCGImage:imageRef scale:scale orientation:kCGImagePropertyOrientationUp];
 #endif
         firstFrameImage.sd_imageFormat = SDImageFormatWebP;
-        firstFrameImage.sd_isDecoded = YES; // We handle byte alignment and alloc bitmap buffer
         CGImageRelease(imageRef);
         WebPDemuxReleaseIterator(&iter);
         WebPDemuxDelete(demuxer);
@@ -1339,7 +1338,6 @@ static float GetFloatValueForKey(NSDictionary * _Nonnull dictionary, NSString * 
     image = [[UIImage alloc] initWithCGImage:imageRef scale:_scale orientation:kCGImagePropertyOrientationUp];
 #endif
     image.sd_imageFormat = SDImageFormatWebP;
-    image.sd_isDecoded = YES; // We handle byte alignment and alloc bitmap buffer
     CGImageRelease(imageRef);
     
     WebPDemuxReleaseIterator(&iter);
