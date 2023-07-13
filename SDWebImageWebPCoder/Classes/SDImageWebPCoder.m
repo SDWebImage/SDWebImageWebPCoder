@@ -648,7 +648,6 @@ WEBP_CSP_MODE ConvertCSPMode(CGBitmapInfo bitmapInfo) {
     // For a typical ARGB image, the aligned bytes-per-row value is a multiple of 64.
     size_t alignment = pixelFormat.alignment;
     size_t bytesPerRow = SDByteAlign(width * (bitsPerPixel / 8), alignment);
-    //size_t bytesPerRow = 6688;
     
     void *rgba = WebPMalloc(bytesPerRow * height);
     config.output.is_external_memory = 1;
