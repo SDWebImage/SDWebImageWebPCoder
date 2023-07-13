@@ -218,6 +218,18 @@ const int64_t kAsyncTestTimeout = 5;
     XCTAssertLessThanOrEqual(dataWithLimit.length, maxFileSize);
 }
 
+- (void)testWebPDecodeDoesNotTriggerCACopyImage {
+    NSURL *staticWebPURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestColorspaceStatic" withExtension:@"webp"];
+    NSData *data = [NSData dataWithContentsOfURL:staticWebPURL];
+    UIImage *image = [SDImageWebPCoder.sharedCoder decodedImageWithData:data options:@{SDImageCoderDecodeThumbnailPixelSize: @(CGSizeMake(1023, 680))}]; // 1023 * 4 need aligned to 4096
+    CGImageRef cgImage = [image CGImage];
+    size_t bytesPerRow = CGImageGetBytesPerRow(cgImage);
+    XCTAssertEqual(bytesPerRow, 4096);
+    CGColorSpaceRef colorspace = CGImageGetColorSpace(cgImage);
+    NSString *colorspaceName = (__bridge_transfer NSString *)CGColorSpaceCopyName(colorspace);
+    XCTAssertEqual(colorspaceName, (__bridge NSString *)kCGColorSpaceSRGB, @"Color space is not sRGB");
+}
+
 - (void)testEncodingSettings {
     WebPConfig config;
     WebPConfigPreset(&config, WEBP_PRESET_DEFAULT, 0.2);
