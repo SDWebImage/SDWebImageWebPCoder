@@ -72,7 +72,7 @@ else OSSpinLockUnlock(&lock##_deprecated);
 /// See more in #73
 static inline CGContextRef _Nullable CreateWebPCanvas(BOOL hasAlpha, CGSize canvasSize, CGSize thumbnailSize, BOOL preserveAspectRatio) {
     // From SDWebImage v5.17.0, use runtime detection of bitmap info instead of hardcode.
-    CGBitmapInfo bitmapInfo = [SDImageCoderHelper preferredBitmapInfo:hasAlpha];
+    CGBitmapInfo bitmapInfo = [SDImageCoderHelper preferredPixelFormat:hasAlpha].bitmapInfo;
     // Check whether we need to use thumbnail
     CGSize scaledSize = [SDImageCoderHelper scaledSizeWithImageSize:CGSizeMake(canvasSize.width, canvasSize.height) scaleSize:thumbnailSize preserveAspectRatio:preserveAspectRatio shouldScaleUp:NO];
     CGContextRef canvas = CGBitmapContextCreate(NULL, scaledSize.width, scaledSize.height, 8, 0, [SDImageCoderHelper colorSpaceGetDeviceRGB], bitmapInfo);
@@ -169,20 +169,6 @@ WEBP_CSP_MODE ConvertCSPMode(CGBitmapInfo bitmapInfo) {
             break;
     }
     return MODE_LAST;
-}
-
-// TODO, share this logic for multiple coders, or do refactory in v6.0 (The coder plugin should provide image information back to Core, like `CGImageSourceCopyPropertiesAtIndex`)
-static inline CGSize SDCalculateScaleDownPixelSize(NSUInteger limitBytes, CGSize originalSize, NSUInteger frameCount, NSUInteger bytesPerPixel) {
-    if (CGSizeEqualToSize(originalSize, CGSizeZero)) return CGSizeMake(1, 1);
-    NSUInteger totalFramePixelSize = limitBytes / bytesPerPixel / (frameCount ?: 1);
-    CGFloat ratio = originalSize.height / originalSize.width;
-    CGFloat width = sqrt(totalFramePixelSize / ratio);
-    CGFloat height = width * ratio;
-    width = MAX(1, floor(width));
-    height = MAX(1, floor(height));
-    CGSize size = CGSizeMake(width, height);
-
-    return size;
 }
 
 @interface SDWebPCoderFrame : NSObject
@@ -328,7 +314,7 @@ static inline CGSize SDCalculateScaleDownPixelSize(NSUInteger limitBytes, CGSize
     if (limitBytes > 0) {
         // Hack 32 BitsPerPixel
         CGSize imageSize = CGSizeMake(canvasWidth, canvasHeight);
-        CGSize framePixelSize = SDCalculateScaleDownPixelSize(limitBytes, imageSize, frameCount, 4);
+        CGSize framePixelSize = [SDImageCoderHelper scaledSizeWithImageSize:imageSize limitBytes:limitBytes bytesPerPixel:4 frameCount:frameCount];
         // Override thumbnail size
         thumbnailSize = framePixelSize;
         preserveAspectRatio = YES;
@@ -477,7 +463,7 @@ static inline CGSize SDCalculateScaleDownPixelSize(NSUInteger limitBytes, CGSize
     if (_limitBytes > 0) {
         // Hack 32 BitsPerPixel
         CGSize imageSize = CGSizeMake(_canvasWidth, _canvasHeight);
-        CGSize framePixelSize = SDCalculateScaleDownPixelSize(_limitBytes, imageSize, _frameCount, 4);
+        CGSize framePixelSize = [SDImageCoderHelper scaledSizeWithImageSize:imageSize limitBytes:_limitBytes bytesPerPixel:4 frameCount:_frameCount];
         // Override thumbnail size
         _thumbnailSize = framePixelSize;
         _preserveAspectRatio = YES;
@@ -631,7 +617,8 @@ static inline CGSize SDCalculateScaleDownPixelSize(NSUInteger limitBytes, CGSize
     
     BOOL hasAlpha = config.input.has_alpha;
     // From SDWebImage v5.17.0, use runtime detection of bitmap info instead of hardcode.
-    CGBitmapInfo bitmapInfo = [SDImageCoderHelper preferredBitmapInfo:hasAlpha];
+    SDImagePixelFormat pixelFormat = [SDImageCoderHelper preferredPixelFormat:hasAlpha];
+    CGBitmapInfo bitmapInfo = pixelFormat.bitmapInfo;
     WEBP_CSP_MODE mode = ConvertCSPMode(bitmapInfo);
     if (mode == MODE_LAST) {
         NSAssert(NO, @"Unsupported libwebp preferred CGBitmapInfo: %d", bitmapInfo);
@@ -659,8 +646,9 @@ static inline CGSize SDCalculateScaleDownPixelSize(NSUInteger limitBytes, CGSize
     // Read: https://github.com/path/FastImageCache#byte-alignment
     // A properly aligned bytes-per-row value must be a multiple of 8 pixels × bytes per pixel
     // For a typical ARGB image, the aligned bytes-per-row value is a multiple of 64.
-    size_t alignment = [SDImageCoderHelper preferredByteAlignment];
+    size_t alignment = pixelFormat.alignment;
     size_t bytesPerRow = SDByteAlign(width * (bitsPerPixel / 8), alignment);
+    //size_t bytesPerRow = 6688;
     
     void *rgba = WebPMalloc(bytesPerRow * height);
     config.output.is_external_memory = 1;
@@ -1069,7 +1057,7 @@ static float GetFloatValueForKey(NSDictionary * _Nonnull dictionary, NSString * 
         if (_limitBytes > 0) {
             // Hack 32 BitsPerPixel
             CGSize imageSize = CGSizeMake(_canvasWidth, _canvasHeight);
-            CGSize framePixelSize = SDCalculateScaleDownPixelSize(_limitBytes, imageSize, _frameCount, 4);
+            CGSize framePixelSize = [SDImageCoderHelper scaledSizeWithImageSize:imageSize limitBytes:_limitBytes bytesPerPixel:4 frameCount:_frameCount];
             // Override thumbnail size
             _thumbnailSize = framePixelSize;
             _preserveAspectRatio = YES;
