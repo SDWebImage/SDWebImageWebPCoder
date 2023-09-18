@@ -1,2 +1,2 @@
-github "SDWebImage/SDWebImage" ~> 5.17
-github "SDWebImage/libwebp-Xcode" ~> 1.0
+github "SDWebImage/SDWebImage" ~> 5.18
+github "SDWebImage/libwebp-Xcode" ~> 1.3

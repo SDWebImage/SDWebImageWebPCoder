@@ -20,10 +20,6 @@
 		806E77B62136A2E900A316D2 /* UIImage+WebP.h in Headers */ = {isa = PBXBuildFile; fileRef = 806E77AD2136A2E900A316D2 /* UIImage+WebP.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		806E77B72136A2E900A316D2 /* SDImageWebPCoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 806E77AE2136A2E900A316D2 /* SDImageWebPCoder.m */; };
 		806E77C72136A7AD00A316D2 /* SDWebImageWebPCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 806E77C62136A7AD00A316D2 /* SDWebImageWebPCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		80BFF2352136AA9100B95470 /* libwebp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80BFF2332136AA9100B95470 /* libwebp.framework */; };
-		80BFF2362136AA9100B95470 /* SDWebImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80BFF2342136AA9100B95470 /* SDWebImage.framework */; };
-		80BFF24B2136BB0D00B95470 /* libwebp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80BFF2492136BB0D00B95470 /* libwebp.framework */; };
-		80BFF24C2136BB0D00B95470 /* SDWebImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80BFF24A2136BB0D00B95470 /* SDWebImage.framework */; };
 		80BFF24D2136BC0600B95470 /* SDWebImageWebPCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 806E77C62136A7AD00A316D2 /* SDWebImageWebPCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		80BFF24E2136BC1000B95470 /* SDImageWebPCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 806E77AB2136A2E900A316D2 /* SDImageWebPCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		80BFF24F2136BC1300B95470 /* SDImageWebPCoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 806E77AE2136A2E900A316D2 /* SDImageWebPCoder.m */; };
@@ -34,15 +30,19 @@
 		80BFF2612136BE1C00B95470 /* UIImage+WebP.h in Headers */ = {isa = PBXBuildFile; fileRef = 806E77AD2136A2E900A316D2 /* UIImage+WebP.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		80BFF2622136BE1F00B95470 /* UIImage+WebP.m in Sources */ = {isa = PBXBuildFile; fileRef = 806E77AA2136A2E900A316D2 /* UIImage+WebP.m */; };
 		80BFF2632136BE2200B95470 /* SDWebImageWebPCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 806E77C62136A7AD00A316D2 /* SDWebImageWebPCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		80BFF2672136BE4200B95470 /* SDWebImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80BFF2652136BE4200B95470 /* SDWebImage.framework */; };
-		80BFF2682136BE4200B95470 /* libwebp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80BFF2662136BE4200B95470 /* libwebp.framework */; };
-		80BFF2792136BEE000B95470 /* SDWebImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80BFF2772136BEE000B95470 /* SDWebImage.framework */; };
-		80BFF27A2136BEE000B95470 /* libwebp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80BFF2782136BEE000B95470 /* libwebp.framework */; };
 		80BFF27B2136BEE700B95470 /* SDImageWebPCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 806E77AB2136A2E900A316D2 /* SDImageWebPCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		80BFF27C2136BEEB00B95470 /* SDImageWebPCoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 806E77AE2136A2E900A316D2 /* SDImageWebPCoder.m */; };
 		80BFF27D2136BEED00B95470 /* UIImage+WebP.h in Headers */ = {isa = PBXBuildFile; fileRef = 806E77AD2136A2E900A316D2 /* UIImage+WebP.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		80BFF27E2136BEF000B95470 /* UIImage+WebP.m in Sources */ = {isa = PBXBuildFile; fileRef = 806E77AA2136A2E900A316D2 /* UIImage+WebP.m */; };
 		80BFF27F2136BEF200B95470 /* SDWebImageWebPCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 806E77C62136A7AD00A316D2 /* SDWebImageWebPCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		888767AA2AB8973A008E988C /* SDWebImage.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 888767A82AB89739008E988C /* SDWebImage.xcframework */; };
+		888767AC2AB8973A008E988C /* libwebp.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 888767A92AB8973A008E988C /* libwebp.xcframework */; };
+		888767AF2AB89742008E988C /* libwebp.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 888767A92AB8973A008E988C /* libwebp.xcframework */; };
+		888767B12AB89742008E988C /* SDWebImage.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 888767A82AB89739008E988C /* SDWebImage.xcframework */; };
+		888767B42AB89747008E988C /* libwebp.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 888767A92AB8973A008E988C /* libwebp.xcframework */; };
+		888767B62AB89747008E988C /* SDWebImage.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 888767A82AB89739008E988C /* SDWebImage.xcframework */; };
+		888767B92AB89752008E988C /* libwebp.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 888767A92AB8973A008E988C /* libwebp.xcframework */; };
+		888767BB2AB89752008E988C /* SDWebImage.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 888767A82AB89739008E988C /* SDWebImage.xcframework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,17 +57,11 @@
 		806E77AE2136A2E900A316D2 /* SDImageWebPCoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDImageWebPCoder.m; sourceTree = "<group>"; };
 		806E77B02136A2E900A316D2 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		806E77C62136A7AD00A316D2 /* SDWebImageWebPCoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SDWebImageWebPCoder.h; sourceTree = "<group>"; };
-		80BFF2332136AA9100B95470 /* libwebp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libwebp.framework; path = Carthage/Build/iOS/libwebp.framework; sourceTree = "<group>"; };
-		80BFF2342136AA9100B95470 /* SDWebImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDWebImage.framework; path = Carthage/Build/iOS/SDWebImage.framework; sourceTree = "<group>"; };
 		80BFF2402136BA4900B95470 /* SDWebImageWebPCoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDWebImageWebPCoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		80BFF2492136BB0D00B95470 /* libwebp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libwebp.framework; path = Carthage/Build/Mac/libwebp.framework; sourceTree = "<group>"; };
-		80BFF24A2136BB0D00B95470 /* SDWebImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDWebImage.framework; path = Carthage/Build/Mac/SDWebImage.framework; sourceTree = "<group>"; };
 		80BFF2572136BDBE00B95470 /* SDWebImageWebPCoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDWebImageWebPCoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		80BFF2652136BE4200B95470 /* SDWebImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDWebImage.framework; path = Carthage/Build/tvOS/SDWebImage.framework; sourceTree = "<group>"; };
-		80BFF2662136BE4200B95470 /* libwebp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libwebp.framework; path = Carthage/Build/tvOS/libwebp.framework; sourceTree = "<group>"; };
 		80BFF26E2136BE7900B95470 /* SDWebImageWebPCoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDWebImageWebPCoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		80BFF2772136BEE000B95470 /* SDWebImage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDWebImage.framework; path = Carthage/Build/watchOS/SDWebImage.framework; sourceTree = "<group>"; };
-		80BFF2782136BEE000B95470 /* libwebp.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libwebp.framework; path = Carthage/Build/watchOS/libwebp.framework; sourceTree = "<group>"; };
+		888767A82AB89739008E988C /* SDWebImage.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SDWebImage.xcframework; path = Carthage/Build/SDWebImage.xcframework; sourceTree = "<group>"; };
+		888767A92AB8973A008E988C /* libwebp.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libwebp.xcframework; path = Carthage/Build/libwebp.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,8 +69,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				80BFF2362136AA9100B95470 /* SDWebImage.framework in Frameworks */,
-				80BFF2352136AA9100B95470 /* libwebp.framework in Frameworks */,
+				888767AA2AB8973A008E988C /* SDWebImage.xcframework in Frameworks */,
+				888767AC2AB8973A008E988C /* libwebp.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,8 +78,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				80BFF24C2136BB0D00B95470 /* SDWebImage.framework in Frameworks */,
-				80BFF24B2136BB0D00B95470 /* libwebp.framework in Frameworks */,
+				888767AF2AB89742008E988C /* libwebp.xcframework in Frameworks */,
+				888767B12AB89742008E988C /* SDWebImage.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,8 +87,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				80BFF2682136BE4200B95470 /* libwebp.framework in Frameworks */,
-				80BFF2672136BE4200B95470 /* SDWebImage.framework in Frameworks */,
+				888767B42AB89747008E988C /* libwebp.xcframework in Frameworks */,
+				888767B62AB89747008E988C /* SDWebImage.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,8 +96,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				80BFF27A2136BEE000B95470 /* libwebp.framework in Frameworks */,
-				80BFF2792136BEE000B95470 /* SDWebImage.framework in Frameworks */,
+				888767B92AB89752008E988C /* libwebp.xcframework in Frameworks */,
+				888767BB2AB89752008E988C /* SDWebImage.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -174,49 +168,11 @@
 		80BFF2312136AA7D00B95470 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				80BFF2322136AA8800B95470 /* iOS */,
-				80BFF23A2136BA1100B95470 /* Mac */,
-				80BFF2642136BE2A00B95470 /* tvOS */,
-				80BFF2762136BECC00B95470 /* watchOS */,
+				888767A92AB8973A008E988C /* libwebp.xcframework */,
+				888767A82AB89739008E988C /* SDWebImage.xcframework */,
 				46F21AD7D1692EBAC4D0FF33 /* Pods_SDWebImageWebPCoderTests.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		80BFF2322136AA8800B95470 /* iOS */ = {
-			isa = PBXGroup;
-			children = (
-				80BFF2332136AA9100B95470 /* libwebp.framework */,
-				80BFF2342136AA9100B95470 /* SDWebImage.framework */,
-			);
-			name = iOS;
-			sourceTree = "<group>";
-		};
-		80BFF23A2136BA1100B95470 /* Mac */ = {
-			isa = PBXGroup;
-			children = (
-				80BFF2492136BB0D00B95470 /* libwebp.framework */,
-				80BFF24A2136BB0D00B95470 /* SDWebImage.framework */,
-			);
-			name = Mac;
-			sourceTree = "<group>";
-		};
-		80BFF2642136BE2A00B95470 /* tvOS */ = {
-			isa = PBXGroup;
-			children = (
-				80BFF2662136BE4200B95470 /* libwebp.framework */,
-				80BFF2652136BE4200B95470 /* SDWebImage.framework */,
-			);
-			name = tvOS;
-			sourceTree = "<group>";
-		};
-		80BFF2762136BECC00B95470 /* watchOS */ = {
-			isa = PBXGroup;
-			children = (
-				80BFF2782136BEE000B95470 /* libwebp.framework */,
-				80BFF2772136BEE000B95470 /* SDWebImage.framework */,
-			);
-			name = watchOS;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
