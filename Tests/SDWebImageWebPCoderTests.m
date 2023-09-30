@@ -252,7 +252,8 @@ const int64_t kAsyncTestTimeout = 5;
                                       SDImageCoderEncodeWebPShowCompressed: @16,
                                       SDImageCoderEncodeWebPPartitions: @17,
                                       SDImageCoderEncodeWebPPartitionLimit: @18,
-                                      SDImageCoderEncodeWebPUseSharpYuv: @19 };
+                                      SDImageCoderEncodeWebPUseSharpYuv: @19,
+                                      SDImageCoderEncodeWebPLossless: @1 };
 
     [SDImageWebPCoder.sharedCoder updateWebPOptionsToConfig:&config maxFileSize:1200 options:options];
 
@@ -275,6 +276,7 @@ const int64_t kAsyncTestTimeout = 5;
     expect(config.partitions).to.equal(17);
     expect(config.partition_limit).to.equal(18);
     expect(config.use_sharp_yuv).to.equal(19);
+    expect(config.lossless).to.equal(1);
 }
 
 - (void)testEncodingSettingsDefaultValue {

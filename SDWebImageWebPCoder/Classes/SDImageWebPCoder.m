@@ -955,7 +955,7 @@ WEBP_CSP_MODE ConvertCSPMode(CGBitmapInfo bitmapInfo) {
 
     config->target_size = (int)maxFileSize; // Max filesize for output, 0 means use quality instead
     config->pass = maxFileSize > 0 ? 6 : 1; // Use 6 passes for file size limited encoding, which is the default value of `cwebp` command line
-    config->lossless = 0; // Disable lossless encoding (If we need, can add new Encoding Options in future version)
+  config->lossless = GetIntValueForKey(options, SDImageCoderEncodeWebPLossless, config->lossless);
     
     config->method = GetIntValueForKey(options, SDImageCoderEncodeWebPMethod, config->method);
     config->pass = GetIntValueForKey(options, SDImageCoderEncodeWebPPass, config->pass);
