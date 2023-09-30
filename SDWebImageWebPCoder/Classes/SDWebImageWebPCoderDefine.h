@@ -136,6 +136,7 @@ FOUNDATION_EXPORT SDImageCoderOption _Nonnull const SDImageCoderEncodeWebPUseSha
  0: Disabled, 1: Enabled.
  Lossless mode. Note that if lossless is enabled, encoder quality param specifies
  compression effort. 100 means maximum compression.
+ Details on cwebp documentation: https://developers.google.com/speed/webp/docs/cwebp#lossless
  */
 FOUNDATION_EXPORT SDImageCoderOption _Nonnull const SDImageCoderEncodeWebPLossless;
 
