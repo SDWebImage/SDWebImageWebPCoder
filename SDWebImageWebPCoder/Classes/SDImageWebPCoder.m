@@ -632,7 +632,7 @@ WEBP_CSP_MODE ConvertCSPMode(CGBitmapInfo bitmapInfo) {
 #endif
         // Fallback to RGBA8888/RGB888 instead
         mode = MODE_rgbA;
-        CGBitmapInfo bitmapInfo = kCGBitmapByteOrderDefault;
+        bitmapInfo = kCGBitmapByteOrderDefault;
         bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedLast : kCGImageAlphaNoneSkipLast;
     }
     config.output.colorspace = mode;
