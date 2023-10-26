@@ -91,15 +91,21 @@ static inline CGContextRef _Nullable CreateWebPCanvas(BOOL hasAlpha, CGSize canv
 WEBP_CSP_MODE ConvertCSPMode(CGBitmapInfo bitmapInfo) {
     // Get alpha info, byteOrder info
     CGImageAlphaInfo alphaInfo = bitmapInfo & kCGBitmapAlphaInfoMask;
-    CGBitmapInfo byteOrderInfo = bitmapInfo & kCGBitmapByteOrderMask;
+    CGImageByteOrderInfo byteOrderInfo = bitmapInfo & kCGBitmapByteOrderMask;
+    size_t bitsPerPixel = 8;
+    if (bitmapInfo & kCGBitmapFloatComponents) {
+        bitsPerPixel = 16; // 16-Bits, which don't support currently!
+    }
     BOOL byteOrderNormal = NO;
     switch (byteOrderInfo) {
-        case kCGBitmapByteOrderDefault: {
+        case kCGImageByteOrderDefault: {
             byteOrderNormal = YES;
         } break;
-        case kCGBitmapByteOrder32Little: {
+        case kCGImageByteOrder32Little:
+        case kCGImageByteOrder16Little: {
         } break;
-        case kCGBitmapByteOrder32Big: {
+        case kCGImageByteOrder32Big:
+        case kCGImageByteOrder16Big: {
             byteOrderNormal = YES;
         } break;
         default: break;
@@ -161,7 +167,7 @@ WEBP_CSP_MODE ConvertCSPMode(CGBitmapInfo bitmapInfo) {
             break;
         case kCGImageAlphaOnly: {
             // A
-            // Unsupported
+            // Unsupported!
             return MODE_LAST;
         }
             break;
@@ -621,8 +627,13 @@ WEBP_CSP_MODE ConvertCSPMode(CGBitmapInfo bitmapInfo) {
     CGBitmapInfo bitmapInfo = pixelFormat.bitmapInfo;
     WEBP_CSP_MODE mode = ConvertCSPMode(bitmapInfo);
     if (mode == MODE_LAST) {
-        NSAssert(NO, @"Unsupported libwebp preferred CGBitmapInfo: %d", bitmapInfo);
-        return nil;
+#if DEBUG
+        NSLog(@"Unsupported libwebp preferred CGBitmapInfo: %d", bitmapInfo);
+#endif
+        // Fallback to RGBA8888/RGB888 instead
+        mode = MODE_rgbA;
+        CGBitmapInfo bitmapInfo = kCGBitmapByteOrderDefault;
+        bitmapInfo |= hasAlpha ? kCGImageAlphaPremultipliedLast : kCGImageAlphaNoneSkipLast;
     }
     config.output.colorspace = mode;
     config.options.use_threads = 1;
