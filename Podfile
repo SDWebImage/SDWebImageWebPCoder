@@ -10,6 +10,12 @@ target 'SDWebImageWebPCoderExample' do
   pod 'SDWebImageWebPCoder', :path => './'
 end
 
+target 'SDWebImageWebPCoderExample-macOS' do
+  platform :osx, '11.0'
+  project example_project_path
+  pod 'SDWebImageWebPCoder', :path => './'
+end
+
 target 'SDWebImageWebPCoderTests' do
   platform :ios, '9.0'
   project test_project_path
