@@ -883,14 +883,20 @@ WEBP_CSP_MODE ConvertCSPMode(CGBitmapInfo bitmapInfo) {
     }
     
     uint8_t *rgba = NULL; // RGBA Buffer managed by CFData, don't call `free` on it, instead call `CFRelease` on `dataRef`
-    // We could not assume that input CGImage's color mode is always RGB888/RGBA8888. Convert all other cases to target color mode using vImage
+    // We must prefer the input CGImage's color space, which may contains ICC profile
+    CGColorSpaceRef colorSpace = CGImageGetColorSpace(imageRef);
+    if (!colorSpace) {
+        colorSpace = [SDImageCoderHelper colorSpaceGetDeviceRGB];
+    }
     vImage_CGImageFormat destFormat = {
         .bitsPerComponent = 8,
         .bitsPerPixel = hasAlpha ? 32 : 24,
-        .colorSpace = [SDImageCoderHelper colorSpaceGetDeviceRGB],
+        .colorSpace = colorSpace,
         .bitmapInfo = hasAlpha ? kCGImageAlphaLast | kCGBitmapByteOrderDefault : kCGImageAlphaNone | kCGBitmapByteOrderDefault // RGB888/RGBA8888 (Non-premultiplied to works for libwebp)
     };
     vImage_Buffer dest;
+    // We could not assume that input CGImage's color mode is always RGB888/RGBA8888. Convert all other cases to target color mode using vImage
+    // But vImageBuffer_InitWithCGImage will do convert automatically (unless you use `kvImageNoAllocate`), so no need to call `vImageConvert` by ourselves
     vImage_Error error = vImageBuffer_InitWithCGImage(&dest, &destFormat, NULL, imageRef, kvImageNoFlags);
     if (error != kvImageNoError) {
         return nil;
