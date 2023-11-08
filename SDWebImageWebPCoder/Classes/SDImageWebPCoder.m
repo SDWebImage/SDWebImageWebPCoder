@@ -888,11 +888,13 @@ WEBP_CSP_MODE ConvertCSPMode(CGBitmapInfo bitmapInfo) {
     if (!colorSpace) {
         colorSpace = [SDImageCoderHelper colorSpaceGetDeviceRGB];
     }
+    CGColorRenderingIntent renderingIntent = CGImageGetRenderingIntent(imageRef);
     vImage_CGImageFormat destFormat = {
         .bitsPerComponent = 8,
         .bitsPerPixel = hasAlpha ? 32 : 24,
         .colorSpace = colorSpace,
-        .bitmapInfo = hasAlpha ? kCGImageAlphaLast | kCGBitmapByteOrderDefault : kCGImageAlphaNone | kCGBitmapByteOrderDefault // RGB888/RGBA8888 (Non-premultiplied to works for libwebp)
+        .bitmapInfo = hasAlpha ? kCGImageAlphaLast | kCGBitmapByteOrderDefault : kCGImageAlphaNone | kCGBitmapByteOrderDefault, // RGB888/RGBA8888 (Non-premultiplied to works for libwebp)
+        .renderingIntent = renderingIntent
     };
     vImage_Buffer dest;
     // We could not assume that input CGImage's color mode is always RGB888/RGBA8888. Convert all other cases to target color mode using vImage
