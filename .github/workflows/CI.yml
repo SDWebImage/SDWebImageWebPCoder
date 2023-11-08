@@ -49,7 +49,6 @@ jobs:
       matrix:
         iosDestination: ["platform=iOS Simulator,name=iPhone 13 Pro"]
         macOSDestination: ["platform=macOS,arch=x86_64"]
-        tvOSDestination: ["platform=tvOS Simulator,name=Apple TV 4K"]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -76,6 +75,12 @@ jobs:
           set -o pipefail
           xcodebuild test -workspace "${{ env.WORKSPACE_NAME }}" -scheme "SDWebImageWebPCoderTests" -destination "${{ matrix.iosDestination }}" -configuration Debug CODE_SIGNING_ALLOWED=NO
           mv ~/Library/Developer/Xcode/DerivedData/ ./DerivedData/iOS
+
+      - name: Test - ${{ matrix.macOSDestination }}
+        run: |
+          set -o pipefail
+          xcodebuild test -workspace "${{ env.WORKSPACE_NAME }}" -scheme "SDWebImageWebPCoderTests-macOS" -destination "${{ matrix.macOSDestination }}" -configuration Debug CODE_SIGNING_ALLOWED=NO
+          mv ~/Library/Developer/Xcode/DerivedData/ ./DerivedData/macOS
           
       - name: Code Coverage
         run: |
@@ -83,4 +88,5 @@ jobs:
           export PATH="/usr/local/opt/curl/bin:$PATH"
           curl --version
           bash <(curl -s https://codecov.io/bash) -v -D './DerivedData/iOS' -J '^SDWebImageWebPCoder$' -c -X gcov -F ios
+          bash <(curl -s https://codecov.io/bash) -v -D './DerivedData/macOS' -J '^SDWebImageWebPCoder$' -c -X gcov -F macos
 
