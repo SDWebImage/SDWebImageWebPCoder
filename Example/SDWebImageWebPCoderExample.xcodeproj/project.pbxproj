@@ -35,6 +35,7 @@
 		329D55C52AFB8A1B008B4DA3 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		329D55C72AFB8A1B008B4DA3 /* SDWebImageWebPCoderExample_macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SDWebImageWebPCoderExample_macOS.entitlements; sourceTree = "<group>"; };
 		329D55E02AFB8C39008B4DA3 /* examples */ = {isa = PBXFileReference; lastKnownFileType = folder; path = examples; sourceTree = "<group>"; };
+		329D55E22AFB916E008B4DA3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		4038A28BEB6E86807E9286D7 /* Pods_SDWebImageWebPCoderExample_macOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SDWebImageWebPCoderExample_macOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		803D79CE213597CB00C815FC /* SDWebImageWebPCoderExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SDWebImageWebPCoderExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		803D79D1213597CB00C815FC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -75,6 +76,7 @@
 		329D55B92AFB8A1A008B4DA3 /* SDWebImageWebPCoderExample-macOS */ = {
 			isa = PBXGroup;
 			children = (
+				329D55E22AFB916E008B4DA3 /* Info.plist */,
 				329D55E02AFB8C39008B4DA3 /* examples */,
 				329D55BA2AFB8A1A008B4DA3 /* AppDelegate.h */,
 				329D55BB2AFB8A1A008B4DA3 /* AppDelegate.m */,
@@ -386,6 +388,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "SDWebImageWebPCoderExample-macOS/Info.plist";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 SDWebImage. All rights reserved.";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
@@ -418,6 +421,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "SDWebImageWebPCoderExample-macOS/Info.plist";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2023 SDWebImage. All rights reserved.";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;

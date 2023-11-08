@@ -22,3 +22,10 @@ target 'SDWebImageWebPCoderTests' do
   pod 'Expecta'
   pod 'SDWebImageWebPCoder', :path => './'
 end
+
+target 'SDWebImageWebPCoderTests-macOS' do
+  platform :osx, '11.0'
+  project test_project_path
+  pod 'Expecta'
+  pod 'SDWebImageWebPCoder', :path => './'
+end

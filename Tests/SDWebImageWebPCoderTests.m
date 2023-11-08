@@ -338,6 +338,26 @@ const int64_t kAsyncTestTimeout = 5;
     expect(255 * b1).notTo.equal(255 * b2);
 }
 
+- (void)testWebPEncodingWithICCProfile {
+    // Test transcoding
+    NSString *jpegPath = [[NSBundle bundleForClass:[self class]] pathForResource:@"TestColorspaceBefore" ofType:@"jpeg"];
+    NSData *jpegData = [NSData dataWithContentsOfFile:jpegPath];
+    UIImage *jpegImage = [[UIImage alloc] initWithData:jpegData];
+    
+    NSData *webpData = [[SDImageWebPCoder sharedCoder] encodedDataWithImage:jpegImage format:SDImageFormatWebP options:nil];
+    // Re-decode to pick color
+    UIImage *webpImage = [[SDImageWebPCoder sharedCoder] decodedImageWithData:webpData options:nil];
+    CGPoint point1 = CGPointMake(310, 70);
+    UIColor *color1 = [webpImage sd_colorAtPoint:point1];
+    CGFloat r1;
+    CGFloat g1;
+    CGFloat b1;
+    [color1 getRed:&r1 green:&g1 blue:&b1 alpha:nil];
+    expect(255 * r1).beCloseToWithin(0, 5);
+    expect(255 * g1).beCloseToWithin(38, 5);
+    expect(255 * b1).beCloseToWithin(135, 5);
+}
+
 @end
 
 @implementation SDWebImageWebPCoderTests (Helpers)
