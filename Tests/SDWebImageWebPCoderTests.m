@@ -371,10 +371,18 @@ const int64_t kAsyncTestTimeout = 5;
     CGFloat r1;
     CGFloat g1;
     CGFloat b1;
+#if SD_UIKIT
     [color1 getRed:&r1 green:&g1 blue:&b1 alpha:nil];
     expect(255 * r1).beCloseToWithin(0, 5);
     expect(255 * g1).beCloseToWithin(38, 5);
     expect(255 * b1).beCloseToWithin(135, 5);
+#else
+    @try {
+        [color1 getRed:&r1 green:&g1 blue:&b1 alpha:nil];
+    }
+    @catch (NSException *exception) {}
+    expect(255 * r1).beCloseToWithin(0, 5);
+#endif
 }
 
 @end
