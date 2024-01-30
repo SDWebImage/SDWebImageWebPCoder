@@ -218,6 +218,21 @@ const int64_t kAsyncTestTimeout = 5;
     XCTAssertLessThanOrEqual(dataWithLimit.length, maxFileSize);
 }
 
+- (void)test46WebPEncodingMonochrome {
+    CGSize size = CGSizeMake(512, 512);
+    SDGraphicsImageRendererFormat *format = [[SDGraphicsImageRendererFormat alloc] init];
+    format.scale = 1;
+    SDGraphicsImageRenderer *renderer = [[SDGraphicsImageRenderer alloc] initWithSize:size format:format];
+    UIColor *monochromeColor = UIColor.clearColor;
+    UIImage *monochromeImage = [renderer imageWithActions:^(CGContextRef ctx) {
+        [monochromeColor setFill];
+        CGContextFillRect(ctx, CGRectMake(0, 0, size.width, size.height));
+    }];
+    XCTAssert(monochromeImage);
+    NSData *data = [SDImageWebPCoder.sharedCoder encodedDataWithImage:monochromeImage format:SDImageFormatWebP options:nil];
+    XCTAssert(data);
+}
+
 - (void)testWebPDecodeDoesNotTriggerCACopyImage {
     NSURL *staticWebPURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestColorspaceStatic" withExtension:@"webp"];
     NSData *data = [NSData dataWithContentsOfURL:staticWebPURL];
