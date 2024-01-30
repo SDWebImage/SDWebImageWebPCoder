@@ -885,6 +885,12 @@ WEBP_CSP_MODE ConvertCSPMode(CGBitmapInfo bitmapInfo) {
     uint8_t *rgba = NULL; // RGBA Buffer managed by CFData, don't call `free` on it, instead call `CFRelease` on `dataRef`
     // We must prefer the input CGImage's color space, which may contains ICC profile
     CGColorSpaceRef colorSpace = CGImageGetColorSpace(imageRef);
+    // We only supports RGB colorspace, filter the un-supported one (like Monochrome, CMYK, etc)
+    if (CGColorSpaceGetModel(colorSpace) != kCGColorSpaceModelRGB) {
+        // Ignore and convert, we don't know how to encode this colorspace directlly to WebP
+        // This may cause little visible difference because of colorpsace conversion
+        colorSpace = NULL;
+    }
     if (!colorSpace) {
         colorSpace = [SDImageCoderHelper colorSpaceGetDeviceRGB];
     }
