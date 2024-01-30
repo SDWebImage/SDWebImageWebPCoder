@@ -218,6 +218,21 @@ const int64_t kAsyncTestTimeout = 5;
     XCTAssertLessThanOrEqual(dataWithLimit.length, maxFileSize);
 }
 
+- (void)test46WebPEncodingMonochrome {
+    CGSize size = CGSizeMake(512, 512);
+    SDGraphicsImageRendererFormat *format = [[SDGraphicsImageRendererFormat alloc] init];
+    format.scale = 1;
+    SDGraphicsImageRenderer *renderer = [[SDGraphicsImageRenderer alloc] initWithSize:size format:format];
+    UIColor *monochromeColor = UIColor.clearColor;
+    UIImage *monochromeImage = [renderer imageWithActions:^(CGContextRef ctx) {
+        [monochromeColor setFill];
+        CGContextFillRect(ctx, CGRectMake(0, 0, size.width, size.height));
+    }];
+    XCTAssert(monochromeImage);
+    NSData *data = [SDImageWebPCoder.sharedCoder encodedDataWithImage:monochromeImage format:SDImageFormatWebP options:nil];
+    XCTAssert(data);
+}
+
 - (void)testWebPDecodeDoesNotTriggerCACopyImage {
     NSURL *staticWebPURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestColorspaceStatic" withExtension:@"webp"];
     NSData *data = [NSData dataWithContentsOfURL:staticWebPURL];
@@ -356,10 +371,18 @@ const int64_t kAsyncTestTimeout = 5;
     CGFloat r1;
     CGFloat g1;
     CGFloat b1;
+#if SD_UIKIT
     [color1 getRed:&r1 green:&g1 blue:&b1 alpha:nil];
     expect(255 * r1).beCloseToWithin(0, 5);
     expect(255 * g1).beCloseToWithin(38, 5);
     expect(255 * b1).beCloseToWithin(135, 5);
+#else
+    @try {
+        [color1 getRed:&r1 green:&g1 blue:&b1 alpha:nil];
+    }
+    @catch (NSException *exception) {}
+    expect(255 * r1).beCloseToWithin(0, 5);
+#endif
 }
 
 @end
