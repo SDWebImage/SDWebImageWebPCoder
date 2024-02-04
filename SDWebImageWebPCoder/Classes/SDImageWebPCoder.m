@@ -8,6 +8,7 @@
 
 #import "SDImageWebPCoder.h"
 #import "SDWebImageWebPCoderDefine.h"
+#import "SDInternalMacros.h"
 #import <Accelerate/Accelerate.h>
 #import <os/lock.h>
 #import <libkern/OSAtomic.h>
@@ -784,7 +785,14 @@ WEBP_CSP_MODE ConvertCSPMode(CGBitmapInfo bitmapInfo) {
     BOOL encodeFirstFrame = [options[SDImageCoderEncodeFirstFrameOnly] boolValue];
     if (encodeFirstFrame || frames.count <= 1) {
         // for static single webp image
+        // Keep EXIF orientation
+#if SD_UIKIT || SD_WATCH
+        CGImagePropertyOrientation orientation = [SDImageCoderHelper exifOrientationFromImageOrientation:image.imageOrientation];
+#else
+        CGImagePropertyOrientation orientation = kCGImagePropertyOrientationUp;
+#endif
         data = [self sd_encodedWebpDataWithImage:imageRef
+                                     orientation:orientation
                                          quality:compressionQuality
                                     maxPixelSize:maxPixelSize
                                      maxFileSize:maxFileSize
@@ -797,7 +805,15 @@ WEBP_CSP_MODE ConvertCSPMode(CGBitmapInfo bitmapInfo) {
         }
         for (size_t i = 0; i < frames.count; i++) {
             SDImageFrame *currentFrame = frames[i];
-            NSData *webpData = [self sd_encodedWebpDataWithImage:currentFrame.image.CGImage
+            UIImage *currentImage = currentFrame.image;
+            // Keep EXIF orientation
+#if SD_UIKIT || SD_WATCH
+            CGImagePropertyOrientation orientation = [SDImageCoderHelper exifOrientationFromImageOrientation:currentImage.imageOrientation];
+#else
+            CGImagePropertyOrientation orientation = kCGImagePropertyOrientationUp;
+#endif
+            NSData *webpData = [self sd_encodedWebpDataWithImage:currentImage.CGImage
+                                                     orientation:orientation
                                                          quality:compressionQuality
                                                     maxPixelSize:maxPixelSize
                                                      maxFileSize:maxFileSize
@@ -838,6 +854,7 @@ WEBP_CSP_MODE ConvertCSPMode(CGBitmapInfo bitmapInfo) {
 }
 
 - (nullable NSData *)sd_encodedWebpDataWithImage:(nullable CGImageRef)imageRef
+                                     orientation:(CGImagePropertyOrientation)orientation
                                          quality:(double)quality
                                     maxPixelSize:(CGSize)maxPixelSize
                                      maxFileSize:(NSUInteger)maxFileSize
@@ -846,6 +863,20 @@ WEBP_CSP_MODE ConvertCSPMode(CGBitmapInfo bitmapInfo) {
     NSData *webpData;
     if (!imageRef) {
         return nil;
+    }
+    // Seems libwebp has no convenient EXIF orientation API ?
+    // Use transform to apply ourselves. Need to release before return
+    // TODO: Use `WebPMuxSetChunk` API to write/read EXIF data, see: https://developers.google.com/speed/webp/docs/riff_container#extended_file_format
+    __block CGImageRef rotatedCGImage = NULL;
+    @onExit {
+        if (rotatedCGImage) {
+            CGImageRelease(rotatedCGImage);
+        }
+    };
+    if (orientation != kCGImagePropertyOrientationUp) {
+        rotatedCGImage = [SDImageCoderHelper CGImageCreateDecoded:imageRef orientation:orientation];
+        NSCParameterAssert(rotatedCGImage);
+        imageRef = rotatedCGImage;
     }
     
     size_t width = CGImageGetWidth(imageRef);
