@@ -20,7 +20,7 @@
 		32A3C1472B7129CB00B611BD /* SDInternalMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A3C1432B7129CB00B611BD /* SDInternalMacros.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		32A3C1482B7129CB00B611BD /* SDInternalMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A3C1432B7129CB00B611BD /* SDInternalMacros.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		32A3C1492B7129CB00B611BD /* SDmetamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A3C1442B7129CB00B611BD /* SDmetamacros.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		32A3C14A2B7129CB00B611BD /* SDmetamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A3C1442B7129CB00B611BD /* SDmetamacros.h */; };
+		32A3C14A2B7129CB00B611BD /* SDmetamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A3C1442B7129CB00B611BD /* SDmetamacros.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		32A3C14B2B7129CB00B611BD /* SDmetamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A3C1442B7129CB00B611BD /* SDmetamacros.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		32A3C14C2B7129CB00B611BD /* SDmetamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A3C1442B7129CB00B611BD /* SDmetamacros.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		806E77B32136A2E900A316D2 /* UIImage+WebP.m in Sources */ = {isa = PBXBuildFile; fileRef = 806E77AA2136A2E900A316D2 /* UIImage+WebP.m */; };
