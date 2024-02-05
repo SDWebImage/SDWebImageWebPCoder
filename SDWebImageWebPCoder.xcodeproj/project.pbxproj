@@ -15,6 +15,14 @@
 		220A623F257EAFB300262720 /* SDWebImageWebPCoderDefine.h in Headers */ = {isa = PBXBuildFile; fileRef = 220A6238257EAFB300262720 /* SDWebImageWebPCoderDefine.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		220A6240257EAFB300262720 /* SDWebImageWebPCoderDefine.h in Headers */ = {isa = PBXBuildFile; fileRef = 220A6238257EAFB300262720 /* SDWebImageWebPCoderDefine.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		228EA36125825A52005903D9 /* SDWebImageWebPCoderDefine.m in Sources */ = {isa = PBXBuildFile; fileRef = 220A6237257EAFB300262720 /* SDWebImageWebPCoderDefine.m */; };
+		32A3C1452B7129CB00B611BD /* SDInternalMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A3C1432B7129CB00B611BD /* SDInternalMacros.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		32A3C1462B7129CB00B611BD /* SDInternalMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A3C1432B7129CB00B611BD /* SDInternalMacros.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		32A3C1472B7129CB00B611BD /* SDInternalMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A3C1432B7129CB00B611BD /* SDInternalMacros.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		32A3C1482B7129CB00B611BD /* SDInternalMacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A3C1432B7129CB00B611BD /* SDInternalMacros.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		32A3C1492B7129CB00B611BD /* SDmetamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A3C1442B7129CB00B611BD /* SDmetamacros.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		32A3C14A2B7129CB00B611BD /* SDmetamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A3C1442B7129CB00B611BD /* SDmetamacros.h */; };
+		32A3C14B2B7129CB00B611BD /* SDmetamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A3C1442B7129CB00B611BD /* SDmetamacros.h */; settings = {ATTRIBUTES = (Private, ); }; };
+		32A3C14C2B7129CB00B611BD /* SDmetamacros.h in Headers */ = {isa = PBXBuildFile; fileRef = 32A3C1442B7129CB00B611BD /* SDmetamacros.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		806E77B32136A2E900A316D2 /* UIImage+WebP.m in Sources */ = {isa = PBXBuildFile; fileRef = 806E77AA2136A2E900A316D2 /* UIImage+WebP.m */; };
 		806E77B42136A2E900A316D2 /* SDImageWebPCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 806E77AB2136A2E900A316D2 /* SDImageWebPCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		806E77B62136A2E900A316D2 /* UIImage+WebP.h in Headers */ = {isa = PBXBuildFile; fileRef = 806E77AD2136A2E900A316D2 /* UIImage+WebP.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -49,6 +57,8 @@
 		220A6237257EAFB300262720 /* SDWebImageWebPCoderDefine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDWebImageWebPCoderDefine.m; sourceTree = "<group>"; };
 		220A6238257EAFB300262720 /* SDWebImageWebPCoderDefine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDWebImageWebPCoderDefine.h; sourceTree = "<group>"; };
 		3217BE7B220547EB003D0310 /* SDWebImageWebPCoder.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = SDWebImageWebPCoder.modulemap; sourceTree = "<group>"; };
+		32A3C1432B7129CB00B611BD /* SDInternalMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDInternalMacros.h; sourceTree = "<group>"; };
+		32A3C1442B7129CB00B611BD /* SDmetamacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDmetamacros.h; sourceTree = "<group>"; };
 		46F21AD7D1692EBAC4D0FF33 /* Pods_SDWebImageWebPCoderTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SDWebImageWebPCoderTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		806E779D2136A1C000A316D2 /* SDWebImageWebPCoder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SDWebImageWebPCoder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		806E77AA2136A2E900A316D2 /* UIImage+WebP.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+WebP.m"; sourceTree = "<group>"; };
@@ -110,6 +120,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		32A3C1422B7129CB00B611BD /* Private */ = {
+			isa = PBXGroup;
+			children = (
+				32A3C1432B7129CB00B611BD /* SDInternalMacros.h */,
+				32A3C1442B7129CB00B611BD /* SDmetamacros.h */,
+			);
+			path = Private;
+			sourceTree = "<group>";
+		};
 		806E77932136A1C000A316D2 = {
 			isa = PBXGroup;
 			children = (
@@ -135,6 +154,7 @@
 			children = (
 				806E77A92136A2E900A316D2 /* Classes */,
 				806E77AF2136A2E900A316D2 /* Module */,
+				32A3C1422B7129CB00B611BD /* Private */,
 				806E77B12136A2E900A316D2 /* Assets */,
 			);
 			name = SDImageWebPCoder;
@@ -229,7 +249,9 @@
 				806E77C72136A7AD00A316D2 /* SDWebImageWebPCoder.h in Headers */,
 				806E77B62136A2E900A316D2 /* UIImage+WebP.h in Headers */,
 				220A623D257EAFB300262720 /* SDWebImageWebPCoderDefine.h in Headers */,
+				32A3C1452B7129CB00B611BD /* SDInternalMacros.h in Headers */,
 				806E77B42136A2E900A316D2 /* SDImageWebPCoder.h in Headers */,
+				32A3C1492B7129CB00B611BD /* SDmetamacros.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -240,7 +262,9 @@
 				80BFF2502136BC1500B95470 /* UIImage+WebP.h in Headers */,
 				80BFF24D2136BC0600B95470 /* SDWebImageWebPCoder.h in Headers */,
 				220A623E257EAFB300262720 /* SDWebImageWebPCoderDefine.h in Headers */,
+				32A3C1462B7129CB00B611BD /* SDInternalMacros.h in Headers */,
 				80BFF24E2136BC1000B95470 /* SDImageWebPCoder.h in Headers */,
+				32A3C14A2B7129CB00B611BD /* SDmetamacros.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -251,7 +275,9 @@
 				80BFF2632136BE2200B95470 /* SDWebImageWebPCoder.h in Headers */,
 				80BFF2612136BE1C00B95470 /* UIImage+WebP.h in Headers */,
 				220A623F257EAFB300262720 /* SDWebImageWebPCoderDefine.h in Headers */,
+				32A3C1472B7129CB00B611BD /* SDInternalMacros.h in Headers */,
 				80BFF25F2136BE1700B95470 /* SDImageWebPCoder.h in Headers */,
+				32A3C14B2B7129CB00B611BD /* SDmetamacros.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -262,7 +288,9 @@
 				80BFF27F2136BEF200B95470 /* SDWebImageWebPCoder.h in Headers */,
 				80BFF27D2136BEED00B95470 /* UIImage+WebP.h in Headers */,
 				220A6240257EAFB300262720 /* SDWebImageWebPCoderDefine.h in Headers */,
+				32A3C1482B7129CB00B611BD /* SDInternalMacros.h in Headers */,
 				80BFF27B2136BEE700B95470 /* SDImageWebPCoder.h in Headers */,
+				32A3C14C2B7129CB00B611BD /* SDmetamacros.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
