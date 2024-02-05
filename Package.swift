@@ -28,7 +28,10 @@ let package = Package(
             dependencies: ["SDWebImage", "libwebp"],
             path: ".",
             sources: ["SDWebImageWebPCoder/Classes"],
-            publicHeadersPath: "SDWebImageWebPCoder/Classes"
+            publicHeadersPath: "SDWebImageWebPCoder/Classes",
+            cSettings: [
+                .headerSearchPath("SDWebImageWebPCoder/Private")
+            ]
         )
     ]
 )
