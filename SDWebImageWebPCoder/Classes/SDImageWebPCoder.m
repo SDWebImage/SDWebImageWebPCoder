@@ -8,10 +8,15 @@
 
 #import "SDImageWebPCoder.h"
 #import "SDWebImageWebPCoderDefine.h"
-#import "SDInternalMacros.h"
 #import <Accelerate/Accelerate.h>
 #import <os/lock.h>
 #import <libkern/OSAtomic.h>
+
+#if __has_include("SDInternalMacros.h")
+#import "SDInternalMacros.h"
+#else
+#import <SDWebImage/SDInternalMacros.h>
+#endif
 
 #if __has_include("webp/decode.h") && __has_include("webp/encode.h") && __has_include("webp/demux.h") && __has_include("webp/mux.h")
 #import "webp/decode.h"
