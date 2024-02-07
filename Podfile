@@ -1,3 +1,7 @@
+install! "cocoapods",
+         :generate_multiple_pod_projects => true,
+         :incremental_installation => true
+         
 use_frameworks!
 
 example_project_path = 'Example/SDWebImageWebPCoderExample'
