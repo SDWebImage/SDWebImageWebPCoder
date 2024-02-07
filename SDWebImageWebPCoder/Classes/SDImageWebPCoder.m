@@ -12,10 +12,12 @@
 #import <os/lock.h>
 #import <libkern/OSAtomic.h>
 
-#if __has_include("SDInternalMacros.h")
-#import "SDInternalMacros.h"
-#else
+#if __has_include("SDWebImage/SDInternalMacros.h")
+#import "SDWebImage/SDInternalMacros.h"
+#elif __has_include(<SDWebImage/SDInternalMacros.h>)
 #import <SDWebImage/SDInternalMacros.h>
+#else
+#import "SDInternalMacros.h"
 #endif
 
 #if __has_include("webp/decode.h") && __has_include("webp/encode.h") && __has_include("webp/demux.h") && __has_include("webp/mux.h")
