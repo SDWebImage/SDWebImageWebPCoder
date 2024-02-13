@@ -16,6 +16,8 @@ This is a SDWebImage coder plugin to support WebP image.
   s.osx.deployment_target = '10.11'
   s.tvos.deployment_target = '9.0'
   s.watchos.deployment_target = '2.0'
+  s.visionos.deployment_target = '1.0'
+
   s.module_map = 'SDWebImageWebPCoder/Module/SDWebImageWebPCoder.modulemap'
   
   s.source_files = 'SDWebImageWebPCoder/Classes/**/*', 'SDWebImageWebPCoder/Private/*.h', 'SDWebImageWebPCoder/Module/SDWebImageWebPCoder.h'
