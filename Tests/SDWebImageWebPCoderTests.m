@@ -233,6 +233,21 @@ const int64_t kAsyncTestTimeout = 5;
     XCTAssert(data);
 }
 
+- (void)test22ThatForceDecodePolicyAlways {
+    XCTestExpectation *expectation = [self expectationWithDescription:@"Always policy with WebP image (libwebp) should force-decode"];
+    NSURL *url = [NSURL URLWithString:@"https://www.gstatic.com/webp/gallery/4.webp"];
+    [SDWebImageManager.sharedManager loadImageWithURL:url options:SDWebImageFromLoaderOnly context:@{SDWebImageContextImageCoder : SDImageWebPCoder.sharedCoder, SDWebImageContextImageForceDecodePolicy : @(SDImageForceDecodePolicyAlways)} progress:nil completed:^(UIImage * _Nullable image, NSData * _Nullable data, NSError * _Nullable error, SDImageCacheType cacheType, BOOL finished, NSURL * _Nullable imageURL) {
+        expect(image).notTo.beNil();
+        expect(image.sd_isDecoded).beTruthy();
+        CGImageRef cgImage = image.CGImage;
+        CGColorSpaceRef colorspace = CGImageGetColorSpace(cgImage);
+        expect(colorspace).equal([SDImageCoderHelper colorSpaceGetDeviceRGB]);
+        
+        [expectation fulfill];
+    }];
+    [self waitForExpectationsWithTimeout:5 handler:nil];
+}
+
 - (void)testWebPDecodeDoesNotTriggerCACopyImage {
     NSURL *staticWebPURL = [[NSBundle bundleForClass:[self class]] URLForResource:@"TestColorspaceStatic" withExtension:@"webp"];
     NSData *data = [NSData dataWithContentsOfURL:staticWebPURL];
@@ -241,11 +256,15 @@ const int64_t kAsyncTestTimeout = 5;
     size_t bytesPerRow = CGImageGetBytesPerRow(cgImage);
     XCTAssertEqual(bytesPerRow, 4096);
     CGColorSpaceRef colorspace = CGImageGetColorSpace(cgImage);
-    NSString *colorspaceName = (__bridge_transfer NSString *)CGColorSpaceCopyName(colorspace);
+    if (@available(iOS 10.0, macOS 10.6, *)) {
+        NSString *colorspaceName = (__bridge_transfer NSString *)CGColorSpaceCopyName(colorspace);
 #if SD_MAC
-    XCTAssertEqual(colorspace, NSScreen.mainScreen.colorSpace.CGColorSpace, @"Color space is not screen");
+        XCTAssertEqual(colorspace, NSScreen.mainScreen.colorSpace.CGColorSpace, @"Color space is not screen");
 #else
-    XCTAssertEqual(colorspaceName, (__bridge NSString *)kCGColorSpaceSRGB, @"Color space is not sRGB");
+        XCTAssertEqual(colorspaceName, (__bridge NSString *)kCGColorSpaceSRGB, @"Color space is not sRGB");
+    } else {
+        // Fallback on earlier versions
+    }
 #endif
 }
 
