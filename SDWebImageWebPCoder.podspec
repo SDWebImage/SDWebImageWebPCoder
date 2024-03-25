@@ -21,12 +21,13 @@ This is a SDWebImage coder plugin to support WebP image.
   s.source_files = 'SDWebImageWebPCoder/Classes/**/*', 'SDWebImageWebPCoder/Private/*.h', 'SDWebImageWebPCoder/Module/SDWebImageWebPCoder.h'
   s.private_header_files = 'SDWebImageWebPCoder/Private/*.h'
   s.xcconfig = {
-    'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) SD_WEBP=1',
-    'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/libwebp/src'
+    'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) SD_WEBP=1'
   }
   s.watchos.xcconfig = {
-    'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) SD_WEBP=1 WEBP_USE_INTRINSICS=1',
-    'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/libwebp/src'
+    'GCC_PREPROCESSOR_DEFINITIONS' => '$(inherited) SD_WEBP=1 WEBP_USE_INTRINSICS=1'
+  }
+  s.pod_target_xcconfig = {
+    'USER_HEADER_SEARCH_PATHS' => '$(PODS_ROOT)/libwebp/src'
   }
   s.framework = 'CoreGraphics'
   s.dependency 'SDWebImage/Core', '~> 5.17'
