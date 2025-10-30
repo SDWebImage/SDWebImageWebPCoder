@@ -972,13 +972,13 @@ WEBP_CSP_MODE ConvertCSPMode(CGBitmapInfo bitmapInfo) {
                     .size = writer.size
                 };
 
-                if (WebPMuxSetImage(mux, &webp_input, 1) == WEBP_MUX_OK) {
+                if (WebPMuxSetImage(mux, &webp_input, 0) == WEBP_MUX_OK) {
                     WebPData icc_chunk = {
                         .bytes = CFDataGetBytePtr(iccData),
                         .size = CFDataGetLength(iccData)
                     };
 
-                    if (WebPMuxSetChunk(mux, "ICCP", &icc_chunk, 1) == WEBP_MUX_OK) {
+                    if (WebPMuxSetChunk(mux, "ICCP", &icc_chunk, 0) == WEBP_MUX_OK) {
                         WebPData output;
                         if (WebPMuxAssemble(mux, &output) == WEBP_MUX_OK) {
                             webpData = [NSData dataWithBytes:output.bytes length:output.size];
