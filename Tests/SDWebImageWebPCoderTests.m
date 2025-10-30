@@ -381,7 +381,7 @@ const int64_t kAsyncTestTimeout = 5;
     NSString *jpegPath = [[NSBundle bundleForClass:[self class]] pathForResource:@"TestColorspaceBefore" ofType:@"jpeg"];
     NSData *jpegData = [NSData dataWithContentsOfFile:jpegPath];
     UIImage *jpegImage = [[UIImage alloc] initWithData:jpegData];
-    
+
     NSData *webpData = [[SDImageWebPCoder sharedCoder] encodedDataWithImage:jpegImage format:SDImageFormatWebP options:nil];
     // Re-decode to pick color
     UIImage *webpImage = [[SDImageWebPCoder sharedCoder] decodedImageWithData:webpData options:nil];
@@ -402,6 +402,37 @@ const int64_t kAsyncTestTimeout = 5;
     @catch (NSException *exception) {}
     expect(255 * r1).beCloseToWithin(0, 5);
 #endif
+}
+
+- (void)testWebPEncodingEmbedICCProfile {
+    // Test that ICC profile is embedded in WebP
+    NSString *jpegPath = [[NSBundle bundleForClass:[self class]] pathForResource:@"TestColorspaceBefore" ofType:@"jpeg"];
+    NSData *jpegData = [NSData dataWithContentsOfFile:jpegPath];
+    UIImage *jpegImage = [[UIImage alloc] initWithData:jpegData];
+    expect(jpegImage).notTo.beNil();
+
+    NSData *webpData = [[SDImageWebPCoder sharedCoder] encodedDataWithImage:jpegImage format:SDImageFormatWebP options:nil];
+    expect(webpData).notTo.beNil();
+
+    // Check for ICCP chunk
+    WebPData webp_data;
+    WebPDataInit(&webp_data);
+    webp_data.bytes = webpData.bytes;
+    webp_data.size = webpData.length;
+
+    WebPDemuxer *demuxer = WebPDemux(&webp_data);
+    expect(demuxer).notTo.beNil();
+
+    uint32_t flags = WebPDemuxGetI(demuxer, WEBP_FF_FORMAT_FLAGS);
+    expect(flags & ICCP_FLAG).notTo.equal(0);
+
+    WebPChunkIterator chunk_iter;
+    int result = WebPDemuxGetChunk(demuxer, "ICCP", 1, &chunk_iter);
+    expect(result).notTo.equal(0);
+    expect(chunk_iter.chunk.size).to.beGreaterThan(0);
+
+    WebPDemuxReleaseChunkIterator(&chunk_iter);
+    WebPDemuxDelete(demuxer);
 }
 
 @end
