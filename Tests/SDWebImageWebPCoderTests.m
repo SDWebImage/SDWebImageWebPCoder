@@ -435,6 +435,43 @@ const int64_t kAsyncTestTimeout = 5;
     WebPDemuxDelete(demuxer);
 }
 
+- (void)testWebPEncodingDisplayP3 {
+    // Test Display P3 wide color gamut encoding with ICC profile
+    NSString *pngPath = [[NSBundle bundleForClass:[self class]] pathForResource:@"TestDisplayP3" ofType:@"png"];
+    if (!pngPath) {
+        return;
+    }
+
+    NSData *pngData = [NSData dataWithContentsOfFile:pngPath];
+    UIImage *p3Image = [[UIImage alloc] initWithData:pngData];
+    expect(p3Image).notTo.beNil();
+
+    NSData *webpData = [[SDImageWebPCoder sharedCoder] encodedDataWithImage:p3Image
+                                                                      format:SDImageFormatWebP
+                                                                     options:@{SDImageCoderEncodeCompressionQuality: @0.95}];
+    expect(webpData).notTo.beNil();
+
+    // Check for ICCP chunk
+    WebPData webp_data;
+    WebPDataInit(&webp_data);
+    webp_data.bytes = webpData.bytes;
+    webp_data.size = webpData.length;
+
+    WebPDemuxer *demuxer = WebPDemux(&webp_data);
+    expect(demuxer).notTo.beNil();
+
+    uint32_t flags = WebPDemuxGetI(demuxer, WEBP_FF_FORMAT_FLAGS);
+    expect(flags & ICCP_FLAG).notTo.equal(0);
+
+    WebPChunkIterator chunk_iter;
+    int result = WebPDemuxGetChunk(demuxer, "ICCP", 1, &chunk_iter);
+    expect(result).notTo.equal(0);
+    expect(chunk_iter.chunk.size).to.beGreaterThan(0);
+
+    WebPDemuxReleaseChunkIterator(&chunk_iter);
+    WebPDemuxDelete(demuxer);
+}
+
 @end
 
 @implementation SDWebImageWebPCoderTests (Helpers)
