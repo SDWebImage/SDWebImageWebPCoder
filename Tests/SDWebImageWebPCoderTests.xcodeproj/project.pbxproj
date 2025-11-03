@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -23,6 +23,8 @@
 		808C918E213FD131004B0F7C /* SDWebImageWebPCoderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 808C918D213FD131004B0F7C /* SDWebImageWebPCoderTests.m */; };
 		808C919C213FD2B2004B0F7C /* TestImageStatic.webp in Resources */ = {isa = PBXBuildFile; fileRef = 808C919A213FD2B2004B0F7C /* TestImageStatic.webp */; };
 		808C919D213FD2B2004B0F7C /* TestImageAnimated.webp in Resources */ = {isa = PBXBuildFile; fileRef = 808C919B213FD2B2004B0F7C /* TestImageAnimated.webp */; };
+		B359E6032EB3ACBE0064933A /* TestDisplayP3.png in Resources */ = {isa = PBXBuildFile; fileRef = B359E6022EB3ACBE0064933A /* TestDisplayP3.png */; };
+		B359E6042EB3ACBE0064933A /* TestDisplayP3.png in Resources */ = {isa = PBXBuildFile; fileRef = B359E6022EB3ACBE0064933A /* TestDisplayP3.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +42,7 @@
 		808C918F213FD131004B0F7C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		808C919A213FD2B2004B0F7C /* TestImageStatic.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = TestImageStatic.webp; sourceTree = "<group>"; };
 		808C919B213FD2B2004B0F7C /* TestImageAnimated.webp */ = {isa = PBXFileReference; lastKnownFileType = file; path = TestImageAnimated.webp; sourceTree = "<group>"; };
+		B359E6022EB3ACBE0064933A /* TestDisplayP3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TestDisplayP3.png; sourceTree = "<group>"; };
 		D92E6791BF088D1A101E670E /* Pods-SDWebImageWebPCoderTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageWebPCoderTests.release.xcconfig"; path = "../Pods/Target Support Files/Pods-SDWebImageWebPCoderTests/Pods-SDWebImageWebPCoderTests.release.xcconfig"; sourceTree = "<group>"; };
 		F121CFAEBEFA209D335C5C6D /* Pods-SDWebImageWebPCoderTests-macOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SDWebImageWebPCoderTests-macOS.debug.xcconfig"; path = "../Pods/Target Support Files/Pods-SDWebImageWebPCoderTests-macOS/Pods-SDWebImageWebPCoderTests-macOS.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -107,6 +110,7 @@
 		808C9199213FD2B2004B0F7C /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				B359E6022EB3ACBE0064933A /* TestDisplayP3.png */,
 				32B4C7912AFB959E003A4BC7 /* TestColorspaceBefore.jpeg */,
 				326420302A5D53E300EE3E46 /* TestColorspaceStatic.webp */,
 				325E268D25C82BE1000B807B /* TestImageGrayscale.jpg */,
@@ -211,6 +215,7 @@
 				32B4C78C2AFB954C003A4BC7 /* TestColorspaceStatic.webp in Resources */,
 				32B4C78D2AFB954C003A4BC7 /* TestImageBlendAnimated.webp in Resources */,
 				32B4C7932AFB959E003A4BC7 /* TestColorspaceBefore.jpeg in Resources */,
+				B359E6042EB3ACBE0064933A /* TestDisplayP3.png in Resources */,
 				32B4C78B2AFB954C003A4BC7 /* TestImageGrayscale.jpg in Resources */,
 				32B4C78F2AFB954C003A4BC7 /* TestImageStatic.webp in Resources */,
 			);
@@ -224,6 +229,7 @@
 				808C919D213FD2B2004B0F7C /* TestImageAnimated.webp in Resources */,
 				808C919C213FD2B2004B0F7C /* TestImageStatic.webp in Resources */,
 				32B4C7922AFB959E003A4BC7 /* TestColorspaceBefore.jpeg in Resources */,
+				B359E6032EB3ACBE0064933A /* TestDisplayP3.png in Resources */,
 				326420312A5D53E300EE3E46 /* TestColorspaceStatic.webp in Resources */,
 				325E268E25C82BE1000B807B /* TestImageGrayscale.jpg in Resources */,
 			);
@@ -262,9 +268,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SDWebImageWebPCoderTests/Pods-SDWebImageWebPCoderTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SDWebImageWebPCoderTests/Pods-SDWebImageWebPCoderTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -297,9 +307,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SDWebImageWebPCoderTests-macOS/Pods-SDWebImageWebPCoderTests-macOS-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SDWebImageWebPCoderTests-macOS/Pods-SDWebImageWebPCoderTests-macOS-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
