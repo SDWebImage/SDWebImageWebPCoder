@@ -262,10 +262,10 @@ const int64_t kAsyncTestTimeout = 5;
         XCTAssertEqual(colorspace, NSScreen.mainScreen.colorSpace.CGColorSpace, @"Color space is not screen");
 #else
         XCTAssertEqual(colorspaceName, (__bridge NSString *)kCGColorSpaceSRGB, @"Color space is not sRGB");
+#endif
     } else {
         // Fallback on earlier versions
     }
-#endif
 }
 
 - (void)testEncodingSettings {
